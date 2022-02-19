@@ -7,8 +7,16 @@
 
       <h1>tumulus</h1>
       
-      <div class="cat">
-        <h3>{{featureName}}</h3>
+      <div class="cat" v-if="properties !== null">
+        <h3 v-if="properties.hasOwnProperty('name')">{{properties.name}}</h3>
+        <div class="type">{{type}}</div>
+        <div class="normal" v-if="properties.hasOwnProperty('wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties.wikipedia">Wikipedia</a></div>
+        <div class="normal" v-if="properties.hasOwnProperty('wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties.wikidata">Wikidata {{properties.wikidata}}</a></div>
+        <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
+        <div class="normal" v-if="properties.hasOwnProperty('fixme')">Note : {{properties.fixme}}</div>
+        <div class="normal" v-if="properties.hasOwnProperty('description')">Description : {{properties.description}}</div>
+        <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
+        <div class="small">{{properties.id}}</div>
       </div>
     </section>
 </template>
@@ -19,7 +27,49 @@ export default {
   name: 'Panel',
   data () {
     return {
-      featureName: 'sample',
+      types: {
+        'yes': 'intérêt historique',
+        'aircraft': 'Aéronef',
+        'aqueduct': 'Aqueduc',
+        'archaeological_site': 'Site archéologique',
+        'battlefield': 'Champ de bataille',
+        'bomb_crater': 'Cratère de bombe',
+        'building': 'Bâtiment',
+        'cannon': 'Canon',
+        'castle': 'Château',
+        'castle_wall': 'Mur défensif',
+        'charcoal_pile': 'Tas de charbon',
+        'church': 'Etablissement religieux',
+        'city_gate': 'Porte de ville',
+        'citywalls': 'Muraille',
+        'farm': 'Ferme',
+        'fort': 'Fort militaire',
+        'gallows': 'Potence',
+        'highwater_mark': 'Repère de crue',
+        'locomotive': 'Locomotive',
+        'manor': 'Manoir',
+        'memorial': 'Mémorial',
+        'mine': 'Mine',
+        'mine_shaft': 'Mine',
+        'milestone': 'Borne routière',
+        'monastery': 'Monastère',
+        'monument': 'Monument',
+        'optical_telegraph': 'Télégraphe optique par sémaphore',
+        'pillory': 'Pilori',
+        'railway_car': 'Wagon',
+        'ruins': 'Ruines',
+        'rune_store': 'Pierre runique',
+        'ship': 'Bateau ou sous-marin',
+        'stone': 'Pierre',
+        'tank': 'Tank',
+        'tomb': 'Tombe',
+        'tower': 'Tour',
+        'vehicle': 'Véhicule',
+        'wayside_cross': 'Croix ou calvaire',
+        'wayside_shrine': 'Oratoire',
+        'wreck': 'Epave'
+      },
+      properties: {},
       scrollPosition: 0,
       isRealScroll: true,
       windowWidth: 0,
@@ -34,6 +84,14 @@ export default {
     this.windowWidth = window.innerWidth
   },
   computed: {
+    type() {
+      var type = this.types[this.properties.historic]
+      if(this.properties.historic === 'memorial') {
+        // TODO https://wiki.openstreetmap.org/wiki/FR:Tag:historic%3Dmemorial
+        if(this.properties.memorial !== undefined) type = this.properties.memorial
+      }
+      return type
+    },
     computedPanelMaxHeight() {
       var value = ''
       if(this.windowWidth < 641)
@@ -54,6 +112,18 @@ export default {
         this.scrollPosition = currentScrollPosition
       }
       this.isRealScroll = true
+    },
+    loadFeature(feature) {
+      console.log(feature.properties)
+      this.properties = feature.properties
+
+      if(this.properties['name'] === undefined) {
+        if(this.properties['wikipedia']) {
+          this.properties.name = this.properties.wikipedia
+        }
+      }
+
+      // https://en.wikipedia.org/w/api.php?action=query&prop=info|extracts|pageimages|images&inprop=url&exsentences=1&titles=india
     }
   }
 }
@@ -73,6 +143,7 @@ export default {
   padding: 5px;
   box-shadow: 0px -1px 6px 0px rgba(0,0,0,0.75);
   overflow-y: auto;
+  user-select: text;
 }
 
 #handle {
@@ -100,17 +171,30 @@ export default {
 }
 
 h1 {
-  font-size: 3em;
+  font-size: 2.5em;
   padding: 0px;
   margin: 5px;
 }
 
 h3 {
   font-size: 1.2em;
-  font-weight: 100;
+  font-weight: 500;
   padding: 2px;
   margin: 4px;
-  margin-top: 5px;
+}
+
+.type {
+  font-size: 1em;
+  font-weight: 100;
+}
+
+.normal {
+
+}
+
+.small {
+  font-size: 0.7em;
+  color: grey;
 }
 
 .cat {
@@ -118,87 +202,6 @@ h3 {
   border-radius: 10px;
   padding: 5px;
   margin: 5px 5px 10px 5px;
-}
-
-#slider {
-  position: relative;
-  top: 0px;
-  width: 50%;
-  margin: auto;
-  margin-bottom: 15px;
-}
-
-#modes {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
-  margin: 0px auto;
-  position: relative;
-  text-align: center;
-}
-
-.mode {
-  width: 80px;
-  height: 80px;
-  margin: 4px;
-  padding: 0px;
-  cursor: pointer;
-  background-color: lightsalmon;
-  border: 5px solid transparent;
-  border-radius: 10px;
-  display: inline-block;
-  position: relative;
-  flex-direction: row;
-}
-
-.mode:hover {
-  background-color: orange;
-}
-
-.selected {
-  background-color: orangered;
-  box-shadow: 3px 3px 11px -3px #000000;
-}
-
-.mode h3 {
-  font-size: 16px;
-}
-
-.mode img {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-}
-
-.mode:hover .tooltip {
-  display:inline-block;
-  position: absolute;
-  background-color: #000000cc;
-  color: white;
-  opacity: 1;
-}
-
-.tooltip {
-  display: none;
-  opacity: 0;
-  text-align: center;
-  padding: 1px;
-  z-index: 10;
-  width: 50px;
-  left: 15px;
-  bottom: 0px;
-  border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-#details {
-  padding-left: 16px;
-  font-size: 1.1em;
-  font-weight: 100;
 }
 
 </style>
