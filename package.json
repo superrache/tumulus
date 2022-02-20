@@ -16,8 +16,9 @@
     "core-js": "^3.6.5",
     "express": "^4.17.3",
     "husky": "^7.0.4",
-    "vue": "^3.0.0",
-    "maplibre-gl": "^1.15.2"
+    "maplibre-gl": "^1.15.2",
+    "request": "^2.88.2",
+    "vue": "^3.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.15",
