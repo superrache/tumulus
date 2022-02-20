@@ -15,6 +15,8 @@ import * as env from './utils/env.js'
 
 import Panel from './Panel.vue'
 
+const DEBUG = true
+
 const geojsonSourceId = "geojson"
 const geojsonLayerId = "geojson-layer"
 
@@ -40,6 +42,7 @@ export default {
   },
   mounted () {
     this.panel = this.$refs.panel
+    this.panel.DEBUG = DEBUG
 
     this.map = new Map({
       container: this.$refs.map,

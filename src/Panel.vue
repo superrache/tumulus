@@ -16,17 +16,29 @@
         <div class="normal" v-if="properties.hasOwnProperty('fixme')">Note : {{properties.fixme}}</div>
         <div class="normal" v-if="properties.hasOwnProperty('description')">Description : {{properties.description}}</div>
         <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
-        <div class="small">{{properties.id}}</div>
+        <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/node/' + id">OSM id={{id}}</a></div>
+      </div>
+
+      <div class="cat" v-show="DEBUG">
+        <div class="normal">key=value</div>
+        <div class="type"
+            v-for="p in Object.keys(properties)"
+            :key="p">
+          {{p}}={{properties[p]}}
+        </div>
       </div>
     </section>
 </template>
 
 <script>
 
+
+
 export default {
   name: 'Panel',
   data () {
     return {
+      DEBUG: false,
       types: {
         'yes': 'intérêt historique',
         'aircraft': 'Aéronef',
@@ -69,6 +81,7 @@ export default {
         'wayside_shrine': 'Oratoire',
         'wreck': 'Epave'
       },
+      id: '',
       properties: {},
       scrollPosition: 0,
       isRealScroll: true,
@@ -114,7 +127,7 @@ export default {
       this.isRealScroll = true
     },
     loadFeature(feature) {
-      console.log(feature.properties)
+      this.id = feature.id
       this.properties = feature.properties
 
       if(this.properties['name'] === undefined) {
