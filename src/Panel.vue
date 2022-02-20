@@ -99,9 +99,15 @@ export default {
   computed: {
     type() {
       var type = this.types[this.properties.historic]
-      if(this.properties.historic === 'memorial') {
+      if(this.properties.historic === 'memorial' && this.properties.memorial !== undefined) {
         // TODO https://wiki.openstreetmap.org/wiki/FR:Tag:historic%3Dmemorial
-        if(this.properties.memorial !== undefined) type = this.properties.memorial
+        if(this.properties.memorial === 'plaque') type = 'Plaque commémorative'
+        else if(this.properties.memorial === 'war_memorial') type = 'Mémorial de guerre'
+        else if(this.properties.memorial === 'statue') type = 'Statue'
+        else if(this.properties.memorial === 'bust') type = 'Buste'
+        else if(this.properties.memorial === 'stele') type = 'Stèle'
+        else if(this.properties.memorial === 'stone') type = 'Pierre'
+        else type = this.properties.memorial
       }
       return type
     },
