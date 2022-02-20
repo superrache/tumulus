@@ -15,7 +15,7 @@ module.exports = function(app, prod) {
 
         try {
             var url = 'https://overpass-api.de/api/interpreter?data='
-            var query = '[out:json][timeout:25];(node["historic"](' + req.query.bounds + '););out;>;out skel qt;'
+            var query = '[out:json][timeout:25];(node[' + req.query.filter + '](' + req.query.bounds + '););out;>;out skel qt;'
             const fullUrl = url + encodeURIComponent(query)
             console.log(fullUrl)
             request(fullUrl, (error, response, data) => {
@@ -45,6 +45,7 @@ module.exports = function(app, prod) {
                     res.json(geojson)
                 } catch(err) {
                     console.error(err)
+                    console.error(data)
                     res.json({error: 1})
                 }
             })

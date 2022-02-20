@@ -15,11 +15,6 @@ import * as env from './utils/env.js'
 
 import Panel from './Panel.vue'
 
-const DEBUG = true
-
-const geojsonSourceId = "geojson"
-const geojsonLayerId = "geojson-layer"
-
 export default {
   name: 'Map',
   components: {
@@ -31,8 +26,30 @@ export default {
       startingZoom: 16,
       currentZoom: 0,
       center: { lat: 47.2143, lng: -1.5587 },
-      geojson: null,
-      panel: null
+      panel: null,
+      selectedFeatureId: null,
+      selectedLayerId: null,
+      themes: {
+        memorial: {
+          id: "memorial",
+          label: "Mémorial",
+          color: "brown",
+          filter: '"historic"="memorial"'
+        },
+        archeo: {
+          id: "archeo",
+          label: "Site archéologique",
+          color: "darkblue",
+          filter: '"historic"="archaeological_site"'
+        },
+        shrine: {
+          id: "shrine",
+          label: "Element religieux",
+          color: "blueviolet",
+          filter: '"historic"="wayside_shrine"',
+          visible: true
+        }
+      }
     }
   },
   computed: {
@@ -42,7 +59,8 @@ export default {
   },
   mounted () {
     this.panel = this.$refs.panel
-    this.panel.DEBUG = DEBUG
+
+    this.panel.themeSelect.map = this
 
     this.map = new Map({
       container: this.$refs.map,
@@ -62,10 +80,10 @@ export default {
       })
     )
 
-    this.map.loadImage('https://docs.mapbox.com/mapbox-gl-js/assets/cat.png', (error, image) => {
+    /*this.map.loadImage('./img/memorial.png', (error, image) => {
       if(error) throw error
       this.map.addImage('megalith', image)
-    })
+    })*/
 
     this.map.on('moveend', this.onMapMove)
     this.onMapMove()
@@ -75,64 +93,111 @@ export default {
       this.currentZoom = this.map.getZoom()
 
       if(!this.dispZoomMore) {
+        console.log('onMapMove')
         const sw = this.map.getBounds()._sw
         const ne = this.map.getBounds()._ne
         const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
-        const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds)
-        const data = await response.json()
-        this.loadGeojson(data)
+
+        for(var t in this.themes) {
+          const theme = this.themes[t]
+          if(theme.visible) {
+            const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + theme.filter)
+            const data = await response.json()
+            this.loadGeojson(theme, data)
+          } else {
+            this.removeGeojson(theme.id)
+          }
+        }
       }
     },
-    removeCurrentGeojson() {
-        if(this.map.getLayer(geojsonLayerId)) this.map.removeLayer(geojsonLayerId)
-        if(this.map.getSource(geojsonSourceId)) this.map.removeSource(geojsonSourceId)
-
-        this.geojson = null
+    removeGeojson(id) {
+        if(this.map.getLayer(id)) this.map.removeLayer(id) // TODO juste changer la source sinon ?
+        if(this.map.getSource(id)) this.map.removeSource(id)
     },
-    loadGeojson(geojson) {
-        this.removeCurrentGeojson()
+    loadGeojson(theme, geojson) {
+        this.removeGeojson(theme.id)
+        
+        if(geojson.error === undefined) {
+          theme.geojson = geojson
+          console.log('load theme ' + theme.id + ' with ' + theme.geojson.features.length + ' features')
 
-        this.geojson = geojson
-        console.log(this.geojson.features.length + ' entités')
+          this.map.addSource(theme.id, {
+              type: "geojson",
+              data: theme.geojson,
+              generateId: false
+          })
 
-        this.map.addSource(geojsonSourceId, {
-            type: "geojson",
-            data: this.geojson,
-            generateId: false
-        })
+          /*this.map.addLayer({
+              id: geojsonLayerId,
+              source: geojsonSourceId,
+              interactive: true,
+              type: 'symbol',
+              layout: {
+                'icon-allow-overlap': true,
+                'icon-anchor': 'center',
+                'icon-ignore-placement': false,
+                'icon-image': 'megalith',
+                'icon-size': 0.1
+              }
+          })*/
 
-        this.map.addLayer({
-            id: geojsonLayerId,
-            source: geojsonSourceId,
+          theme.layer = this.map.addLayer({
+            id: theme.id,
+            source: theme.id,
             interactive: true,
-            type: 'symbol',
+            type: 'circle',
+            paint: {
+              'circle-color': theme.color,
+              'circle-opacity': 1,
+              'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 10, 8],
+              'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
+              'circle-stroke-width': 4
+            },
             layout: {
-              'icon-allow-overlap': true,
-              'icon-anchor': 'center',
-              'icon-ignore-placement': false,
-              'icon-image': 'megalith',
-              'icon-size': 0.1
+              visibility: 'visible'
             }
-        })
+          })
 
-        this.map.on('mousemove', geojsonLayerId, (e) => {
-            if(e.features.length > 0) {
-                this.map.getCanvas().style.cursor = "pointer" //crosshair
-            }
-        })
+          this.map.on('mousemove', theme.id, (e) => {
+              if(e.features.length > 0) {
+                  this.map.getCanvas().style.cursor = "pointer" //crosshair
+              }
+          })
 
-        this.map.on('mouseleave', geojsonLayerId, () => {
-            this.map.getCanvas().style.cursor = ""
-        })
+          this.map.on('mouseleave', theme.id, () => {
+              this.map.getCanvas().style.cursor = ""
+          })
 
-        this.map.on('click', geojsonLayerId, (e) => {
-            if(e.features.length > 0) {
-                this.onFeatureSelect(e.features[0])
-            }
-        })
+          this.map.on('click', theme.id, (e) => {
+              if(e.features.length > 0) {
+                  this.onFeatureSelect(e.features[0], theme)
+              }
+          })
+        }
     },
-    onFeatureSelect(feature) {
-      this.panel.loadFeature(feature)
+    onFeatureSelect(feature, theme) {
+      this.selectFeature(feature)
+      this.panel.featureResult.loadFeature(feature, theme)
+    },
+    selectFeature(feature) {
+      this.unselectFeature(feature)
+      this.selectedFeatureId = feature.id
+      this.selectedLayerId = feature.layer.id
+      console.log('select ' + feature.id)
+      this.map.setFeatureState(
+        { source: this.selectedLayerId, id: this.selectedFeatureId },
+        { selected: true }
+      )
+    },
+    unselectFeature() {
+      if(this.selectedFeatureId !== null) {
+        console.log('unselect ' + this.selectedFeatureId)
+        this.map.setFeatureState(
+          { source: this.selectedLayerId, id: this.selectedFeatureId },
+          { selected: false }
+        )
+      }
+      this.selectedFeatureId = null
     }
 
   }
