@@ -16,7 +16,8 @@ module.exports = function(app, prod) {
         console.log('get /data')
 
         try {
-            var url = 'https://overpass-api.de/api/interpreter?data='
+            var instances = [/*'https://overpass-api.de/api/interpreter', */'https://lz4.overpass-api.de/api/interpreter', 'https://z.overpass-api.de/api/interpreter']
+            var url = instances[Math.floor(Math.random() * instances.length)] + '?data='
             var query = '[out:json][timeout:25];(node[' + req.query.filter + '](' + req.query.bounds + '););out;>;out skel qt;'
             const fullUrl = url + encodeURIComponent(query)
             console.log(fullUrl)
@@ -76,14 +77,20 @@ module.exports = function(app, prod) {
                         
                         const json = JSON.parse(data)
 
-                        const originalImageName = json.claims.P18[0].mainsnak.datavalue.value
-                        const imageName = originalImageName.replace(/\s/g, '_')
-                        const hash = MD5(imageName) // ne pas prendre json.claims.P18[0].mainsnak.hash qui se base sur le nom d'origine
-                        const imageURI = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + hash[0] + '/' + hash[0] + hash[1] + '/' + imageName + '/' + req.query.width + 'px-' + imageName
+                        const original = json.claims.P18[0].mainsnak.datavalue.value
+                        const escaped = original.replace(/\s/g, '_')
+                        // TODO ne pas escape les ç + Le hash ne doit pas etre calculé sur escaped apparemment
+                        const encoded = encodeURIComponent(escaped).replace(/[!'()*]/g, function(c) { return '%' + c.charCodeAt(0).toString(16); })
+                        /*console.log(MD5(original))
+                        console.log(MD5(escaped))
+                        console.log(MD5(encoded))
+                        console.log(json.claims.P18[0].mainsnak.hash)*/
+                        const hash = MD5(escaped) // ne pas prendre json.claims.P18[0].mainsnak.hash qui se base sur le nom d'origine
+                        const imageURI = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + hash[0] + '/' + hash.substr(0, 2) + '/' + encoded + '/' + req.query.width + 'px-' + encoded
                         
                         // autre méthode qui change d'URL
                         //const resizeUrl = 'https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/' + imageName.replace(/\s/g, '_') + '&width=300'
-                        
+
                         console.log(imageURI)
                         res.json({image: imageURI})
                     } catch(err) {
