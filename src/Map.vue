@@ -15,8 +15,11 @@
 import { Map, NavigationControl, GeolocateControl } from 'maplibre-gl'
 
 import * as env from './utils/env.js'
+import * as utils from './utils/utils.js'
 
 import Panel from './Panel.vue'
+
+const appName = "tumulus"
 
 export default {
   name: 'Map',
@@ -126,7 +129,16 @@ export default {
       return this.currentZoom < 12
     }
   },
-  mounted () {
+  created() {
+    console.log(location.pathname)
+    const params = location.pathname.split('/')
+    if(params.length >= 4) {
+      this.startingZoom = params[1]
+      console.log(this.startingZoom)
+      this.center = { lat: params[2], lng: params[3] }
+    }
+  },
+  mounted() {
     this.panel = this.$refs.panel
 
     this.panel.themeSelect.map = this
@@ -254,7 +266,10 @@ export default {
     },
     async onMapMove(e, launchQuery) {
       if(e !== null) launchQuery = true // vrai déplacement
+
+      const {lng, lat} = this.map.getCenter()
       this.currentZoom = this.map.getZoom()
+      window.history.pushState(appName, appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng))
 
       if(!this.dispZoomMore) {
         console.log('onMapMove launchQuery=' + launchQuery)

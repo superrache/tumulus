@@ -115,6 +115,7 @@ export default {
         'land_art': 'Land art',
         'landart': 'Land art',
         'streetart': 'Streetart',
+        'street_art': 'Streetart',
         'fountain': 'Fontaine',
         'column': 'Colonne',
         'stele': 'Stèle'
