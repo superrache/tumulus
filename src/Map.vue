@@ -30,7 +30,7 @@ export default {
       map: null,
       startingZoom: 13,
       currentZoom: 0,
-      center: { lat: 48.04831, lng: -4.64890 },
+      center: { lat: 48.09589, lng: -4.46101 },
       panel: null,
       selectedFeatureId: null,
       selectedLayerId: null,
@@ -49,7 +49,7 @@ export default {
           color: "orange",
           query: 'historic',
           key: 'historic',
-          values: ['memorial']
+          values: ['memorial', 'highwater_mark']
         },
         archeo: {
           id: "archeo",
@@ -60,13 +60,50 @@ export default {
           values: ['archaeological_site'],
           visible: true
         },
+        monument: {
+          id: "monument",
+          label: "Monument historique",
+          color: 'salmon',
+          query: 'historic',
+          key: 'historic',
+          values: ['aqueduct', 'building', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
+          visible: true
+        },
+        military: {
+          id: 'military',
+          label: "Equipement militaire",
+          color: "DarkOliveGreen",
+          query: 'historic',
+          key: 'historic',
+          values: ['battlefield', 'bomb_crater', 'cannon', 'castle', 'castle_wall', 'citywalls', 'fort', 'pa', 'tank'],
+          visible: true
+        },
+        transport: {
+          id: 'transport',
+          label: "Transport",
+          color: "green",
+          query: 'historic',
+          key: 'historic',
+          values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'ship', 'vehicle', 'wreck'],
+          visible: true
+        },
         shrine: {
           id: "shrine",
           label: "Element religieux",
           color: "blueviolet",
           query: 'historic',
           key: 'historic',
-          values: ['wayside_cross', 'wayside_shrine']
+          values: ['wayside_cross', 'wayside_shrine', 'church', 'monastery', 'rune_stone'],
+          visible: true
+        },
+        other: {
+          id: "other",
+          label: "Autres",
+          color: "pink",
+          query: 'historic',
+          key: 'historic',
+          values: ['yes'],
+          visible: true
         }
       }
     }
