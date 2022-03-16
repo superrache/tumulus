@@ -4,7 +4,7 @@
       :style="{ 'background-color': theme.color }">
       <h3 v-if="properties.hasOwnProperty('name')">{{properties.name}}</h3>
       <div class="type">{{type}}</div>
-      <img :src="imageURL" width="280"/>
+      <img v-if="imageURL.length > 0" :src="imageURL" width="280"/>
       <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
 
       <div class="normal" v-if="properties.hasOwnProperty('wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties.wikipedia">Wikipedia</a></div>
@@ -167,6 +167,7 @@ export default {
       this.imageURL = ''
     },
     async getImageURL() {
+      this.imageURL = ''
       if(this.properties.wikidata !== undefined) {
         const response = await fetch(env.getServerUrl() + "/image?type=wikidata&width=280&ref=" + this.properties.wikidata)
         const data = await response.json()
