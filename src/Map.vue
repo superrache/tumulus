@@ -1,6 +1,11 @@
 <template>
     <div id="map_container">
       <div id="map" ref="map"></div>
+
+      <div id="loading" v-for="l in loadings" :key="l">
+        <div class="loading_item" :style="{ 'background-color': l.color }">{{ l.loadingMessage }}</div>
+      </div>
+
       <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
 
       <Panel id="panel" ref="panel" />
@@ -23,38 +28,52 @@ export default {
   data () {
     return {
       map: null,
-      startingZoom: 16,
+      startingZoom: 13,
       currentZoom: 0,
-      center: { lat: 47.2143, lng: -1.5587 },
+      center: { lat: 48.04831, lng: -4.64890 },
       panel: null,
       selectedFeatureId: null,
       selectedLayerId: null,
+      loadings: new Set(),
+      neededQueries: new Set(),
+      queries: {
+        historic: {
+          filter: '"historic"',
+          data: {}
+        }
+      },
       themes: {
         memorial: {
           id: "memorial",
           label: "Mémorial",
-          color: "brown",
-          filter: '"historic"="memorial"'
+          color: "orange",
+          query: 'historic',
+          key: 'historic',
+          values: ['memorial']
         },
         archeo: {
           id: "archeo",
           label: "Site archéologique",
-          color: "darkblue",
-          filter: '"historic"="archaeological_site"'
+          color: "blue",
+          query: 'historic',
+          key: 'historic',
+          values: ['archaeological_site'],
+          visible: true
         },
         shrine: {
           id: "shrine",
           label: "Element religieux",
           color: "blueviolet",
-          filter: '"historic"="wayside_shrine"',
-          visible: true
+          query: 'historic',
+          key: 'historic',
+          values: ['wayside_cross', 'wayside_shrine']
         }
       }
     }
   },
   computed: {
     dispZoomMore() {
-      return this.currentZoom < 14
+      return this.currentZoom < 12
     }
   },
   mounted () {
@@ -85,46 +104,45 @@ export default {
       this.map.addImage('megalith', image)
     })*/
 
-    this.map.on('moveend', this.onMapMove)
-    this.onMapMove()
+    console.log('mounted ok')
+    this.map.on('load', this.onMapLoad)
   },
   methods: {
-    async onMapMove() {
-      this.currentZoom = this.map.getZoom()
+    onMapLoad() {
+      console.log('map loaded')
+      this.reinitThemes()
+      this.map.on('moveend', this.onMapMove)
+    },
+    removeLayerAndSource(id) {
+      if(this.map.getLayer(id)) this.map.removeLayer(id)
+      if(this.map.getSource(id)) this.map.removeSource(id)
+    },
+    reinitThemes() {
+      var oldNeededQueries = new Set()
+      this.neededQueries.forEach(function(q) {
+        oldNeededQueries.add(q)
+      })
+      this.neededQueries.clear()
 
-      if(!this.dispZoomMore) {
-        console.log('onMapMove')
-        const sw = this.map.getBounds()._sw
-        const ne = this.map.getBounds()._ne
-        const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
+      for(var t in this.themes) {
+        const theme = this.themes[t]
+        console.log('Theme ' + theme.id + (theme.visible ? ' visible' : ' hidden'))
 
-        for(var t in this.themes) {
-          const theme = this.themes[t]
-          if(theme.visible) {
-            const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + theme.filter)
-            const data = await response.json()
-            this.loadGeojson(theme, data)
-          } else {
-            this.removeGeojson(theme.id)
+        // dans tous les cas, on supprime la couche et la source
+        this.removeLayerAndSource(theme.id)
+
+        if(theme.visible) {
+          theme.dataCacheIds = new Set()
+          this.neededQueries.add(theme.query)
+
+          theme.geojson = {
+            type: "FeatureCollection",
+            features: []
           }
-        }
-      }
-    },
-    removeGeojson(id) {
-        if(this.map.getLayer(id)) this.map.removeLayer(id) // TODO juste changer la source sinon ?
-        if(this.map.getSource(id)) this.map.removeSource(id)
-    },
-    loadGeojson(theme, geojson) {
-        this.removeGeojson(theme.id)
-        
-        if(geojson.error === undefined) {
-          theme.geojson = geojson
-          console.log('load theme ' + theme.id + ' with ' + theme.geojson.features.length + ' features')
 
-          this.map.addSource(theme.id, {
-              type: "geojson",
-              data: theme.geojson,
-              generateId: false
+          theme.source = this.map.addSource(theme.id, {
+            type: "geojson",
+            data: theme.geojson
           })
 
           /*this.map.addLayer({
@@ -171,9 +189,78 @@ export default {
           this.map.on('click', theme.id, (e) => {
               if(e.features.length > 0) {
                   this.onFeatureSelect(e.features[0], theme)
+              } else { // TODO 'click' without layer
+                this.unselectFeature()
+                this.panel.featureResult.unloadFeature()
               }
           })
         }
+      }
+      
+      this.panel.featureResult.unloadFeature()
+
+      let areSetsEqual = (a, b) => a.size === b.size && [...a].every(value => b.has(value)) // TODO move in utils
+      this.onMapMove(null, oldNeededQueries.size === 0 || !areSetsEqual(oldNeededQueries, this.neededQueries))
+    },
+    async onMapMove(e, launchQuery) {
+      if(e !== null) launchQuery = true // vrai déplacement
+      this.currentZoom = this.map.getZoom()
+
+      if(!this.dispZoomMore) {
+        console.log('onMapMove launchQuery=' + launchQuery)
+        const sw = this.map.getBounds()._sw
+        const ne = this.map.getBounds()._ne
+        const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
+
+        this.loadings.clear()
+        for(var t in this.themes) {
+          const theme = this.themes[t]
+          if(theme.visible) {
+            theme.loadingMessage = 'Chargement des données'
+            this.loadings.add(theme)
+          }
+        }
+
+        if(launchQuery !== undefined && launchQuery) {
+          for(var q of this.neededQueries.values()) {
+            console.log('launching query ' + q)
+            const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + this.queries[q].filter)
+            const data = await response.json()
+            if(data.error === undefined) {
+              this.queries[q].data = data
+            } else {
+              console.log('query error ' + data.error)
+            }
+          }
+        }
+
+        for(t in this.themes) {
+          const theme = this.themes[t]
+          if(theme.visible) {
+            this.loadGeojson(theme, this.queries[theme.query].data)
+            this.loadings.delete(theme)
+          }
+        }
+      }
+    },
+    loadGeojson(theme, geojson) {
+      if(geojson.features !== undefined) {
+        console.log('loading ' + geojson.features.length + ' features to theme ' + theme.id)
+        var added = 0
+        // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
+        for(var f in geojson.features) {
+          const feature = geojson.features[f]
+          if(!theme.dataCacheIds.has(feature.id)) {
+            if(theme.values.indexOf(feature.properties[theme.key]) > -1) {
+              theme.dataCacheIds.add(feature.id)
+              theme.geojson.features.push(feature)
+              added++
+            }
+          }
+        }
+        this.map.getSource(theme.id).setData(theme.geojson)
+        console.log('' + added + ' features added to theme ' + theme.id)
+      }
     },
     onFeatureSelect(feature, theme) {
       this.selectFeature(feature)
@@ -230,6 +317,21 @@ a {
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+
+#loading {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 1020;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading_item {
+  margin: 0;
+  height: 15px;
 }
 
 #zoomMore {

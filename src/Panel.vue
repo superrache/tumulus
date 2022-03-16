@@ -13,7 +13,7 @@
       </table>
       
       <ThemeSelect id="themeSelect" ref="themeSelect" />
-      <FeatureResult id="featureResult" ref="featureResult" />
+      <FeatureResult ref="featureResult" />
     </section>
 </template>
 

@@ -4,7 +4,7 @@
         <div class="theme"
             v-for="t in Object.keys(map.themes)"
             :key="t"
-            v-on:click="onThemeClic($event, t)"
+            v-on:click="toogleThemeVisibility($event, t)"
             :style="{ 'background-color': map.themes[t].color, 'opacity': map.themes[t].visible ? '1' : '0.3' }">
             {{map.themes[t].label}}
         </div>
@@ -23,12 +23,14 @@ export default {
     }
   },
   methods: {
-      onThemeClic(e, id) {
-          console.log('select theme ' + id)
+      toogleThemeVisibility(e, id) {
+          console.log('toogleThemeVisibility ' + id)
           for(var t in this.map.themes) {
-            this.map.themes[t].visible = (t === id)
+            if(t === id) {
+              this.map.themes[t].visible = !this.map.themes[t].visible
+            }
           }
-          this.map.onMapMove()
+          this.map.reinitThemes()
       }
   }
 }
