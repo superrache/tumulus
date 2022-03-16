@@ -2,9 +2,7 @@
     <div id="map_container">
       <div id="map" ref="map"></div>
 
-      <div id="loading" v-for="l in loadings" :key="l">
-        <div class="loading_item" :style="{ 'background-color': l.color }">{{ l.loadingMessage }}</div>
-      </div>
+      <div id="loading" :style="{width: loading + '%'}"></div>
 
       <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
 
@@ -32,14 +30,20 @@ export default {
       currentZoom: 0,
       center: { lat: 48.09589, lng: -4.46101 },
       panel: null,
+      loading: 0,
       selectedFeatureId: null,
       selectedLayerId: null,
-      loadings: new Set(),
       neededQueries: new Set(),
       queries: {
         historic: {
           filter: '"historic"',
-          data: {}
+          bounds: '',
+          cache: {}
+        },
+        artwork: {
+          filter: '"tourism"="artwork"',
+          bounds: '',
+          cache: {}
         }
       },
       themes: {
@@ -99,11 +103,20 @@ export default {
         other: {
           id: "other",
           label: "Autres",
-          color: "pink",
+          color: "dodgerblue",
           query: 'historic',
           key: 'historic',
           values: ['yes'],
           visible: true
+        },
+        artwork: {
+          id: "artwork",
+          label: "Oeuvre d'art",
+          color: "crimson",
+          query: 'artwork',
+          key: 'tourism',
+          values: ['artwork'],
+          visible: false
         }
       }
     }
@@ -249,35 +262,35 @@ export default {
         const ne = this.map.getBounds()._ne
         const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
 
-        this.loadings.clear()
-        for(var t in this.themes) {
-          const theme = this.themes[t]
-          if(theme.visible) {
-            theme.loadingMessage = 'Chargement des données'
-            this.loadings.add(theme)
-          }
-        }
-
+        this.loading = 20
         if(launchQuery !== undefined && launchQuery) {
           for(var q of this.neededQueries.values()) {
-            console.log('launching query ' + q)
-            const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + this.queries[q].filter)
-            const data = await response.json()
-            if(data.error === undefined) {
-              this.queries[q].data = data
-            } else {
-              console.log('query error ' + data.error)
+            var launch = this.queries[q].bounds !== bounds // ne refait la requête que si la carte a bougé
+            while(launch) {
+              console.log('launching query ' + q)
+              const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + this.queries[q].filter)
+              const data = await response.json()
+              if(data.error === undefined) {
+                this.queries[q].cache = data
+                this.queries[q].bounds = bounds
+                this.loading += 1 / this.neededQueries.size * 100 - 20
+                launch = false
+              } else {
+                console.log('query error ' + data.error)
+                this.loading += 5 
+              }
             }
           }
         }
 
-        for(t in this.themes) {
+        for(var t in this.themes) {
           const theme = this.themes[t]
           if(theme.visible) {
-            this.loadGeojson(theme, this.queries[theme.query].data)
-            this.loadings.delete(theme)
+            this.loadGeojson(theme, this.queries[theme.query].cache)
           }
         }
+
+        this.loading = 0
       }
     },
     loadGeojson(theme, geojson) {
@@ -360,15 +373,9 @@ a {
   position: absolute;
   top: 0px;
   left: 0px;
-  width: 100%;
+  height: 5px;
   z-index: 1020;
-  display: flex;
-  flex-direction: column;
-}
-
-.loading_item {
-  margin: 0;
-  height: 15px;
+  background-color: red;
 }
 
 #zoomMore {
