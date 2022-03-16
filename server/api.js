@@ -13,14 +13,13 @@ module.exports = function(app, prod) {
             res.header('Access-Control-Allow-Headers', "*")
         }
 
-        console.log('get /data')
-
         try {
-            var instances = [/*'https://overpass-api.de/api/interpreter', */'https://lz4.overpass-api.de/api/interpreter', 'https://z.overpass-api.de/api/interpreter']
-            var url = instances[Math.floor(Math.random() * instances.length)] + '?data='
-            var query = '[out:json][timeout:25];(node[' + req.query.filter + '](' + req.query.bounds + '););out;>;out skel qt;'
+            var instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
+            var instance = instances[Math.floor(Math.random() * instances.length)]
+            var url = instance + '/api/interpreter?data='
+            var query = '[out:json][timeout:10];(node[' + req.query.filter + '](' + req.query.bounds + '););out;>;out skel qt;'
             const fullUrl = url + encodeURIComponent(query)
-            console.log(fullUrl)
+            console.log('get /data request on ' + instance + ' filter: ' + req.query.filter + ' bounds: ' + req.query.bounds)
             request(fullUrl, (error, response, data) => {
                 try {
                     if(error) console.log(error)
@@ -47,13 +46,13 @@ module.exports = function(app, prod) {
                     }
                     res.json(geojson)
                 } catch(err) {
-                    console.error(err)
-                    console.error(data)
+                    // console.error(err)
+                    // console.error(data)
                     res.json({error: 1})
                 }
             })
         } catch(err) {
-            console.error(err)
+            //console.error(err)
             res.json({error: 2})
         }
     })
@@ -64,12 +63,10 @@ module.exports = function(app, prod) {
             res.header('Access-Control-Allow-Headers', "*")
         }
 
-        console.log('get /image')
-
         try {
             if(req.query.type === 'wikidata') {
                 const wikidataAPIUrl = 'https://www.wikidata.org/w/api.php?action=wbgetclaims&property=P18&entity=' + req.query.ref + '&format=json'
-                console.log(wikidataAPIUrl)
+                console.log('get /image request ' + wikidataAPIUrl)
                 request(wikidataAPIUrl, (error, response, data) => {
                     try {
                         if(error) console.log(error)
@@ -94,8 +91,8 @@ module.exports = function(app, prod) {
                         console.log(imageURI)
                         res.json({image: imageURI})
                     } catch(err) {
-                        console.error(err)
-                        console.error(data)
+                        //console.error(err)
+                        //console.error(data)
                         res.json({error: 1})
                     }
                 })
@@ -103,7 +100,7 @@ module.exports = function(app, prod) {
                 res.json({error: 0})
             }
         } catch(err) {
-            console.error(err)
+            //console.error(err)
             res.json({error: 2})
         }
     })
