@@ -5,10 +5,23 @@
       <h3 v-if="properties.hasOwnProperty('name')">{{properties.name}}</h3>
       <div class="type">{{type}}</div>
       <img :src="imageURL" width="280"/>
+      <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
+
       <div class="normal" v-if="properties.hasOwnProperty('wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties.wikipedia">Wikipedia</a></div>
       <div class="normal" v-if="properties.hasOwnProperty('wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties.wikidata">Wikidata {{properties.wikidata}}</a></div>
       <div class="normal" v-if="properties.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + properties['ref:mhs']">Base Mérimée {{properties['ref:mhs']}}</a></div>
-      <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
+      <div class="normal" v-if="properties.hasOwnProperty('website')"><a target="_blank" :href="properties['website']">{{properties['website']}}</a></div>
+
+      <div class="normal" v-if="properties.hasOwnProperty('artist_name')">Artiste : {{properties.artist_name}}</div>
+      <div class="normal" v-if="properties.hasOwnProperty('artist:wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties['artist:wikipedia']">Wikipedia de l'artiste</a></div>
+      <div class="normal" v-if="properties.hasOwnProperty('artist:wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties['artist:wikidata']">Wikidata de l'artiste {{properties['artist:wikidata']}}</a></div>
+
+      <div class="normal" v-if="properties.hasOwnProperty('artwork_subject')">Sujet de l'oeuvre : {{properties.artwork_subject}}</div>
+      <div class="normal" v-if="properties.hasOwnProperty('subject:wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties['subject:wikipedia']">Wikipedia de l'oeuvre</a></div>
+      <div class="normal" v-if="properties.hasOwnProperty('subject:wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties['subject:wikidata']">Wikidata de l'oeuvre {{properties['subject:wikidata']}}</a></div>
+
+      <div class="normal" v-if="properties.hasOwnProperty('material')">Matériau : {{properties.material}}</div>
+
       <div class="normal" v-if="properties.hasOwnProperty('fixme')">Note : {{properties.fixme}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('description')">Description : {{properties.description}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
@@ -35,7 +48,7 @@ export default {
   data () {
     return {
       DEBUG: true,
-      types: {
+      historicTypes: {
         'yes': 'intérêt historique',
         'aircraft': 'Aéronef',
         'aqueduct': 'Aqueduc',
@@ -77,6 +90,35 @@ export default {
         'wayside_shrine': 'Oratoire',
         'wreck': 'Epave'
       },
+      memorialTypes: {
+        'plaque': 'Plaque commémorative',
+        'war_memorial': 'Mémorial de guerre',
+        'statue': 'Statue',
+        'bust': 'Buste',
+        'stele': 'Stèle',
+        'stone': 'Pierre'
+      },
+      artworkTypes: {
+        'architecture': 'Bâtiment remarquable',
+        'mural': 'Oeuvre d\'art mural',
+        'mural_painting': 'Peinture murale',
+        'painting': 'Peinture',
+        'sculpture': 'Sculpture',
+        'statue': 'Statue',
+        'bust': 'Buste',
+        'stone': 'Rocher',
+        'installation': 'Installation artistique',
+        'graffiti': 'Graffiti',
+        'tilework': 'Carrelage',
+        'mosaic': 'Mosaïc',
+        'azulejo': 'Azulejo',
+        'land_art': 'Land art',
+        'landart': 'Land art',
+        'streetart': 'Streetart',
+        'fountain': 'Fontaine',
+        'column': 'Colonne',
+        'stele': 'Stèle'
+      },
       id: '',
       properties: {},
       imageURL: '',
@@ -85,17 +127,21 @@ export default {
   },
   computed: {
     type() {
-      var type = this.types[this.properties.historic]
+      var type = this.historicTypes[this.properties.historic]
+     
       if(this.properties.historic === 'memorial' && this.properties.memorial !== undefined) {
-        // TODO https://wiki.openstreetmap.org/wiki/FR:Tag:historic%3Dmemorial
-        if(this.properties.memorial === 'plaque') type = 'Plaque commémorative'
-        else if(this.properties.memorial === 'war_memorial') type = 'Mémorial de guerre'
-        else if(this.properties.memorial === 'statue') type = 'Statue'
-        else if(this.properties.memorial === 'bust') type = 'Buste'
-        else if(this.properties.memorial === 'stele') type = 'Stèle'
-        else if(this.properties.memorial === 'stone') type = 'Pierre'
-        else type = this.properties.memorial
+        type = this.memorialTypes[this.properties.memorial]
+        if(type === undefined) type = this.properties.memorial
       }
+      
+      if(this.properties.tourism === 'artwork') {
+        type = 'Oeuvre d\'art'
+        if(this.properties.artwork_type !== undefined) {
+          type = this.artworkTypes[this.properties.artwork_type]
+          if(type === undefined) type = this.properties.artwork_type
+        }
+      }
+      
       return type
     }
   },
