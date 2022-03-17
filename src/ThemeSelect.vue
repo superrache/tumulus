@@ -30,7 +30,7 @@ export default {
               this.map.themes[t].visible = !this.map.themes[t].visible
             }
           }
-          this.map.reinitThemes()
+          this.map.updateThemesVisibility()
       }
   }
 }

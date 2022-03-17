@@ -4,6 +4,14 @@
 
       <div id="loading" :style="{width: loading + '%'}"></div>
 
+      <div id="queries">
+          <div class="query" v-for="q in queries" :key="q">
+              <div v-if="q.loading">
+                  <img src='./img/radar.gif' width="25"/>   {{q.label}}
+              </div>
+          </div>
+      </div>
+
       <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
 
       <Panel id="panel" ref="panel" />
@@ -31,22 +39,27 @@ export default {
       map: null,
       startingZoom: 13,
       currentZoom: 0,
-      center: { lat: 48.09589, lng: -4.46101 },
+      center: { lat: 48.09486, lng: -4.35441 },
       panel: null,
       loading: 0,
       selectedFeatureId: null,
       selectedLayerId: null,
-      neededQueries: new Set(),
       queries: {
         historic: {
           filter: '"historic"',
+          label: 'Eléments d\'intérêt historique',
           bounds: '',
-          cache: {}
+          cache: {},
+          needed: false,
+          loading: false
         },
         artwork: {
           filter: '"tourism"="artwork"',
+          label: 'Oeuvres d\'art',
           bounds: '',
-          cache: {}
+          cache: {},
+          needed: false,
+          loading: false
         }
       },
       themes: {
@@ -119,7 +132,7 @@ export default {
           query: 'artwork',
           key: 'tourism',
           values: ['artwork'],
-          visible: false
+          visible: true
         }
       }
     }
@@ -172,136 +185,134 @@ export default {
   methods: {
     onMapLoad() {
       console.log('map loaded')
-      this.reinitThemes()
+      this.initThemes()
+      this.updateThemesVisibility()
       this.map.on('moveend', this.onMapMove)
     },
     removeLayerAndSource(id) {
       if(this.map.getLayer(id)) this.map.removeLayer(id)
       if(this.map.getSource(id)) this.map.removeSource(id)
     },
-    reinitThemes() {
-      var oldNeededQueries = new Set()
-      this.neededQueries.forEach(function(q) {
-        oldNeededQueries.add(q)
-      })
-      this.neededQueries.clear()
-
+    initThemes() {
       for(var t in this.themes) {
         const theme = this.themes[t]
-        console.log('Theme ' + theme.id + (theme.visible ? ' visible' : ' hidden'))
+        console.log('init theme ' + theme.id)
 
-        // dans tous les cas, on supprime la couche et la source
-        this.removeLayerAndSource(theme.id)
-
-        if(theme.visible) {
-          theme.dataCacheIds = new Set()
-          this.neededQueries.add(theme.query)
-
-          theme.geojson = {
-            type: "FeatureCollection",
-            features: []
-          }
-
-          theme.source = this.map.addSource(theme.id, {
-            type: "geojson",
-            data: theme.geojson
-          })
-
-          /*this.map.addLayer({
-              id: geojsonLayerId,
-              source: geojsonSourceId,
-              interactive: true,
-              type: 'symbol',
-              layout: {
-                'icon-allow-overlap': true,
-                'icon-anchor': 'center',
-                'icon-ignore-placement': false,
-                'icon-image': 'megalith',
-                'icon-size': 0.1
-              }
-          })*/
-
-          theme.layer = this.map.addLayer({
-            id: theme.id,
-            source: theme.id,
-            interactive: true,
-            type: 'circle',
-            paint: {
-              'circle-color': theme.color,
-              'circle-opacity': 1,
-              'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 10, 8],
-              'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
-              'circle-stroke-width': 4
-            },
-            layout: {
-              visibility: 'visible'
-            }
-          })
-
-          this.map.on('mousemove', theme.id, (e) => {
-              if(e.features.length > 0) {
-                  this.map.getCanvas().style.cursor = "pointer" //crosshair
-              }
-          })
-
-          this.map.on('mouseleave', theme.id, () => {
-              this.map.getCanvas().style.cursor = ""
-          })
-
-          this.map.on('click', theme.id, (e) => {
-              if(e.features.length > 0) {
-                  this.onFeatureSelect(e.features[0], theme)
-              } else { // TODO 'click' without layer
-                this.unselectFeature()
-                this.panel.featureResult.unloadFeature()
-              }
-          })
+        theme.dataCacheIds = new Set()
+        theme.geojson = {
+          type: "FeatureCollection",
+          features: []
         }
+        theme.source = this.map.addSource(theme.id, {
+          type: "geojson",
+          data: theme.geojson
+        })
+
+        /*this.map.addLayer({
+            id: geojsonLayerId,
+            source: geojsonSourceId,
+            interactive: true,
+            type: 'symbol',
+            layout: {
+              'icon-allow-overlap': true,
+              'icon-anchor': 'center',
+              'icon-ignore-placement': false,
+              'icon-image': 'megalith',
+              'icon-size': 0.1
+            }
+        })*/
+
+        theme.layer = this.map.addLayer({
+          id: theme.id,
+          source: theme.id,
+          interactive: true,
+          type: 'circle',
+          paint: {
+            'circle-color': theme.color,
+            'circle-opacity': 1,
+            'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 10, 8],
+            'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
+            'circle-stroke-width': 4
+          },
+          layout: {
+            visibility: 'visible'
+          }
+        })
+
+        this.map.on('mousemove', theme.id, (e) => {
+            if(e.features.length > 0) {
+                this.map.getCanvas().style.cursor = "pointer" //crosshair
+            }
+        })
+
+        this.map.on('mouseleave', theme.id, () => {
+            this.map.getCanvas().style.cursor = ""
+        })
+
+        this.map.on('click', theme.id, (e) => {
+            if(e.features.length > 0) {
+                this.onFeatureSelect(e.features[0], theme)
+            } else { // TODO 'click' without layer
+              this.unselectFeature()
+              this.panel.featureResult.unloadFeature()
+            }
+        })
       }
-      
+    },
+    updateThemesVisibility() {
+      for(var t in this.themes) {
+        const theme = this.themes[t]
+        this.map.setLayoutProperty(theme.id, 'visibility', theme.visible ? 'visible' : 'none')
+        this.queries[theme.query].needed = theme.visible
+      }
+
       this.panel.featureResult.unloadFeature()
 
-      let areSetsEqual = (a, b) => a.size === b.size && [...a].every(value => b.has(value)) // TODO move in utils
-      this.onMapMove(null, oldNeededQueries.size === 0 || !areSetsEqual(oldNeededQueries, this.neededQueries))
+      //let areSetsEqual = (a, b) => a.size === b.size && [...a].every(value => b.has(value)) // TODO move in utils
+      //this.onMapMove(null, oldNeededQueries.size === 0 || !areSetsEqual(oldNeededQueries, this.neededQueries))
+      this.onMapMove(null)
     },
-    async onMapMove(e, launchQuery) {
-      if(e !== null) launchQuery = true // vrai déplacement
+    async onMapMove() {
+      console.log('onMapMove')
 
       const {lng, lat} = this.map.getCenter()
       this.currentZoom = this.map.getZoom()
       window.history.pushState(appName, appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng))
 
       if(!this.dispZoomMore) {
-        console.log('onMapMove launchQuery=' + launchQuery)
         const sw = this.map.getBounds()._sw
         const ne = this.map.getBounds()._ne
         const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
 
         this.loading = 20
-        if(launchQuery !== undefined && launchQuery) {
-          for(var q of this.neededQueries.values()) {
-            var launch = this.queries[q].bounds !== bounds // ne refait la requête que si la carte a bougé
-            while(launch) {
-              console.log('launching query ' + q)
-              const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + this.queries[q].filter)
-              const data = await response.json()
-              if(data.error === undefined) {
-                this.queries[q].cache = data
-                this.queries[q].bounds = bounds
-                this.loading += 1 / this.neededQueries.size * 100 - 20
-                launch = false
-              } else {
-                console.log('query error ' + data.error)
-                this.loading += 5 
+
+        // TODO lancer en parallèle
+        for(var q in this.queries) {
+          var query = this.queries[q]
+          var launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
+          while(launch) {
+            console.log('launching query ' + q)
+            query.loading = true
+            const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
+            const data = await response.json()
+            if(data.error !== undefined) {
+              console.log('query error ' + data.error)
+              this.loading += 5
+            } else {
+              query.loading = false
+              query.cache = data
+              query.bounds = bounds
+              this.loading += 1 / this.queries.length * (100 - 20)
+              launch = false
+
+              // application de la donnée aux thèmes concernés (visible ou pas)
+              for(var t in this.themes) {
+                const theme = this.themes[t]
+                if(theme.query === q) {
+                  this.loadGeojson(theme, data)
+                }
               }
             }
-          }
-        }
-
-        for(var t in this.themes) {
-          const theme = this.themes[t]
-          if(theme.visible) {
-            this.loadGeojson(theme, this.queries[theme.query].cache)
           }
         }
 
@@ -391,6 +402,20 @@ a {
   height: 5px;
   z-index: 1020;
   background-color: red;
+}
+
+#queries {
+  position: absolute;
+  left: 320px;
+  top: 15px;
+  z-index: 1030;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.query {
+  flex: auto;
 }
 
 #zoomMore {
