@@ -67,7 +67,7 @@ export default {
         memorial: {
           id: "memorial",
           label: "Mémorial",
-          color: "orange",
+          color: "DarkGoldenRod",
           query: 'historic',
           key: 'historic',
           values: ['memorial', 'highwater_mark']
@@ -75,7 +75,7 @@ export default {
         archeo: {
           id: "archeo",
           label: "Site archéologique",
-          color: "blue",
+          color: "green",
           query: 'historic',
           key: 'historic',
           values: ['archaeological_site'],
@@ -84,7 +84,7 @@ export default {
         monument: {
           id: "monument",
           label: "Monument historique",
-          color: 'salmon',
+          color: 'royalblue',
           query: 'historic',
           key: 'historic',
           values: ['aqueduct', 'building', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
@@ -102,7 +102,7 @@ export default {
         transport: {
           id: 'transport',
           label: "Transport",
-          color: "green",
+          color: "orangered",
           query: 'historic',
           key: 'historic',
           values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'ship', 'vehicle', 'wreck'],
@@ -120,7 +120,7 @@ export default {
         other: {
           id: "other",
           label: "Autres",
-          color: "dodgerblue",
+          color: "steelblue",
           query: 'historic',
           key: 'historic',
           values: ['yes'],

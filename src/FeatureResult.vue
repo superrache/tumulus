@@ -1,9 +1,10 @@
 <template>
     <div class="cat" 
-      v-if="properties !== null"
-      :style="{ 'background-color': theme.color }">
-      <h3 v-if="properties.hasOwnProperty('name')">{{properties.name}}</h3>
-      <div class="type">{{type}}</div>
+      v-if="properties !== null">
+      <div id="title" :style="{ 'background-color': theme.color }">
+        <h3 v-if="properties.hasOwnProperty('name')">{{properties.name}}</h3>
+        <div class="type">{{type}}</div>
+      </div>
       <img v-if="imageURL.length > 0" :src="imageURL" width="280"/>
       <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
 
@@ -26,12 +27,13 @@
       <div class="normal" v-if="properties.hasOwnProperty('description')">Description : {{properties.description}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('source')">Source : {{properties.source}}</div>
+      
       <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/node/' + id">OSM id={{id}}</a></div>
     </div>
 
     <div class="cat" v-show="DEBUG" v-if="properties !== null">
       <div class="normal">key=value</div>
-      <div class="type"
+      <div class="small"
           v-for="p in Object.keys(properties)"
           :key="p">
         {{p}}={{properties[p]}}
@@ -182,36 +184,41 @@ export default {
 
 <style scoped>
 
-h3 {
-  font-size: 1.2em;
-  font-weight: 500;
-  padding: 2px;
-  margin: 4px;
-}
-
-.type {
-  font-size: 1em;
-  font-weight: 100;
-}
-
-.normal {
-
-}
-
-a {
-  color: yellow;
-}
-
-.small {
-  font-size: 0.7em;
-  color: grey;
-}
-
 .cat {
   background-color: #aaaaaa33;
   border-radius: 10px;
-  padding: 5px;
+  padding: 0px 0px 10px 0px;
   margin: 5px 5px 10px 5px;
+}
+
+#title {
+  margin: 0px;
+  margin-bottom: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 5px;
+}
+
+h3 {
+  margin: 5px 5px 5px 5px;
+  font-size: 1.5em;
+}
+
+.type {
+  padding: 1px 5px;
+}
+
+.normal {
+  padding: 5px 5px;
+}
+
+a {
+  color: aquamarine;
+}
+
+.small {
+  padding: 0px 5px;
+  font-size: 0.7em;
 }
 
 </style>

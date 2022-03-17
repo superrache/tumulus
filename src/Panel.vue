@@ -95,7 +95,6 @@ export default {
 #handle {
   position: relative;
   margin: auto;
-  margin-bottom: 10px;
   width: 60px;
   height: 5px;
   background-color: #888;
@@ -113,6 +112,7 @@ export default {
 
   #handle {
     visibility: hidden;
+    height: 0px;
   }
 }
 

@@ -46,11 +46,17 @@ export default {
   margin: 5px 5px 10px 5px;
 }
 
+h3 {
+  margin: 5px 5px 10px 5px;
+}
+
 .theme {
   font-size: 1.2em;
   font-weight: 500;
-  padding: 2px;
-  margin: 0px 5px;
+  padding: 3px;
+  padding-left: 5px;
+  margin: 5px;
+  border-radius: 5px;
 }
 
 .theme:hover {
