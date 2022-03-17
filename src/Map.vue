@@ -42,6 +42,7 @@ export default {
       center: { lat: 48.09486, lng: -4.35441 },
       panel: null,
       loading: 0,
+      currentCodename: '',
       selectedFeatureId: null,
       selectedLayerId: null,
       queries: {
@@ -273,7 +274,9 @@ export default {
       this.onMapMove(null)
     },
     async onMapMove() {
-      console.log('onMapMove')
+      const codename = btoa(Math.random().toString()).substr(10, 5)
+      this.currentCodename = codename
+      console.log(codename + ' : onMapMove ')
 
       const {lng, lat} = this.map.getCenter()
       this.currentZoom = this.map.getZoom()
@@ -291,12 +294,16 @@ export default {
           var query = this.queries[q]
           var launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
           while(launch) {
-            console.log('launching query ' + q)
+            console.log(codename + ' : launching query ' + q)
             query.loading = true
             const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
+            if(codename !== this.currentCodename) return
+            
             const data = await response.json()
+            if(codename !== this.currentCodename) return
+
             if(data.error !== undefined) {
-              console.log('query error ' + data.error)
+              console.log(codename + ' : query error ' + data.error)
               this.loading += 5
             } else {
               query.loading = false
@@ -309,7 +316,7 @@ export default {
               for(var t in this.themes) {
                 const theme = this.themes[t]
                 if(theme.query === q) {
-                  this.loadGeojson(theme, data)
+                  this.loadGeojson(theme, data, codename)
                 }
               }
             }
@@ -319,9 +326,9 @@ export default {
         this.loading = 0
       }
     },
-    loadGeojson(theme, geojson) {
+    loadGeojson(theme, geojson, codename) {
       if(geojson.features !== undefined) {
-        console.log('loading ' + geojson.features.length + ' features to theme ' + theme.id)
+        console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
         var added = 0
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
         for(var f in geojson.features) {
@@ -335,7 +342,7 @@ export default {
           }
         }
         this.map.getSource(theme.id).setData(theme.geojson)
-        console.log('' + added + ' features added to theme ' + theme.id)
+        console.log(codename + ' : ' + added + ' features added to theme ' + theme.id)
       }
     },
     onFeatureSelect(feature, theme) {
@@ -416,6 +423,7 @@ a {
 
 .query {
   flex: auto;
+  color: black;
 }
 
 #zoomMore {
