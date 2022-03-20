@@ -2,7 +2,7 @@
     <div class="cat" 
       v-if="properties !== null">
       <div id="title" :style="{ 'background-color': theme.color }">
-        <h3 v-if="properties.hasOwnProperty('name')">{{properties.name}}</h3>
+        <h3>{{name}}</h3>
         <div class="type">{{type}}</div>
       </div>
       <img v-if="imageURL.length > 0" :src="imageURL" width="280"/>
@@ -129,6 +129,19 @@ export default {
     }
   },
   computed: {
+    name() {
+      if(this.properties.name !== undefined) {
+        return this.properties.name
+      } else {
+        if(this.properties.wikipedia !== undefined) {
+          const s = this.properties.wikipedia.split(':')
+          if(s.length > 1) return s[1]
+          else return this.properties.wikipedia
+        } else {
+          return this.type
+        }
+      }
+    },
     type() {
       var type = this.historicTypes[this.properties.historic]
      
@@ -153,12 +166,6 @@ export default {
       this.id = feature.id
       this.properties = feature.properties
       this.theme = theme
-
-      if(this.properties['name'] === undefined) {
-        if(this.properties['wikipedia']) {
-          this.properties.name = this.properties.wikipedia
-        }
-      }
 
       this.getImageURL()
     },
@@ -188,7 +195,7 @@ export default {
   background-color: #aaaaaa33;
   border-radius: 10px;
   padding: 0px 0px 10px 0px;
-  margin: 5px 5px 10px 5px;
+  margin: 5px 0px 10px 0px;
 }
 
 #title {
@@ -208,17 +215,21 @@ h3 {
   padding: 1px 5px;
 }
 
-.normal {
-  padding: 5px 5px;
+img {
+  padding-left: 5px;
 }
 
-a {
-  color: aquamarine;
+.normal {
+  padding: 5px 5px;
 }
 
 .small {
   padding: 0px 5px;
   font-size: 0.7em;
+}
+
+a {
+  color: aquamarine;
 }
 
 </style>
