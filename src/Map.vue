@@ -348,6 +348,7 @@ export default {
     },
     onFeatureSelect(feature, theme) {
       this.selectFeature(feature)
+      this.panel.themeSelect.collapse()
       this.panel.featureResult.loadFeature(feature, theme)
     },
     selectFeature(feature) {

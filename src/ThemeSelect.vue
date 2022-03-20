@@ -1,11 +1,11 @@
 <template>
     <div class="cat">
-        <h3>Thématiques</h3>
+        <h3 class="collapsible" @click="toogleCollapse">{{collapsed ? '+' : '-'}} Thématiques</h3>
         <div class="theme"
             v-for="t in Object.keys(map.themes)"
             :key="t"
             v-on:click="toogleThemeVisibility($event, t)"
-            :style="{ 'background-color': map.themes[t].color, 'opacity': map.themes[t].visible ? '1' : '0.3' }">
+            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': map.themes[t].color, 'opacity': map.themes[t].visible ? '1' : '0.3' }">
             {{map.themes[t].label}}
         </div>
     </div>
@@ -19,7 +19,8 @@ export default {
     return {
         map: {
             themes: {}
-        }
+        },
+        collapsed: false
     }
   },
   methods: {
@@ -31,6 +32,12 @@ export default {
             }
           }
           this.map.updateThemesVisibility()
+      },
+      toogleCollapse() {
+        this.collapsed = !this.collapsed
+      },
+      collapse() {
+        this.collapsed = true
       }
   }
 }
@@ -46,8 +53,15 @@ export default {
   margin: 5px 5px 10px 5px;
 }
 
-h3 {
+.collapsible {
   margin: 5px 5px 10px 5px;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.collapsible:hover, .collapsible:active {
+  background-color: #aaaaaa33;
 }
 
 .theme {
