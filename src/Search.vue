@@ -6,7 +6,6 @@
             @input="updateInput"
             placeholder="Rechercher"
         />
-        <span id="button">Aller</span>
         <div id="results" v-if="results.length > 0">
             <div class="result"
                 v-for="r in results"
@@ -53,42 +52,27 @@ export default {
   background-color: #aaaaaa33;
   border-radius: 10px;
   padding: 7px;
+  padding-right: 15px;
   margin: 5px 5px 10px 5px;
 }
 
 #input {
-    width: 187px;
+    width: 100%;
     height: 27px;
     font-family: Arial;
     font-size: 16px;
     border-radius: 5px;
+    background-color: #aaaaaa11;
+    color: white;
 }
 
-#button {
-  border-radius: 5px;
-  font-family: Arial;
-  color: #ffffff;
-  font-size: 16px;
-  background: #3377ff;
-  padding: 7px 15px 7px 15px;
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  float: right;
-}
-
-#button:hover {
-  background: #5599ff;
-  text-decoration: none;
-}
-
-#button:active {
-  background-color: #4488ff;
-  text-decoration: none;
+#input:hover, #input:active {
+    background-color: #aaaaaa33;
 }
 
 #results {
     position: relative;
+    float:left;
     top: 0px;
     left: 0px;
     width: 100%;
@@ -102,9 +86,6 @@ export default {
     user-select: none;
     padding: 5px;
     overflow: auto;
-}
-
-.result {
 }
 
 .result:hover {
