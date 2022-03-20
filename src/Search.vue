@@ -2,7 +2,6 @@
     <div class="cat">
         <input id="input"
             :type="text"
-            v-model="searchText"
             @input="updateInput"
             placeholder="Rechercher"
         />
@@ -23,7 +22,6 @@ export default {
   name: 'Search',
   data() {
     return {
-        searchText: '',
         results: []
     }
   },
@@ -59,7 +57,6 @@ export default {
 #input {
     width: 100%;
     height: 27px;
-    font-family: Arial;
     font-size: 16px;
     border-radius: 5px;
     background-color: #aaaaaa11;
@@ -78,7 +75,6 @@ export default {
     width: 100%;
     height: 150px;
     background-color: #00001277;
-    font-family: Arial;
     color: #ffffff;
     font-size: 16px;
     border-radius: 5px;
@@ -86,6 +82,11 @@ export default {
     user-select: none;
     padding: 5px;
     overflow: auto;
+}
+
+.result {
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .result:hover {

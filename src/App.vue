@@ -19,23 +19,28 @@ export default {
 </script>
 
 <style>
-html,
-body {
-  font-family: Ubuntu;
+
+html {
+  box-sizing: border-box;
+}
+
+body,
+.innerbodywrapper{
+  overflow-x: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
   margin: 0;
   padding: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: #343434;
-  overflow: hidden;
+  user-select: none;
+  font-family: Ubuntu, Arial, Helvetica, sans-serif;
+  color: white;
 }
 
 #app {
-  user-select: none;
-  color: white;
   width: 100%;
   height: 100%;
-  margin: 0;
+  text-align: left;
 }
 
 </style>
