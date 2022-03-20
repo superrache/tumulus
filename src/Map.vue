@@ -38,6 +38,7 @@ export default {
     return {
       map: null,
       startingZoom: 13,
+      maxZoomToGetData: 13,
       currentZoom: 0,
       center: { lat: 48.09486, lng: -4.35441 },
       panel: null,
@@ -140,7 +141,7 @@ export default {
   },
   computed: {
     dispZoomMore() {
-      return this.currentZoom < 12
+      return this.currentZoom < this.maxZoomToGetData
     }
   },
   created() {
@@ -154,7 +155,7 @@ export default {
   },
   mounted() {
     this.panel = this.$refs.panel
-
+    this.panel.search.map = this
     this.panel.themeSelect.map = this
 
     this.map = new Map({
@@ -368,6 +369,12 @@ export default {
         )
       }
       this.selectedFeatureId = null
+    },
+    flyTo(coords) {
+      this.map.flyTo({
+        center: coords,
+        essential: true // this animation is considered essential with respect to prefers-reduced-motion
+      })
     }
 
   }

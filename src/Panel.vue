@@ -12,6 +12,7 @@
         </tr>
       </table>
       
+      <Search ref="search" />
       <ThemeSelect id="themeSelect" ref="themeSelect" />
       <FeatureResult ref="featureResult" />
     </section>
@@ -19,17 +20,20 @@
 
 <script>
 
+import Search from './Search.vue'
 import ThemeSelect from './ThemeSelect.vue'
 import FeatureResult from './FeatureResult.vue'
 
 export default {
   name: 'Panel',
   components: {
+    Search,
     ThemeSelect,
     FeatureResult
   },
   data () {
     return {
+      search: null,
       themeSelect: null,
       featureResult: null,
       scrollPosition: 0,
@@ -46,6 +50,7 @@ export default {
     this.windowWidth = window.innerWidth
   },
   mounted() {
+    this.search = this.$refs.search
     this.themeSelect = this.$refs.themeSelect
     this.featureResult = this.$refs.featureResult
   },
