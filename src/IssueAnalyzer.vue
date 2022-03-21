@@ -1,0 +1,78 @@
+<template>
+    <div class="cat" v-if="issues.length > 0">
+        <h3>Problèmes identifiés</h3>
+        <div id="issues">
+            <div class="issue"
+                v-for="i in issues"
+                :key="i"
+                :style="{ 'background-color': importances[i.importance]}">
+                <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + i.type + '=' + i.id + '&hashtags=tumulus'">{{i.message}}</a>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+export default {
+  name: 'IssueAnalyzer',
+  data() {
+    return {
+        issues: [],
+        importances: ["yellow", "orange", "red"]
+    }
+  },
+  methods: {
+    clear() {
+        this.issues = []
+    },
+    analyzeFeature(features, theme) {
+        for(var f in features) {
+            const feature = features[f]
+            const properties = feature.properties
+
+            if(properties.name === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 0, message: 'Pas de nom'})
+
+            if(properties.wikipedia !== undefined && properties.wikipedia.indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence wikipedia'})
+            if(properties['artist:wikipedia'] !== undefined && properties['artist:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence artist:wikipedia'})
+            if(properties['subject:wikipedia'] !== undefined && properties['subject:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence subject:wikipedia'})
+
+            if(properties.wikipedia !== undefined && properties.wikidata === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence wikipedia sans référence wikidata'})
+
+        }
+    }
+  }
+}
+
+</script>
+
+<style scoped>
+
+.cat {
+  background-color: #aaaaaa33;
+  border-radius: 10px;
+  padding: 7px;
+  padding-right: 15px;
+  margin: 5px 0px 10px 0px;
+}
+
+.issue {
+    font-size: 12px;
+    border-radius: 5px;
+    color: black;
+    cursor: pointer;
+    user-select: none;
+    padding: 5px;
+    margin: 2px 0px;
+}
+
+.issue:hover, .issue:active {
+    text-decoration: underline;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+</style>

@@ -12,6 +12,7 @@
       <Search ref="search" />
       <ThemeSelect id="themeSelect" ref="themeSelect" />
       <FeatureResult ref="featureResult" />
+      <IssueAnalyzer ref="issueAnalyzer" />
     </section>
 </template>
 
@@ -20,19 +21,22 @@
 import Search from './Search.vue'
 import ThemeSelect from './ThemeSelect.vue'
 import FeatureResult from './FeatureResult.vue'
+import IssueAnalyzer from './IssueAnalyzer.vue'
 
 export default {
   name: 'Panel',
   components: {
     Search,
     ThemeSelect,
-    FeatureResult
+    FeatureResult,
+    IssueAnalyzer
   },
   data () {
     return {
       search: null,
       themeSelect: null,
       featureResult: null,
+      issueAnalyzer: null,
       scrollPosition: 0,
       isRealScroll: true,
       windowWidth: 0,
@@ -50,6 +54,7 @@ export default {
     this.search = this.$refs.search
     this.themeSelect = this.$refs.themeSelect
     this.featureResult = this.$refs.featureResult
+    this.issueAnalyzer = this.$refs.issueAnalyzer
   },
   computed: {
     computedPanelMaxHeight() {

@@ -290,6 +290,8 @@ export default {
 
         this.loading = 20
 
+        this.panel.issueAnalyzer.clear()
+
         // TODO lancer en parallèle
         for(var q in this.queries) {
           var query = this.queries[q]
@@ -330,6 +332,9 @@ export default {
     loadGeojson(theme, geojson, codename) {
       if(geojson.features !== undefined) {
         console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
+        
+        this.panel.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
+        
         var added = 0
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
         for(var f in geojson.features) {
