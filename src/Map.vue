@@ -253,7 +253,7 @@ export default {
 
         this.map.on('click', theme.id, (e) => {
             if(e.features.length > 0) {
-                this.onFeatureSelect(e.features[0], theme)
+                this.onFeatureSelect(e.features[0], theme, e.lngLat)
             } else { // TODO 'click' without layer
               this.unselectFeature()
               this.panel.featureResult.unloadFeature()
@@ -351,10 +351,10 @@ export default {
         console.log(codename + ' : ' + added + ' features added to theme ' + theme.id)
       }
     },
-    onFeatureSelect(feature, theme) {
+    onFeatureSelect(feature, theme, lngLat) {
       this.selectFeature(feature)
       this.panel.themeSelect.collapse()
-      this.panel.featureResult.loadFeature(feature, theme)
+      this.panel.featureResult.loadFeature(feature, theme, lngLat)
     },
     selectFeature(feature) {
       this.unselectFeature(feature)

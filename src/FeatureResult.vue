@@ -15,9 +15,9 @@
 
       <div v-for="w in wikis" :key="w.pageId">
         <div class="subtitle" v-html="w.displaytitle"></div>
-        <a :href="w.originalimage.source"><img :src="w.thumbnail.source" width="280"/></a>
-        <div class="normal"><span v-html="w.extract_html"></span><a target="_blank" :href="w.content_urls.desktop.page">Lire la suite ...</a></div>
-        <div class="normal"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a></div>
+        <a v-if="w.hasOwnProperty('originalimage') && w.hasOwnProperty('thumbnail')" :href="w.originalimage.source"><img :src="w.thumbnail.source" width="280"/></a>
+        <div class="normal" v-if="w.hasOwnProperty('extract_html') && w.hasOwnProperty('content_urls')"><span v-html="w.extract_html"></span><a target="_blank" :href="w.content_urls.desktop.page">Lire la suite ...</a></div>
+        <div class="normal" v-if="w.hasOwnProperty('wikibase_item')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a></div>
       </div>
 
       <div class="normal" v-if="properties.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + properties['ref:mhs']">Base Mérimée {{properties['ref:mhs']}}</a></div>
@@ -28,7 +28,7 @@
       <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('source')">Source : {{properties.source}}</div>
       
-      <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/node/' + id">OSM id={{id}}</a></div>
+      <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/edit?' + elementType + '=' + id + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer sur OpenStreetMap</a></div>
     </div>
 
     <div class="cat" v-show="DEBUG" v-if="properties !== null">
@@ -123,6 +123,8 @@ export default {
         'stele': 'Stèle'
       },
       id: '',
+      lngLat: {lng: 0, lat: 0},
+      elementType: '',
       properties: {},
       wikis: [],
       theme: {}
@@ -162,8 +164,12 @@ export default {
     }
   },
   methods: {
-    loadFeature(feature, theme) {
+    loadFeature(feature, theme, lngLat) {
+      console.log('loadFeature')
+
       this.id = feature.id
+      this.elementType = 'node' // TODO
+      this.lngLat = lngLat
       this.properties = feature.properties
       this.theme = theme
 
@@ -171,8 +177,6 @@ export default {
       this.loadWikiData('wikipedia', 'wikidata', '')
       this.loadWikiData('subject:wikipedia', 'subject:wikidata', 'Sujet : ')
       this.loadWikiData('artist:wikipedia', 'artist:wikidata', 'Artiste : ')
-
-      console.log(this.wikis)
 
       //this.getImageURL()
     },
@@ -184,6 +188,7 @@ export default {
     },
     async loadWikiData(wikipediaKey, wikidataKey, titlePrefix) {
       if(this.properties[wikipediaKey] !== undefined) {
+        console.log('has ' + wikipediaKey + '=' + this.properties[wikipediaKey])
         const s = this.properties[wikipediaKey].split(':')
         if(s.length > 1) {
           const response = await fetch("https://" + s[0] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(s[1]))

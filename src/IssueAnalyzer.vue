@@ -36,8 +36,13 @@ export default {
             if(properties.wikipedia !== undefined && properties.wikipedia.indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence wikipedia'})
             if(properties['artist:wikipedia'] !== undefined && properties['artist:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence artist:wikipedia'})
             if(properties['subject:wikipedia'] !== undefined && properties['subject:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence subject:wikipedia'})
-
+ 
             if(properties.wikipedia !== undefined && properties.wikidata === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence wikipedia sans référence wikidata'})
+            if(properties.wikidata !== undefined && properties.wikipedia === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence wikidata sans référence wikipedia'})
+            if(properties['artist:wikipedia'] !== undefined && properties['artist:wikidata'] === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence artist:wikipedia sans référence artist:wikidata'})
+            if(properties['artist:wikidata'] !== undefined && properties['artist:wikipedia'] === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence artist:wikidata sans référence artist:wikipedia'})
+            if(properties['subject:wikipedia'] !== undefined && properties['subject:wikidata'] === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence subject:wikipedia sans référence subject:wikidata'})
+            if(properties['subject:wikidata'] !== undefined && properties['subject:wikipedia'] === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 1, message: 'Référence subject:wikidata sans référence subject:wikipedia'})
 
         }
     }
