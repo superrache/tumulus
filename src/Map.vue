@@ -37,10 +37,10 @@ export default {
   data () {
     return {
       map: null,
-      startingZoom: 13,
+      startingZoom: 15,
       maxZoomToGetData: 13,
       currentZoom: 0,
-      center: { lat: 48.09486, lng: -4.35441 },
+      center: { lat: 47.32312, lng: 5.04273 },
       panel: null,
       loading: 0,
       currentCodename: '',

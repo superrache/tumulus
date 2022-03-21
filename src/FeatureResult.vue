@@ -5,23 +5,23 @@
         <h3>{{name}}</h3>
         <div class="type">{{type}}</div>
       </div>
-      <img v-if="imageURL.length > 0" :src="imageURL" width="280"/>
-      <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
 
-      <div class="normal" v-if="properties.hasOwnProperty('wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties.wikipedia">Wikipedia</a></div>
-      <div class="normal" v-if="properties.hasOwnProperty('wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties.wikidata">Wikidata {{properties.wikidata}}</a></div>
+      <img v-if="properties.hasOwnProperty('image')" :src="properties.image" width="280"/>
+
+      <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
+      <div class="normal" v-if="properties.hasOwnProperty('artist_name')">Artiste : {{properties.artist_name}}</div>
+      <div class="normal" v-if="properties.hasOwnProperty('artwork_subject')">Sujet de l'oeuvre : {{properties.artwork_subject}}</div>
+      <div class="normal" v-if="properties.hasOwnProperty('material')">Matériau : {{properties.material}}</div>
+
+      <div v-for="w in wikis" :key="w.pageId">
+        <div class="subtitle" v-html="w.displaytitle"></div>
+        <a :href="w.originalimage.source"><img :src="w.thumbnail.source" width="280"/></a>
+        <div class="normal"><span v-html="w.extract_html"></span><a target="_blank" :href="w.content_urls.desktop.page">Lire la suite ...</a></div>
+        <div class="normal"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a></div>
+      </div>
+
       <div class="normal" v-if="properties.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + properties['ref:mhs']">Base Mérimée {{properties['ref:mhs']}}</a></div>
       <div class="normal" v-if="properties.hasOwnProperty('website')"><a target="_blank" :href="properties['website']">{{properties['website']}}</a></div>
-
-      <div class="normal" v-if="properties.hasOwnProperty('artist_name')">Artiste : {{properties.artist_name}}</div>
-      <div class="normal" v-if="properties.hasOwnProperty('artist:wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties['artist:wikipedia']">Wikipedia de l'artiste</a></div>
-      <div class="normal" v-if="properties.hasOwnProperty('artist:wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties['artist:wikidata']">Wikidata de l'artiste {{properties['artist:wikidata']}}</a></div>
-
-      <div class="normal" v-if="properties.hasOwnProperty('artwork_subject')">Sujet de l'oeuvre : {{properties.artwork_subject}}</div>
-      <div class="normal" v-if="properties.hasOwnProperty('subject:wikipedia')"><a target="_blank" :href="'https://wikipedia.org/wiki/' + properties['subject:wikipedia']">Wikipedia de l'oeuvre</a></div>
-      <div class="normal" v-if="properties.hasOwnProperty('subject:wikidata')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + properties['subject:wikidata']">Wikidata de l'oeuvre {{properties['subject:wikidata']}}</a></div>
-
-      <div class="normal" v-if="properties.hasOwnProperty('material')">Matériau : {{properties.material}}</div>
 
       <div class="normal" v-if="properties.hasOwnProperty('fixme')">Note : {{properties.fixme}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('description')">Description : {{properties.description}}</div>
@@ -43,7 +43,7 @@
 
 <script>
 
-import * as env from './utils/env.js'
+//import * as env from './utils/env.js'
 
 export default {
   name: 'FeatureResult',
@@ -124,7 +124,7 @@ export default {
       },
       id: '',
       properties: {},
-      imageURL: '',
+      wikis: [],
       theme: {}
     }
   },
@@ -167,22 +167,49 @@ export default {
       this.properties = feature.properties
       this.theme = theme
 
-      this.getImageURL()
+      this.wikis = []
+      this.loadWikiData('wikipedia', 'wikidata', '')
+      this.loadWikiData('subject:wikipedia', 'subject:wikidata', 'Sujet : ')
+      this.loadWikiData('artist:wikipedia', 'artist:wikidata', 'Artiste : ')
+
+      console.log(this.wikis)
+
+      //this.getImageURL()
     },
     unloadFeature() {
       console.log('unloadFeature')
       this.id = null
       this.properties = null
-      this.imageURL = ''
+      this.wikis = []
     },
-    async getImageURL() {
+    async loadWikiData(wikipediaKey, wikidataKey, titlePrefix) {
+      if(this.properties[wikipediaKey] !== undefined) {
+        const s = this.properties[wikipediaKey].split(':')
+        if(s.length > 1) {
+          const response = await fetch("https://" + s[0] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(s[1]))
+          const data = await response.json()
+          data.displaytitle = titlePrefix + data.displaytitle
+          this.wikis.push(data)
+        } else {
+          console.log('il manque la lang fr: ou en: sur le wiki osm id=' + this.properties.id)
+        }
+      } else {
+        if(this.properties[wikidataKey] !== undefined) {
+          this.wikis.push({
+            displaytitle: titlePrefix,
+            wikibase_item: this.properties[wikidataKey]
+          })
+        }
+      }
+    }
+    /*async getImageURL() {
       this.imageURL = ''
       if(this.properties.wikidata !== undefined) {
         const response = await fetch(env.getServerUrl() + "/image?type=wikidata&width=280&ref=" + this.properties.wikidata)
         const data = await response.json()
         this.imageURL = data.image
       }
-    }
+    }*/
 
   }
 }
@@ -217,6 +244,11 @@ h3 {
 
 img {
   padding-left: 5px;
+}
+
+.subtitle {
+  padding: 5px 5px;
+  font-weight: 700;
 }
 
 .normal {
