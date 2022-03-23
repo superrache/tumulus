@@ -26,7 +26,7 @@ export default {
   methods: {
       toogleThemeVisibility(e, id) {
           console.log('toogleThemeVisibility ' + id)
-          for(var t in this.map.themes) {
+          for(let t in this.map.themes) {
             if(t === id) {
               this.map.themes[t].visible = !this.map.themes[t].visible
             }

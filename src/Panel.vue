@@ -44,7 +44,7 @@ export default {
     }
   },
   created() {
-    var self = this
+    let self = this
     window.addEventListener('resize', function() {
       self.windowWidth = window.innerWidth
     })
@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     computedPanelMaxHeight() {
-      var value = ''
+      let value = ''
       if(this.windowWidth < 641)
         value = this.mobilePanelMaxHeight + 'px'
       else
@@ -70,8 +70,8 @@ export default {
   methods: {
     handleScroll(e) {
       if(e.srcElement.scrollTop !== 0 && this.isRealScroll) {
-        var currentScrollPosition = e.srcElement.scrollTop
-        var diff = currentScrollPosition - this.scrollPosition
+        let currentScrollPosition = e.srcElement.scrollTop
+        let diff = currentScrollPosition - this.scrollPosition
         this.mobilePanelMaxHeight += diff
         this.isRealScroll = false
         this.scrollPosition = currentScrollPosition

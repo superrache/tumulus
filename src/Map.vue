@@ -196,7 +196,7 @@ export default {
       if(this.map.getSource(id)) this.map.removeSource(id)
     },
     initThemes() {
-      for(var t in this.themes) {
+      for(let t in this.themes) {
         const theme = this.themes[t]
         console.log('init theme ' + theme.id)
 
@@ -262,7 +262,7 @@ export default {
       }
     },
     updateThemesVisibility() {
-      for(var t in this.themes) {
+      for(let t in this.themes) {
         const theme = this.themes[t]
         this.map.setLayoutProperty(theme.id, 'visibility', theme.visible ? 'visible' : 'none')
         this.queries[theme.query].needed = theme.visible
@@ -293,9 +293,9 @@ export default {
         this.panel.issueAnalyzer.clear()
 
         // TODO lancer en parallèle
-        for(var q in this.queries) {
-          var query = this.queries[q]
-          var launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
+        for(let q in this.queries) {
+          let query = this.queries[q]
+          let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
           while(launch) {
             console.log(codename + ' : launching query ' + q)
             query.loading = true
@@ -316,7 +316,7 @@ export default {
               launch = false
 
               // application de la donnée aux thèmes concernés (visible ou pas)
-              for(var t in this.themes) {
+              for(let t in this.themes) {
                 const theme = this.themes[t]
                 if(theme.query === q) {
                   this.loadGeojson(theme, data, codename)
@@ -335,9 +335,9 @@ export default {
         
         this.panel.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
         
-        var added = 0
+        let added = 0
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
-        for(var f in geojson.features) {
+        for(let f in geojson.features) {
           const feature = geojson.features[f]
           if(!theme.dataCacheIds.has(feature.id)) {
             if(theme.values.indexOf(feature.properties[theme.key]) > -1) {

@@ -1,9 +1,9 @@
 module.exports = function osm2geojson(data) {
-    var features = []
+    let features = []
 
     JSON.parse(data).elements.forEach(function(e) {
         if(e.type === 'node' && e.hasOwnProperty('tags')) {
-            var feature = {
+            let feature = {
                 type: "Feature",
                 geometry: {
                     type: "Point",
@@ -20,7 +20,7 @@ module.exports = function osm2geojson(data) {
     // TODO support way
     // TODO support relation
 
-    var geojson = {
+    const geojson = {
         type: "FeatureCollection",
         features: features
     }

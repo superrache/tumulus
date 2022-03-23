@@ -15,10 +15,10 @@ module.exports = function(app, prod) {
         }
 
         try {
-            var instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
-            var instance = instances[Math.floor(Math.random() * instances.length)]
-            var url = instance + '/api/interpreter?data='
-            var query = '[out:json][timeout:10];(node[' + req.query.filter + '](' + req.query.bounds + '););out;>;out skel qt;'
+            const instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
+            const instance = instances[Math.floor(Math.random() * instances.length)]
+            const url = instance + '/api/interpreter?data='
+            const query = '[out:json][timeout:10];(node[' + req.query.filter + '](' + req.query.bounds + '););out;>;out skel qt;'
             const fullUrl = url + encodeURIComponent(query)
             console.log('get /data request on ' + instance + ' filter: ' + req.query.filter + ' bounds: ' + req.query.bounds)
             request(fullUrl, (error, response, data) => {
