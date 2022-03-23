@@ -1,4 +1,5 @@
 <template>
+
     <div class="cat" 
       v-if="properties !== null">
       <div id="title" :style="{ 'background-color': theme.color }">
@@ -15,9 +16,18 @@
 
       <div v-for="w in wikis" :key="w.pageId">
         <div class="subtitle" v-html="w.displaytitle"></div>
-        <a v-if="w.hasOwnProperty('originalimage') && w.hasOwnProperty('thumbnail')" :href="w.originalimage.source"><img :src="w.thumbnail.source" width="280"/></a>
-        <div class="normal" v-if="w.hasOwnProperty('extract_html') && w.hasOwnProperty('content_urls')"><span v-html="w.extract_html"></span><a target="_blank" :href="w.content_urls.desktop.page">Lire la suite ...</a></div>
-        <div class="normal" v-if="w.hasOwnProperty('wikibase_item')"><a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a></div>
+
+        <div v-if="w.hasOwnProperty('thumbnail') && w.hasOwnProperty('originalimage')">
+          <ExpandableImage :thumbnail="w.thumbnail.source" :original="w.originalimage.source" />
+        </div>
+        
+        <div class="normal" v-if="w.hasOwnProperty('extract_html') && w.hasOwnProperty('content_urls')">
+          <span v-html="w.extract_html"></span>
+          <a target="_blank" :href="w.content_urls.desktop.page">Lire la suite ...</a>
+        </div>
+        <div class="normal" v-if="w.hasOwnProperty('wikibase_item')">
+          <a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a>
+        </div>      
       </div>
 
       <div class="normal" v-if="properties.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + properties['ref:mhs']">Base Mérimée {{properties['ref:mhs']}}</a></div>
@@ -44,9 +54,13 @@
 <script>
 
 //import * as env from './utils/env.js'
+import ExpandableImage from './ExpandableImage.vue'
 
 export default {
   name: 'FeatureResult',
+  components: {
+    ExpandableImage
+  },
   data () {
     return {
       DEBUG: true,
@@ -125,7 +139,7 @@ export default {
       id: '',
       lngLat: {lng: 0, lat: 0},
       elementType: '',
-      properties: {},
+      properties: null,
       wikis: [],
       theme: {}
     }
@@ -145,7 +159,7 @@ export default {
       }
     },
     type() {
-      var type = this.historicTypes[this.properties.historic]
+      let type = this.historicTypes[this.properties.historic]
      
       if(this.properties.historic === 'memorial' && this.properties.memorial !== undefined) {
         type = this.memorialTypes[this.properties.memorial]
