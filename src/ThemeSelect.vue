@@ -75,6 +75,7 @@ export default {
 
 .theme:hover {
     cursor: pointer;
+    outline: solid 1px white;
 }
 
 </style>
