@@ -15,6 +15,7 @@
       <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
 
       <Panel id="panel" ref="panel" />
+      <OSMConnector id="osmConnector" ref="osmConnector" />
     </div>
 </template>
 
@@ -26,13 +27,15 @@ import * as env from './utils/env.js'
 import * as utils from './utils/utils.js'
 
 import Panel from './Panel.vue'
+import OSMConnector from './OSMConnector.vue'
 
 const appName = "tumulus"
 
 export default {
   name: 'Map',
   components: {
-    Panel
+    Panel,
+    OSMConnector
   },
   data () {
     return {
@@ -42,6 +45,7 @@ export default {
       currentZoom: 0,
       center: { lat: 47.32312, lng: 5.04273 },
       panel: null,
+      osmConnector: null,
       loading: 0,
       currentCodename: '',
       selectedFeatureId: null,
@@ -154,13 +158,15 @@ export default {
     }
   },
   mounted() {
+    // liens entre les composants
     this.panel = this.$refs.panel
     this.panel.search.map = this
     this.panel.themeSelect.map = this
+    this.panel.issueAnalyzer.osmConnector = this.$refs.osmConnector
 
     this.map = new Map({
       container: this.$refs.map,
-      style: 'https://api.jawg.io/styles/3425c3c4-29a2-494c-a977-e9232dd8cf26.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d',
+      style: 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d',
       center: [this.center.lng, this.center.lat],
       zoom: this.startingZoom
     })
