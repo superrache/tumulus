@@ -1,8 +1,8 @@
 <template>
     <div class="panel">
-        <button @click="login" :disabled="authenticated">Se connecter</button>
+        <button @click="onLogin" :disabled="authenticated">Se connecter</button>
         <span>{{userName}}</span>
-        <button @click="logout" :disabled="!authenticated">Se déconnecter</button>
+        <button @click="onLogout" :disabled="!authenticated">Se déconnecter</button>
     </div>
 </template>
 
@@ -29,9 +29,9 @@ export default {
         //url: DEBUG ? 'https://www.openstreetmap.org' : 'https://www.openstreetmap.org',
         oauth_consumer_key: 'bTmTD4dsTPCymICqf9uMbr6XxaqiNJaprTruAzdy',
         oauth_secret: 'qgXfV5WWqGNOZwZfUB2Ngf2e3d6VlFQ0x4CwktvK',
-        auto: true,
+        //auto: true,
         //singlepage: true, // Load the auth-window in the current window, with a redirect,
-        landing: window.location.href // Come back to the current page
+        //landing: window.location.href // Come back to the current page
     })
 
     this.osmRequest = new OsmRequest({
@@ -41,37 +41,38 @@ export default {
     })
   },
   methods: {
-    login() {
-        if(this.auth && !this.auth.bringPopupWindowToFront()) {
+    update() {
+        this.authenticated = this.auth.authenticated()
+        if(this.authenticated) {
+            this.auth.xhr({
+                method: 'GET',
+                path: '/api/0.6/user/details'
+            }, this.done)
+        }
+    },
+    done(err, res) {
+        if(err) {
+            this.userName = 'erreur'
+            return
+        }
+
+        const user = res.getElementsByTagName('user')[0]
+        if(user) {
+            this.userName = user.getAttribute('display_name')
+        }
+    },
+    onLogin() {
+        if(!this.auth.bringPopupWindowToFront()) {
             let self = this
             this.auth.authenticate(function() {
-                console.log('authentication terminated')
-                console.log(self.authenticated = self.auth.authenticated())
-                if(self.authenticated) {
-                    self.auth.xhr({
-                        method: 'GET',
-                        path: '/api/0.6/user/details'
-                    }, function(err, res) {
-                        if(err) {
-                            console.log('error retrieving OpenStreetMap user details')
-                            console.log(err)
-                        } else {
-                            const user = res.getElementsByTagName('user')[0]
-                            if(user) {
-                                self.userName = user.getAttribute('display_name')
-                            }
-                        }
-                    })
-                }
+                self.update()
             })
         }
     },
-    logout() {
-        if(this.auth && this.auth.authenticated()) {
-            this.auth.logout()
-            this.userName = ''
-            this.authenticated = this.auth.authenticated()
-        }
+    onLogout() {
+        this.auth.logout()
+        this.userName = ''
+        this.update()
     },
     async autoRepair(features) {
         this.features = features
