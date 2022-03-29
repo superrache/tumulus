@@ -12,13 +12,22 @@ module.exports = function osm2geojson(data) {
                 properties: e.tags,
                 id: e.id
             }
-            //feature.properties.id = e.id
+            features.push(feature)
+        } else if(e.type === 'way' && e.hasOwnProperty('tags')) {
+            let feature = {
+                type: "Feature",
+                geometry: {
+                    type: ""
+                },
+                properties: e.tags,
+                id: e.id
+            }
             features.push(feature)
         }
-    })
 
-    // TODO support way
-    // TODO support relation
+        // TODO support relation
+
+    })
 
     const geojson = {
         type: "FeatureCollection",

@@ -197,88 +197,83 @@ export default {
       this.updateThemesVisibility()
       this.map.on('moveend', this.onMapMove)
     },
-    removeLayerAndSource(id) {
-      if(this.map.getLayer(id)) this.map.removeLayer(id)
-      if(this.map.getSource(id)) this.map.removeSource(id)
-    },
     initThemes() {
       for(let t in this.themes) {
         const theme = this.themes[t]
         console.log('init theme ' + theme.id)
 
         theme.dataCacheIds = new Set()
-        theme.geojson = {
-          type: "FeatureCollection",
-          features: []
-        }
-        theme.source = this.map.addSource(theme.id, {
-          type: "geojson",
-          data: theme.geojson
-        })
+        theme.geojsons = [ {type: "FeatureCollection", features: []}, {type: "FeatureCollection", features: []}, {type: "FeatureCollection", features: []} ]
+        theme.sources = []
+        theme.layers = []
 
-        /*this.map.addLayer({
-            id: geojsonLayerId,
-            source: geojsonSourceId,
+        // 1 layer et 1 source par theme et par type de géométrie (0=point, 1=polyline, 2=polygon)
+        for(let g = 0; g < 3; g++) {
+          const id = g + '/' + theme.id
+          theme.sources.push(this.map.addSource(id, {
+              type: "geojson",
+              data: theme.geojsons[g]
+          }))
+
+          const type = (g === 0 ? 'circle' : (g === 1 ? 'line' : 'fill'))
+          const paint = (g === 0 ? {
+              'circle-color': theme.color,
+              'circle-opacity': 1,
+              'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 10, 8],
+              'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
+              'circle-stroke-width': 4
+            } : (g === 1 ? {
+              'line-color': theme.color,
+              'line-opacity': 1,
+              'line-width': ['case', ['boolean', ['feature-state', 'selected'], false], 6, 4]
+            } : {
+              'fill-color': theme.color,
+              'fill-opacity': ['case', ['boolean', ['feature-state', 'selected'], false], 0.7, 0.5]
+            }))
+
+          theme.layers.push(this.map.addLayer({
+            id: id,
+            source: id,
             interactive: true,
-            type: 'symbol',
+            type: type,
+            paint: paint,
             layout: {
-              'icon-allow-overlap': true,
-              'icon-anchor': 'center',
-              'icon-ignore-placement': false,
-              'icon-image': 'megalith',
-              'icon-size': 0.1
+              visibility: 'visible'
             }
-        })*/
+          }))
 
-        theme.layer = this.map.addLayer({
-          id: theme.id,
-          source: theme.id,
-          interactive: true,
-          type: 'circle',
-          paint: {
-            'circle-color': theme.color,
-            'circle-opacity': 1,
-            'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 10, 8],
-            'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
-            'circle-stroke-width': 4
-          },
-          layout: {
-            visibility: 'visible'
-          }
-        })
+          this.map.on('mousemove', id, (e) => {
+              if(e.features.length > 0) {
+                  this.map.getCanvas().style.cursor = "pointer" //crosshair
+              }
+          })
 
-        this.map.on('mousemove', theme.id, (e) => {
-            if(e.features.length > 0) {
-                this.map.getCanvas().style.cursor = "pointer" //crosshair
-            }
-        })
+          this.map.on('mouseleave', id, () => {
+              this.map.getCanvas().style.cursor = ""
+          })
 
-        this.map.on('mouseleave', theme.id, () => {
-            this.map.getCanvas().style.cursor = ""
-        })
+          this.map.on('click', id, (e) => {
+              if(e.features.length > 0) {
+                  this.onFeatureSelect(e.features[0], theme, e.lngLat)
+              } else { // TODO 'click' without layer
+                this.unselectFeature()
+                this.panel.featureResult.unloadFeature()
+              }
+          })
+        }
 
-        this.map.on('click', theme.id, (e) => {
-            if(e.features.length > 0) {
-                this.onFeatureSelect(e.features[0], theme, e.lngLat)
-            } else { // TODO 'click' without layer
-              this.unselectFeature()
-              this.panel.featureResult.unloadFeature()
-            }
-        })
       }
     },
     updateThemesVisibility() {
       for(let t in this.themes) {
         const theme = this.themes[t]
-        this.map.setLayoutProperty(theme.id, 'visibility', theme.visible ? 'visible' : 'none')
+        for(let g = 0; g < 3; g++) this.map.setLayoutProperty(g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
         this.queries[theme.query].needed = theme.visible
       }
 
       this.panel.featureResult.unloadFeature()
 
-      //let areSetsEqual = (a, b) => a.size === b.size && [...a].every(value => b.has(value)) // TODO move in utils
-      //this.onMapMove(null, oldNeededQueries.size === 0 || !areSetsEqual(oldNeededQueries, this.neededQueries))
-      this.onMapMove(null)
+      this.onMapMove()
     },
     async onMapMove() {
       const codename = btoa(Math.random().toString()).substr(10, 5)
@@ -341,23 +336,38 @@ export default {
         
         this.panel.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
         
-        let added = 0
+        let added = [0, 0, 0]
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
         for(let f in geojson.features) {
-          const feature = geojson.features[f]
+          let feature = geojson.features[f]
+          feature.id = feature.properties.id
+
           if(!theme.dataCacheIds.has(feature.id)) {
             if(theme.values.indexOf(feature.properties[theme.key]) > -1) {
               theme.dataCacheIds.add(feature.id)
-              theme.geojson.features.push(feature)
-              added++
+              let g = 0
+              switch(feature.geometry.type) {
+                case 'Point': g = 0; break;
+                case 'LineString': g = 1; break;
+                case 'Polygon': g = 2; break;
+                case 'MultiPoint': g = 0; break;
+                case 'MultiLineString': g = 1; break;
+                case 'MultiPolygon': g = 2; break;
+                default: g = 0;
+              }
+              theme.geojsons[g].features.push(feature)
+              added[g]++
             }
           }
         }
-        this.map.getSource(theme.id).setData(theme.geojson)
-        console.log(codename + ' : ' + added + ' features added to theme ' + theme.id)
+        for(let g = 0; g < 3; g++) {
+          this.map.getSource(g + '/' + theme.id).setData(theme.geojsons[g])
+          console.log(codename + ' : ' + added[g] + ' features of type ' + g + ' added to theme ' + theme.id)
+        }
       }
     },
     onFeatureSelect(feature, theme, lngLat) {
+      feature.id = feature.properties.id
       this.selectFeature(feature)
       this.panel.themeSelect.collapse()
       this.panel.featureResult.loadFeature(feature, theme, lngLat)

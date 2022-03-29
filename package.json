@@ -19,6 +19,7 @@
     "maplibre-gl": "^1.15.2",
     "osm-auth": "^1.1.1",
     "osm-request": "^1.2.10",
+    "osmtogeojson": "^3.0.0-beta.4",
     "request": "^2.88.2",
     "vue": "^3.0.0"
   },
