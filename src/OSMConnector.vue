@@ -1,9 +1,14 @@
 <template>
     <div class="panel">
-        <button @click="onLogin" :disabled="authenticated">Se connecter</button>
-        <span>{{userName}}</span>
-        <button @click="onLogout" :disabled="!authenticated">Se déconnecter</button>
+        <button @click="onLogin" v-show="!authenticated"><img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> Se connecter</button>
+        <button id="user" v-show="authenticated"><img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{userName}}</button>
+
+        <nav id="menu">
+            <a target="_blank" :href="'https://www.openstreetmap.org/user/' + userName"><div class="item">Mon compte</div></a>
+            <div class="item" @click="onLogout">Se déconnecter</div>
+        </nav>
     </div>
+   
 </template>
 
 <script>
@@ -136,6 +141,66 @@ export default {
   text-align: center;
   overflow: hidden;
   user-select: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+    color: white;
+    background-color: #555;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: dodgerblue;
+    color: black;
+}
+
+button:active {
+    background-color: lightblue;
+}
+
+.user-img {
+    width: 20px;
+    margin-bottom: -5px;
+}
+
+#user + #menu:active,
+#user:focus + #menu {
+    visibility: visible;
+}
+
+#menu {
+    visibility: hidden;
+    position: fixed;
+    z-index: 1007;
+    top: 48px;
+    right: 15px;
+    width: 200px;
+    border-radius: 10px;
+    box-shadow: 0px -1px 6px 0px rgba(0,0,0,0.75);
+    background-color: #000012dd;
+    color: white;
+}
+
+.item {
+    color: white;
+    text-decoration: none;
+    padding: 5px 5px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.item:hover {
+    background-color: dodgerblue;
+    color: black;
 }
 
 </style>
