@@ -18,6 +18,8 @@
 
 <script>
 
+import * as config from './config.js'
+
 export default {
   name: 'Search',
   data() {
@@ -29,7 +31,7 @@ export default {
     async updateInput(e) {
         const q = e.target.value
         if(q.length > 2) {
-            const url = 'https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=' + encodeURIComponent(q)
+            const url = config.nominatimInstance + '/search.php?format=jsonv2&q=' + encodeURIComponent(q)
             const response = await fetch(url)
             this.results = await response.json()
         }

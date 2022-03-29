@@ -1,5 +1,5 @@
 <template>
-  <Map/>
+  <Map ref="map" />
 </template>
 
 <script>
@@ -11,9 +11,23 @@ export default {
     Map
   },
   async created () {
-    if (window.location.origin.indexOf('herokuapp.com') > 0) {
+    if(window.location.origin.indexOf('herokuapp.com') > 0) {
       await fetch('https://dept-quiz.herokuapp.com/stat?feature=tumulus')
+
+      if(location.protocol !== 'https:') {
+       location.replace('https:' + location.href.substring(location.protocol.length))
+      }
     }
+
+    console.log(location.pathname)
+    
+    const params = location.pathname.split('/')
+    if(params.length >= 4) {
+      let map = this.$refs.map
+      map.startingZoom = params[1]
+      map.center = { lat: params[2], lng: params[3] }
+    }
+
   }
 }
 </script>

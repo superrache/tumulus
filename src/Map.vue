@@ -25,11 +25,10 @@ import { Map, NavigationControl, GeolocateControl } from 'maplibre-gl'
 
 import * as env from './utils/env.js'
 import * as utils from './utils/utils.js'
+import * as config from './config.js'
 
 import Panel from './Panel.vue'
 import OSMConnector from './OSMConnector.vue'
-
-const appName = "tumulus"
 
 export default {
   name: 'Map',
@@ -40,138 +39,21 @@ export default {
   data () {
     return {
       map: null,
-      startingZoom: 15,
       maxZoomToGetData: 13,
       currentZoom: 0,
-      center: { lat: 47.15959, lng: -1.27846 },
       panel: null,
       osmConnector: null,
       loading: 0,
       currentCodename: '',
       selectedFeatureId: null,
       selectedLayerId: null,
-      queries: {
-        historic: {
-          filter: '"historic"',
-          label: 'Eléments d\'intérêt historique',
-          bounds: '',
-          cache: {},
-          needed: false,
-          loading: false
-        },
-        artwork: {
-          filter: '"tourism"="artwork"',
-          label: 'Oeuvres d\'art',
-          bounds: '',
-          cache: {},
-          needed: false,
-          loading: false
-        },
-        railway: {
-          filter: '"railway"="abandoned"',
-          label: 'Ferroviaire',
-          bounds: '',
-          cache: {},
-          needed: false,
-          loading: false
-        }
-      },
-      themes: {
-        memorial: {
-          id: "memorial",
-          label: "Mémorial",
-          color: "DarkGoldenRod",
-          query: 'historic',
-          key: 'historic',
-          values: ['memorial', 'highwater_mark']
-        },
-        archeo: {
-          id: "archeo",
-          label: "Site archéologique",
-          color: "green",
-          query: 'historic',
-          key: 'historic',
-          values: ['archaeological_site'],
-          visible: true
-        },
-        monument: {
-          id: "monument",
-          label: "Monument historique",
-          color: 'royalblue',
-          query: 'historic',
-          key: 'historic',
-          values: ['aqueduct', 'building', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
-          visible: true
-        },
-        military: {
-          id: 'military',
-          label: "Equipement militaire",
-          color: "DarkOliveGreen",
-          query: 'historic',
-          key: 'historic',
-          values: ['battlefield', 'bomb_crater', 'cannon', 'castle', 'castle_wall', 'citywalls', 'fort', 'pa', 'tank'],
-          visible: true
-        },
-        transport: {
-          id: 'transport',
-          label: "Transport",
-          color: "orangered",
-          query: 'historic',
-          key: 'historic',
-          values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'ship', 'vehicle', 'wreck'],
-          visible: true
-        },
-        shrine: {
-          id: "shrine",
-          label: "Element religieux",
-          color: "blueviolet",
-          query: 'historic',
-          key: 'historic',
-          values: ['wayside_cross', 'wayside_shrine', 'church', 'monastery', 'rune_stone'],
-          visible: true
-        },
-        other: {
-          id: "other",
-          label: "Autres",
-          color: "steelblue",
-          query: 'historic',
-          key: 'historic',
-          values: ['yes'],
-          visible: true
-        },
-        artwork: {
-          id: "artwork",
-          label: "Oeuvre d'art",
-          color: "crimson",
-          query: 'artwork',
-          key: 'tourism',
-          values: ['artwork'],
-          visible: true
-        },
-        railway: {
-          id: 'railway',
-          label: 'Ferroviaire',
-          color: 'fuchsia',
-          query: 'railway',
-          key: 'railway',
-          values: ['abandoned'],
-          visible: true
-        }
-      }
+      queries: config.queries,
+      themes: config.themes
     }
   },
   computed: {
     dispZoomMore() {
       return this.currentZoom < this.maxZoomToGetData
-    }
-  },
-  created() {
-    console.log(location.pathname)
-    const params = location.pathname.split('/')
-    if(params.length >= 4) {
-      this.startingZoom = params[1]
-      console.log(this.startingZoom)
-      this.center = { lat: params[2], lng: params[3] }
     }
   },
   mounted() {
@@ -183,9 +65,9 @@ export default {
 
     this.map = new Map({
       container: this.$refs.map,
-      style: 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d',
-      center: [this.center.lng, this.center.lat],
-      zoom: this.startingZoom
+      style: config.style,
+      center: config.startingPosition,
+      zoom: config.startingZoom
     })
 
     this.map.addControl(new NavigationControl(), 'top-right')
@@ -299,7 +181,7 @@ export default {
 
       const {lng, lat} = this.map.getCenter()
       this.currentZoom = this.map.getZoom()
-      window.history.pushState(appName, appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng))
+      window.history.pushState(config.appName, config.appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng))
 
       if(!this.dispZoomMore) {
         const sw = this.map.getBounds()._sw
