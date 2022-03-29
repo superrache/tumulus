@@ -43,7 +43,7 @@ export default {
       startingZoom: 15,
       maxZoomToGetData: 13,
       currentZoom: 0,
-      center: { lat: 47.32312, lng: 5.04273 },
+      center: { lat: 47.15959, lng: -1.27846 },
       panel: null,
       osmConnector: null,
       loading: 0,
@@ -62,6 +62,14 @@ export default {
         artwork: {
           filter: '"tourism"="artwork"',
           label: 'Oeuvres d\'art',
+          bounds: '',
+          cache: {},
+          needed: false,
+          loading: false
+        },
+        railway: {
+          filter: '"railway"="abandoned"',
+          label: 'Ferroviaire',
           bounds: '',
           cache: {},
           needed: false,
@@ -138,6 +146,15 @@ export default {
           query: 'artwork',
           key: 'tourism',
           values: ['artwork'],
+          visible: true
+        },
+        railway: {
+          id: 'railway',
+          label: 'Ferroviaire',
+          color: 'fuchsia',
+          query: 'railway',
+          key: 'railway',
+          values: ['abandoned'],
           visible: true
         }
       }

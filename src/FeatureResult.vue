@@ -94,6 +94,7 @@ export default {
         'optical_telegraph': 'Télégraphe optique par sémaphore',
         'pillory': 'Pilori',
         'railway_car': 'Wagon',
+        'railway_station': 'Gare ferroviaire',
         'ruins': 'Ruines',
         'rune_store': 'Pierre runique',
         'ship': 'Bateau ou sous-marin',
@@ -136,6 +137,9 @@ export default {
         'column': 'Colonne',
         'stele': 'Stèle'
       },
+      railwayTypes: {
+        'abandoned': 'Ancienne voie ferrée'
+      },
       id: '',
       lngLat: {lng: 0, lat: 0},
       elementType: '',
@@ -172,6 +176,10 @@ export default {
           type = this.artworkTypes[this.properties.artwork_type]
           if(type === undefined) type = this.properties.artwork_type
         }
+      }
+
+      if(this.properties.railway === 'abandoned') {
+        type = this.railwayTypes[this.properties.railway]
       }
       
       return type
