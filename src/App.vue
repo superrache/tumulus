@@ -24,8 +24,12 @@ export default {
     const params = location.pathname.split('/')
     if(params.length >= 4) {
       let map = this.$refs.map
-      map.startingZoom = params[1]
-      map.center = { lat: params[2], lng: params[3] }
+      if(map) {
+        map.startingZoom = params[1]
+        map.center = [ params[3], params[2] ]
+      } else {
+        console.log('unable to set user map attributes')
+      }
     }
 
   }

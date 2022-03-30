@@ -39,6 +39,9 @@ export default {
   data () {
     return {
       map: null,
+      style: config.style,
+      center: config.startingPosition,
+      zoom: config.startingZoom,
       maxZoomToGetData: 13,
       currentZoom: 0,
       panel: null,
@@ -57,6 +60,8 @@ export default {
     }
   },
   mounted() {
+    console.log('component Map mounted')
+
     // liens entre les composants
     this.panel = this.$refs.panel
     this.panel.search.map = this
@@ -65,9 +70,9 @@ export default {
 
     this.map = new Map({
       container: this.$refs.map,
-      style: config.style,
-      center: config.startingPosition,
-      zoom: config.startingZoom
+      style: this.style,
+      center: this.center,
+      zoom: this.zoom
     })
 
     this.map.addControl(new NavigationControl(), 'top-right')
