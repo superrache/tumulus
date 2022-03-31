@@ -1,15 +1,30 @@
 export const appName = "tumulus"
 
+export const DEBUG = true
+
 export const style = 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d'
 
 export const startingZoom = 15
 export const startingPosition = [-1.27846, 47.15959]
+
 export const nominatimInstance = 'https://nominatim.openstreetmap.org'
+
+export const osmApiDebug = {
+  instance: 'https://master.apis.dev.openstreetmap.org',
+  oauthConsumerKey: 'J0kI4dFGwwWfEk3GRj8KRat3bnalmFvKRp95av2Y',
+  oauthSecret: '4TYpKych3loXgv6eO5ACvo7PRA490NCjjatCjOb2'
+}
+
+export const osmApiProd = {
+  instance: 'https://www.openstreetmap.org',
+  oauthConsumerKey: 'bTmTD4dsTPCymICqf9uMbr6XxaqiNJaprTruAzdy',
+  oauthSecret: 'qgXfV5WWqGNOZwZfUB2Ngf2e3d6VlFQ0x4CwktvK'
+}
 
 export const queries = {
   historic: {
     filter: '"historic"',
-    label: 'Eléments d\'intérêt historique',
+    label: "Eléments d'intérêt historique",
     bounds: '',
     cache: {},
     needed: false,
@@ -17,7 +32,7 @@ export const queries = {
   },
   artwork: {
     filter: '"tourism"="artwork"',
-    label: 'Oeuvres d\'art',
+    label: "Oeuvres d'art",
     bounds: '',
     cache: {},
     needed: false,
@@ -49,7 +64,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['archaeological_site'],
-      visible: true
+      visible: false
     },
     monument: {
       id: "monument",
@@ -57,8 +72,8 @@ export const themes = {
       color: 'royalblue',
       query: 'historic',
       key: 'historic',
-      values: ['aqueduct', 'building', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
-      visible: true
+      values: ['aqueduct', 'building', 'castle', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
+      visible: false
     },
     military: {
       id: 'military',
@@ -66,8 +81,8 @@ export const themes = {
       color: "DarkOliveGreen",
       query: 'historic',
       key: 'historic',
-      values: ['battlefield', 'bomb_crater', 'cannon', 'castle', 'castle_wall', 'citywalls', 'fort', 'pa', 'tank'],
-      visible: true
+      values: ['battlefield', 'bomb_crater', 'cannon', 'castle_wall', 'citywalls', 'fort', 'pa', 'tank'],
+      visible: false
     },
     transport: {
       id: 'transport',
@@ -76,7 +91,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'ship', 'vehicle', 'wreck'],
-      visible: true
+      visible: false
     },
     shrine: {
       id: "shrine",
@@ -85,7 +100,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['wayside_cross', 'wayside_shrine', 'church', 'monastery', 'rune_stone'],
-      visible: true
+      visible: false
     },
     other: {
       id: "other",
@@ -94,7 +109,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['yes'],
-      visible: true
+      visible: false
     },
     artwork: {
       id: "artwork",
@@ -103,7 +118,7 @@ export const themes = {
       query: 'artwork',
       key: 'tourism',
       values: ['artwork'],
-      visible: true
+      visible: false
     },
     railway: {
       id: 'railway',
@@ -114,4 +129,84 @@ export const themes = {
       values: ['abandoned'],
       visible: true
     }
+  }
+
+export const historicTypes = {
+    'yes': 'intérêt historique',
+    'aircraft': 'Aéronef',
+    'aqueduct': 'Aqueduc',
+    'archaeological_site': 'Site archéologique',
+    'battlefield': 'Champ de bataille',
+    'bomb_crater': 'Cratère de bombe',
+    'building': 'Bâtiment',
+    'cannon': 'Canon',
+    'castle': 'Château',
+    'castle_wall': 'Mur défensif',
+    'charcoal_pile': 'Tas de charbon',
+    'church': 'Etablissement religieux',
+    'city_gate': 'Porte de ville',
+    'citywalls': 'Muraille',
+    'farm': 'Ferme',
+    'fort': 'Fort militaire',
+    'gallows': 'Potence',
+    'highwater_mark': 'Repère de crue',
+    'locomotive': 'Locomotive',
+    'manor': 'Manoir',
+    'memorial': 'Mémorial',
+    'mine': 'Mine',
+    'mine_shaft': 'Mine',
+    'milestone': 'Borne routière',
+    'monastery': 'Monastère',
+    'monument': 'Monument',
+    'optical_telegraph': 'Télégraphe optique par sémaphore',
+    'pillory': 'Pilori',
+    'railway_car': 'Wagon',
+    'railway_station': 'Gare ferroviaire',
+    'ruins': 'Ruines',
+    'rune_store': 'Pierre runique',
+    'ship': 'Bateau ou sous-marin',
+    'stone': 'Pierre',
+    'tank': 'Tank',
+    'tomb': 'Tombe',
+    'tower': 'Tour',
+    'vehicle': 'Véhicule',
+    'wayside_cross': 'Croix ou calvaire',
+    'wayside_shrine': 'Oratoire',
+    'wreck': 'Epave'
+  }
+
+export const memorialTypes = {
+    'plaque': 'Plaque commémorative',
+    'war_memorial': 'Mémorial de guerre',
+    'statue': 'Statue',
+    'bust': 'Buste',
+    'stele': 'Stèle',
+    'stone': 'Pierre'
+  }
+
+export const artworkTypes = {
+    'architecture': 'Bâtiment remarquable',
+    'mural': 'Oeuvre d\'art mural',
+    'mural_painting': 'Peinture murale',
+    'painting': 'Peinture',
+    'sculpture': 'Sculpture',
+    'statue': 'Statue',
+    'bust': 'Buste',
+    'stone': 'Rocher',
+    'installation': 'Installation artistique',
+    'graffiti': 'Graffiti',
+    'tilework': 'Carrelage',
+    'mosaic': 'Mosaïc',
+    'azulejo': 'Azulejo',
+    'land_art': 'Land art',
+    'landart': 'Land art',
+    'streetart': 'Streetart',
+    'street_art': 'Streetart',
+    'fountain': 'Fontaine',
+    'column': 'Colonne',
+    'stele': 'Stèle'
+  }
+
+export const railwayTypes = {
+  'abandoned': 'Ancienne voie ferrée'
   }

@@ -15,8 +15,7 @@
 
 import OsmAuth from 'osm-auth'
 import OsmRequest from 'osm-request'
-
-const DEBUG = true
+import * as config from './config.js'
 
 export default {
   name: 'OSMConnector',
@@ -31,18 +30,18 @@ export default {
   },
   created() {
     this.auth = OsmAuth({
-        //url: DEBUG ? 'https://www.openstreetmap.org' : 'https://www.openstreetmap.org',
-        oauth_consumer_key: 'bTmTD4dsTPCymICqf9uMbr6XxaqiNJaprTruAzdy',
-        oauth_secret: 'qgXfV5WWqGNOZwZfUB2Ngf2e3d6VlFQ0x4CwktvK',
+        url: config.DEBUG ? config.osmApiDebug.instance : config.osmApiProd.instance,
+        oauth_consumer_key: config.DEBUG ? config.osmApiDebug.oauthConsumerKey : config.osmApiProd.oauthConsumerKey,
+        oauth_secret: config.DEBUG ? config.osmApiDebug.oauthSecret : config.osmApiProd.oauthSecret,
         //auto: true,
         //singlepage: true, // Load the auth-window in the current window, with a redirect,
         //landing: window.location.href // Come back to the current page
     })
 
     this.osmRequest = new OsmRequest({
-        endpoint: DEBUG ? 'https://master.apis.dev.openstreetmap.org' : 'https://www.openstreetmap.org',
-        oauthConsumerKey: 'bTmTD4dsTPCymICqf9uMbr6XxaqiNJaprTruAzdy',
-        oauthSecret: 'qgXfV5WWqGNOZwZfUB2Ngf2e3d6VlFQ0x4CwktvK'
+        endpoint: config.DEBUG ? config.osmApiDebug.instance : config.osmApiProd.instance,
+        oauthConsumerKey: config.DEBUG ? config.osmApiDebug.oauthConsumerKey : config.osmApiProd.oauthConsumerKey,
+        oauthSecret: config.DEBUG ? config.osmApiDebug.oauthSecret : config.osmApiProd.oauthSecret
     })
   },
   methods: {
@@ -82,7 +81,7 @@ export default {
     async autoRepair(features) {
         this.features = features
 
-        await this.login()
+        this.onLogin()
 
         const comment = 'add and correct wiki attributes'
         const changesetId = await this.osmRequest.createChangeset('tumulus', comment)
@@ -130,10 +129,6 @@ export default {
 <style scoped>
 
 .panel {
-  z-index: 1006;
-  position: absolute;
-  top: 5px;
-  right: 50px;
   border-radius: 10px;
   background-color: #000012dd;
   box-shadow: 0px -1px 6px 0px rgba(0,0,0,0.75);
@@ -179,7 +174,7 @@ button:active {
 #menu {
     visibility: hidden;
     position: fixed;
-    z-index: 1007;
+    z-index: 31;
     top: 48px;
     right: 15px;
     width: 200px;

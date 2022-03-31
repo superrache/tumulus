@@ -1,12 +1,12 @@
 <template>
     <div class="cat">
-        <h3 class="collapsible" @click="toogleCollapse">{{collapsed ? '+' : '-'}} Thématiques</h3>
+        <h3 class="collapsible" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}} Thématiques</h3>
         <div class="theme"
-            v-for="t in Object.keys(map.themes)"
+            v-for="t in Object.keys(themes)"
             :key="t"
             v-on:click="toogleThemeVisibility($event, t)"
-            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': map.themes[t].color, 'opacity': map.themes[t].visible ? '1' : '0.3' }">
-            {{map.themes[t].label}}
+            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': themes[t].color, 'opacity': themes[t].visible ? '1' : '0.3' }">
+            {{themes[t].label}}
         </div>
     </div>
 </template>
@@ -17,24 +17,30 @@ export default {
   name: 'ThemeSelect',
   data () {
     return {
-        map: {
-            themes: {}
+        themes: {
+          loading: {
+            id: "loading",
+            label: "...",
+            color: "transparent"
+          }
         },
+        updateThemesVisibility: null,
         collapsed: false
     }
   },
   methods: {
+      load(map) {
+        this.updateThemesVisibility = map.updateThemesVisibility
+        this.themes = map.themes
+      },
       toogleThemeVisibility(e, id) {
-          console.log('toogleThemeVisibility ' + id)
-          for(let t in this.map.themes) {
+          for(let t in this.themes) {
             if(t === id) {
-              this.map.themes[t].visible = !this.map.themes[t].visible
+              this.themes[t].visible = !this.themes[t].visible
+              console.log('toogleThemeVisibility ' + id + ' to ' + (this.themes[t].visible ? 'visible' : 'invisible'))
             }
           }
-          this.map.updateThemesVisibility()
-      },
-      toogleCollapse() {
-        this.collapsed = !this.collapsed
+          this.updateThemesVisibility()
       },
       collapse() {
         this.collapsed = true

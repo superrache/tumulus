@@ -2,12 +2,12 @@
 
     <div class="cat" 
       v-if="properties !== null">
-      <div id="title" :style="{ 'background-color': theme.color }">
+      <div id="feature-title" :style="{ 'background-color': theme.color }">
         <h3>{{name}}</h3>
         <div class="type">{{type}}</div>
       </div>
 
-      <img v-if="properties.hasOwnProperty('image')" :src="properties.image" width="280"/>
+      <img v-if="properties.hasOwnProperty('image')" :src="properties.image"/>
 
       <div class="normal" v-if="properties.hasOwnProperty('start_date')">Date : {{properties.start_date}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('artist_name')">Artiste : {{properties.artist_name}}</div>
@@ -41,7 +41,7 @@
       <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/edit?' + elementType + '=' + id + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer sur OpenStreetMap</a></div>
     </div>
 
-    <div class="cat" v-show="DEBUG" v-if="properties !== null">
+    <div class="cat" v-show="debug" v-if="properties !== null">
       <div class="normal">key=value</div>
       <div class="small"
           v-for="p in Object.keys(properties)"
@@ -55,6 +55,7 @@
 
 //import * as env from './utils/env.js'
 import ExpandableImage from './ExpandableImage.vue'
+import * as config from './config.js'
 
 export default {
   name: 'FeatureResult',
@@ -63,83 +64,11 @@ export default {
   },
   data () {
     return {
-      DEBUG: true,
-      historicTypes: {
-        'yes': 'intérêt historique',
-        'aircraft': 'Aéronef',
-        'aqueduct': 'Aqueduc',
-        'archaeological_site': 'Site archéologique',
-        'battlefield': 'Champ de bataille',
-        'bomb_crater': 'Cratère de bombe',
-        'building': 'Bâtiment',
-        'cannon': 'Canon',
-        'castle': 'Château',
-        'castle_wall': 'Mur défensif',
-        'charcoal_pile': 'Tas de charbon',
-        'church': 'Etablissement religieux',
-        'city_gate': 'Porte de ville',
-        'citywalls': 'Muraille',
-        'farm': 'Ferme',
-        'fort': 'Fort militaire',
-        'gallows': 'Potence',
-        'highwater_mark': 'Repère de crue',
-        'locomotive': 'Locomotive',
-        'manor': 'Manoir',
-        'memorial': 'Mémorial',
-        'mine': 'Mine',
-        'mine_shaft': 'Mine',
-        'milestone': 'Borne routière',
-        'monastery': 'Monastère',
-        'monument': 'Monument',
-        'optical_telegraph': 'Télégraphe optique par sémaphore',
-        'pillory': 'Pilori',
-        'railway_car': 'Wagon',
-        'railway_station': 'Gare ferroviaire',
-        'ruins': 'Ruines',
-        'rune_store': 'Pierre runique',
-        'ship': 'Bateau ou sous-marin',
-        'stone': 'Pierre',
-        'tank': 'Tank',
-        'tomb': 'Tombe',
-        'tower': 'Tour',
-        'vehicle': 'Véhicule',
-        'wayside_cross': 'Croix ou calvaire',
-        'wayside_shrine': 'Oratoire',
-        'wreck': 'Epave'
-      },
-      memorialTypes: {
-        'plaque': 'Plaque commémorative',
-        'war_memorial': 'Mémorial de guerre',
-        'statue': 'Statue',
-        'bust': 'Buste',
-        'stele': 'Stèle',
-        'stone': 'Pierre'
-      },
-      artworkTypes: {
-        'architecture': 'Bâtiment remarquable',
-        'mural': 'Oeuvre d\'art mural',
-        'mural_painting': 'Peinture murale',
-        'painting': 'Peinture',
-        'sculpture': 'Sculpture',
-        'statue': 'Statue',
-        'bust': 'Buste',
-        'stone': 'Rocher',
-        'installation': 'Installation artistique',
-        'graffiti': 'Graffiti',
-        'tilework': 'Carrelage',
-        'mosaic': 'Mosaïc',
-        'azulejo': 'Azulejo',
-        'land_art': 'Land art',
-        'landart': 'Land art',
-        'streetart': 'Streetart',
-        'street_art': 'Streetart',
-        'fountain': 'Fontaine',
-        'column': 'Colonne',
-        'stele': 'Stèle'
-      },
-      railwayTypes: {
-        'abandoned': 'Ancienne voie ferrée'
-      },
+      debug: config.DEBUG,
+      historicTypes: config.historicTypes,
+      memorialTypes: config.memorialTypes,
+      artworkTypes: config.artworkTypes,
+      railwayTypes: config.railwayTypes,
       id: '',
       lngLat: {lng: 0, lat: 0},
       elementType: '',
@@ -252,7 +181,7 @@ export default {
   margin: 5px 0px 10px 0px;
 }
 
-#title {
+#feature-title {
   margin: 0px;
   margin-bottom: 5px;
   border-top-left-radius: 10px;
@@ -262,7 +191,6 @@ export default {
 
 h3 {
   margin: 5px 5px 5px 5px;
-  font-size: 1.5em;
 }
 
 .type {

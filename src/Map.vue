@@ -1,22 +1,8 @@
 <template>
-    <div id="map_container">
-      <div id="map" ref="map"></div>
+  <div id="map" ref="map">
 
-      <div id="loading" :style="{width: loading + '%'}"></div>
+  </div>
 
-      <div id="queries">
-          <div class="query" v-for="q in queries" :key="q">
-              <div v-if="q.loading">
-                  <img src='./img/radar.gif' width="25"/>   {{q.label}}
-              </div>
-          </div>
-      </div>
-
-      <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
-
-      <Panel id="panel" ref="panel" />
-      <OSMConnector id="osmConnector" ref="osmConnector" />
-    </div>
 </template>
 
 <script>
@@ -27,46 +13,36 @@ import * as env from './utils/env.js'
 import * as utils from './utils/utils.js'
 import * as config from './config.js'
 
-import Panel from './Panel.vue'
-import OSMConnector from './OSMConnector.vue'
-
 export default {
   name: 'Map',
-  components: {
-    Panel,
-    OSMConnector
-  },
   data () {
     return {
+      app: null,
       map: null,
       style: config.style,
       center: config.startingPosition,
       zoom: config.startingZoom,
       maxZoomToGetData: 13,
       currentZoom: 0,
-      panel: null,
-      osmConnector: null,
-      loading: 0,
       currentCodename: '',
       selectedFeatureId: null,
       selectedLayerId: null,
       queries: config.queries,
-      themes: config.themes
-    }
-  },
-  computed: {
-    dispZoomMore() {
-      return this.currentZoom < this.maxZoomToGetData
+      themes: config.themes,
+      // external components
+      themeSelect: null,
+      featureResult: null,
+      issueAnalyzer: null
     }
   },
   mounted() {
-    console.log('component Map mounted')
-
-    // liens entre les composants
-    this.panel = this.$refs.panel
-    this.panel.search.map = this
-    this.panel.themeSelect.map = this
-    this.panel.issueAnalyzer.osmConnector = this.$refs.osmConnector
+    // prise en compte des paramètres de l'URL
+    console.log(location.pathname)
+    const params = location.pathname.split('/')
+    if(params.length >= 4) {
+      this.zoom = params[1]
+      this.center = [ params[3], params[2] ]
+    }
 
     this.map = new Map({
       container: this.$refs.map,
@@ -91,7 +67,7 @@ export default {
       this.map.addImage('megalith', image)
     })*/
 
-    console.log('mounted ok')
+    console.log('map mounted')
     this.map.on('load', this.onMapLoad)
   },
   methods: {
@@ -161,7 +137,7 @@ export default {
                   this.onFeatureSelect(e.features[0], theme, e.lngLat)
               } else { // TODO 'click' without layer
                 this.unselectFeature()
-                this.panel.featureResult.unloadFeature()
+                this.featureResult.unloadFeature()
               }
           })
         }
@@ -169,13 +145,16 @@ export default {
       }
     },
     updateThemesVisibility() {
+      for(let q in this.queries) {
+        this.queries[q].needed = false
+      }
       for(let t in this.themes) {
         const theme = this.themes[t]
         for(let g = 0; g < 3; g++) this.map.setLayoutProperty(g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
-        this.queries[theme.query].needed = theme.visible
+        this.queries[theme.query].needed = this.queries[theme.query].needed || theme.visible
       }
 
-      this.panel.featureResult.unloadFeature()
+      if(this.featureResult !== null) this.featureResult.unloadFeature()
 
       this.onMapMove()
     },
@@ -188,14 +167,14 @@ export default {
       this.currentZoom = this.map.getZoom()
       window.history.pushState(config.appName, config.appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng))
 
-      if(!this.dispZoomMore) {
+      if(!this.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
         const ne = this.map.getBounds()._ne
         const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
 
-        this.loading = 20
+        this.app.loading = 'Chargement de la carte ...'
 
-        this.panel.issueAnalyzer.clear()
+        this.issueAnalyzer.clear()
 
         // TODO lancer en parallèle
         for(let q in this.queries) {
@@ -203,7 +182,7 @@ export default {
           let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
           while(launch) {
             console.log(codename + ' : launching query ' + q)
-            query.loading = true
+            this.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
             const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
             if(codename !== this.currentCodename) return
             
@@ -212,12 +191,9 @@ export default {
 
             if(data.error !== undefined) {
               console.log(codename + ' : query error ' + data.error)
-              this.loading += 5
             } else {
-              query.loading = false
               query.cache = data
               query.bounds = bounds
-              this.loading += 1 / this.queries.length * (100 - 20)
               launch = false
 
               // application de la donnée aux thèmes concernés (visible ou pas)
@@ -231,14 +207,14 @@ export default {
           }
         }
 
-        this.loading = 0
+        this.app.loading = ''
       }
     },
     loadGeojson(theme, geojson, codename) {
       if(geojson.features !== undefined) {
         console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
         
-        this.panel.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
+        this.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
         
         let added = [0, 0, 0]
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
@@ -273,8 +249,8 @@ export default {
     onFeatureSelect(feature, theme, lngLat) {
       feature.id = feature.properties.id
       this.selectFeature(feature)
-      this.panel.themeSelect.collapse()
-      this.panel.featureResult.loadFeature(feature, theme, lngLat)
+      this.themeSelect.collapse()
+      this.featureResult.loadFeature(feature, theme, lngLat)
     },
     selectFeature(feature) {
       this.unselectFeature(feature)
@@ -312,64 +288,8 @@ export default {
 
 @import '~maplibre-gl/dist/maplibre-gl.css';
 
-#map_container {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  overflow: hidden;
-}
-
-li {
-  cursor: pointer;
-}
-
-a {
-  color: #5eb793;
-}
-
 #map {
-  width: 100%;
   height: 100%;
-  z-index: 1;
-}
-
-#loading {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 5px;
-  z-index: 1020;
-  background-color: red;
-}
-
-#queries {
-  position: absolute;
-  left: 320px;
-  top: 15px;
-  z-index: 1030;
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.query {
-  flex: auto;
-  color: black;
-}
-
-#zoomMore {
-  width:180px;
-  text-align:center;
-  padding-top:20px;
-  padding-bottom:20px;
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  z-index: 1010;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
 }
 
 </style>

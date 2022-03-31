@@ -24,6 +24,7 @@ export default {
   name: 'Search',
   data() {
     return {
+        map: null,
         results: []
     }
   },
