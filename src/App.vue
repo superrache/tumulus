@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div id="sidebar" :style="{width: sidebarWidth}">
+    <div id="sidebar">
       <div id="sidebar-resizer"></div>
       <div id="panel">
         <a id="title" href="">
@@ -56,8 +56,7 @@ export default {
       osmConnector: null,
       issueAnalyzer: null,
       loading: '',
-      sidebarWidth: '33%',
-      sidebarResizing: false
+      sidebar: null
     }
   },
   async created () {
@@ -91,6 +90,7 @@ export default {
     this.issueAnalyzer = this.$refs.issueAnalyzer
 
     // resizer
+    this.sidebar = this.$el.querySelector("#sidebar")
     let resizer = this.$el.querySelector("#sidebar-resizer")
     resizer.addEventListener("mousedown", () => {
       document.addEventListener("mousemove", this.onSidebarResize, false);
@@ -107,7 +107,12 @@ export default {
   },
   methods: {
     onSidebarResize(e) {
-      this.sidebarWidth = `${e.x}px`
+      console.log('onSidebarResize')
+      if(window.innerWidth < 641) { // mobile
+        this.sidebar.style.height = `${window.innerHeight - e.y}px`
+      } else { // desktop
+        this.sidebar.style.width = `${e.x}px`
+      }
       this.map.map.resize()
     }
   }
@@ -159,6 +164,8 @@ body {
   position: relative;
   min-width: 235px;
   max-width: 85%;
+  min-height: 100%;
+  max-height: 100%;
   height: 100%;
   float: left;
   z-index: 10;
@@ -170,7 +177,7 @@ body {
 
 #sidebar-resizer {
   position: absolute;
-  top: 0;
+  top: 0px;
   right: 0px;
   width: 5px;
   height: 100%;
@@ -189,6 +196,35 @@ body {
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+@media only screen and (max-width: 641px) {
+  #sidebar {
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    height: 25%;
+    min-height: 75px;
+    max-height: 100%;
+    position: absolute;
+    bottom: 0px;
+    padding-right: 0px;
+  }
+
+  #sidebar-resizer {
+    position: relative;
+    left: 40%;
+    width: 20%;
+    height: 5px;
+    cursor: row-resize;
+    background-color: #aaa;
+    border-radius: 5px;
+  }
+
+  #panel {
+    position: relative;
+    top: 5px;
+  }
 }
 
 #main-content {
@@ -227,19 +263,13 @@ body {
   left: 0px;
   height: 15px;
   z-index: 20;
-  background-color: red;
-  background: linear-gradient(to right, #faa 8%, #f55 18%, #faa 33%);
+  background: linear-gradient(to right, #aaa 8%, #ccc 18%, #aaa 33%);
   background-size: 800px 104px;
   animation-duration: 2s;
   animation-fill-mode: forwards;
   animation-iteration-count: infinite;
   animation-name: placeHolderShimmer;
   animation-timing-function: linear;
-}
-
-#loading-masker {
-  background-color: red;
-  position: absolute;
 }
 
 @keyframes placeHolderShimmer {
