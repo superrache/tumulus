@@ -98,6 +98,12 @@ export default {
         document.removeEventListener("mousemove", this.onSidebarResize, false);
       }, false);
     })
+    resizer.addEventListener("touchdown", () => {
+      document.addEventListener("touchmove", this.onSidebarResize, false);
+      document.addEventListener("touchup", () => {
+        document.removeEventListener("touchmove", this.onSidebarResize, false);
+      }, false);
+    })
   },
   computed: {
     dispZoomMore() {
