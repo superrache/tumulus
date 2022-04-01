@@ -56,12 +56,24 @@ export default {
           }
         } else {
           let kv = param.split('=')
-          if(kv.length === 2 && kv[0] === 'themes') {
-            let themesParam = kv[1].split(',')
-            console.log(kv[1])
-            for(let t in this.themes) {
-              let theme = this.themes[t]
-              theme.visible = themesParam.indexOf(t) > -1
+          if(kv.length === 2) {
+            switch(kv[0]) {
+              case 'themes': {
+                let themesParam = kv[1].split(',')
+                console.log(kv[1])
+                for(let t in this.themes) {
+                  let theme = this.themes[t]
+                  theme.visible = themesParam.indexOf(t) > -1
+                }
+                break;
+              }
+              case 'id': {
+                let id = kv[1]
+                console.log('TODO select ' + id)
+                break;
+              }
+              default:
+                break;
             }
           }
         }
@@ -107,6 +119,18 @@ export default {
     this.map.on('load', this.onMapLoad)
   },
   methods: {
+    updateAppUrl() {
+      console.log('updateAppUrl ' + this.selectedFeatureId)
+      const {lng, lat} = this.map.getCenter()
+      this.currentZoom = this.map.getZoom()
+      window.history.pushState(config.appName, config.appName, 
+        '/' + utils.round6Digits(this.currentZoom)
+        + '/' + utils.round6Digits(lat)
+        + '/' + utils.round6Digits(lng) 
+        + '&themes=' + this.themesSelection
+        + (this.selectedFeatureId !== null ? '&id=' + this.selectedFeatureId.replace('/', '-') : '')
+      )
+    },
     onMapLoad() {
       console.log('map loaded')
       this.initThemes()
@@ -225,9 +249,7 @@ export default {
       this.currentCodename = codename
       console.log(codename + ' : onMapMove ')
 
-      const {lng, lat} = this.map.getCenter()
-      this.currentZoom = this.map.getZoom()
-      window.history.pushState(config.appName, config.appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng) + "&themes=" + this.themesSelection)
+      this.updateAppUrl()
 
       if(!this.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
@@ -329,11 +351,12 @@ export default {
       this.unselectFeature(feature)
       this.selectedFeatureId = feature.id
       this.selectedLayerId = feature.layer.id
-      console.log('select ' + feature.id)
+      console.log('select ' + this.selectedFeatureId)
       this.map.setFeatureState(
         { source: this.selectedLayerId, id: this.selectedFeatureId },
         { selected: true }
       )
+      this.updateAppUrl()
     },
     unselectFeature() {
       if(this.selectedFeatureId !== null) {
@@ -344,6 +367,7 @@ export default {
         )
       }
       this.selectedFeatureId = null
+      this.updateAppUrl()
     },
     flyTo(coords) {
       this.map.flyTo({
