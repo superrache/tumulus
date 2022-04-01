@@ -32,6 +32,7 @@ export default {
       selectedLayerId: null,
       queries: config.queries,
       themes: config.themes,
+      themesSelection: '',
       // external components
       themeSelect: null,
       featureResult: null,
@@ -40,11 +41,31 @@ export default {
   },
   mounted() {
     // prise en compte des paramètres de l'URL
-    console.log(location.pathname)
-    const params = location.pathname.split('/')
-    if(params.length >= 4) {
-      this.zoom = params[1]
-      this.center = [ params[3], params[2] ]
+    console.log('params ' + location.pathname)
+    let params = location.pathname.split('&')
+    if(params.length > 0) {
+      for(let p in params) {
+        let param = params[p]
+        if(p == 0) {
+          console.log(param)
+          let slashes = param.split('/')
+          console.log(slashes)
+          if(slashes.length >= 4) {
+            this.zoom = slashes[1]
+            this.center = [ slashes[3], slashes[2] ]
+          }
+        } else {
+          let kv = param.split('=')
+          if(kv.length === 2 && kv[0] === 'themes') {
+            let themesParam = kv[1].split(',')
+            console.log(kv[1])
+            for(let t in this.themes) {
+              let theme = this.themes[t]
+              theme.visible = themesParam.indexOf(t) > -1
+            }
+          }
+        }
+      }
     }
 
     this.map = new Map({
@@ -183,6 +204,8 @@ export default {
       for(let q in this.queries) {
         this.queries[q].needed = false
       }
+
+      this.themesSelection = ''
       for(let t in this.themes) {
         const theme = this.themes[t]
         for(let g = 0; g < 3; g++) {
@@ -190,6 +213,7 @@ export default {
           if(g === 0 && theme.icon !== undefined) this.map.setLayoutProperty('symbol/' + g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
         }
         this.queries[theme.query].needed = this.queries[theme.query].needed || theme.visible
+        this.themesSelection += (theme.visible ? ((this.themesSelection.length > 0 ? ',' : '') + theme.id) : '')
       }
 
       if(this.featureResult !== null) this.featureResult.unloadFeature()
@@ -203,7 +227,7 @@ export default {
 
       const {lng, lat} = this.map.getCenter()
       this.currentZoom = this.map.getZoom()
-      window.history.pushState(config.appName, config.appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng))
+      window.history.pushState(config.appName, config.appName, "/" + utils.round6Digits(this.currentZoom) + "/" + utils.round6Digits(lat) + "/" + utils.round6Digits(lng) + "&themes=" + this.themesSelection)
 
       if(!this.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
