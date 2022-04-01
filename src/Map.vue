@@ -8,6 +8,9 @@
 <script>
 
 import { Map, NavigationControl, GeolocateControl } from 'maplibre-gl'
+import along from '@turf/along'
+import length from '@turf/length'
+import pointOnFeature from '@turf/point-on-feature'
 
 import * as env from './utils/env.js'
 import * as utils from './utils/utils.js'
@@ -237,6 +240,18 @@ export default {
               }
               theme.geojsons[g].features.push(feature)
               added[g]++
+
+              // on rajoute en plus un point pour les polylignes et les polygones
+              if(g >= 1) {
+                let pointFeature = (g == 2 ? pointOnFeature(feature) 
+                  : along(feature, length(feature) / 2))
+                console.log(pointFeature.geometry.coordinates)
+                pointFeature.properties = feature.properties
+                pointFeature.id = feature.id
+                theme.geojsons[0].features.push(pointFeature)
+                added[0]++
+              }
+
             }
           }
         }
