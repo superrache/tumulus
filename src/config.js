@@ -4,8 +4,8 @@ export const DEBUG = true
 
 export const style = 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d'
 
-export const startingZoom = 15
-export const startingPosition = [-1.27846, 47.15959]
+export const startingZoom = 16.5
+export const startingPosition = [-1.55468, 47.21853]
 
 export const nominatimInstance = 'https://nominatim.openstreetmap.org'
 
@@ -55,7 +55,9 @@ export const themes = {
       color: "DarkGoldenRod",
       query: 'historic',
       key: 'historic',
-      values: ['memorial', 'highwater_mark']
+      values: ['memorial', 'highwater_mark'],
+      icon: 'memorial',
+      visible: true
     },
     archeo: {
       id: "archeo",
@@ -127,7 +129,7 @@ export const themes = {
       query: 'railway',
       key: 'railway',
       values: ['abandoned'],
-      visible: true
+      visible: false
     }
   }
 

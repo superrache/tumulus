@@ -65,10 +65,22 @@ export default {
       })
     )
 
-    /*this.map.loadImage('./img/memorial.png', (error, image) => {
-      if(error) throw error
-      this.map.addImage('megalith', image)
-    })*/
+    // Chargement des images
+    for(let t in this.themes) {
+      const theme = this.themes[t]
+      if(theme.icon !== undefined) {
+        console.log('loading icon ' + theme.icon)
+        this.map.loadImage(window.location.origin + '/img/' + theme.icon + '.png', (error, image) => {
+          if(error) {
+            console.log(error)
+            throw error
+          } else {
+            this.map.addImage(theme.icon, image, { 'sdf': true })
+            console.log(theme.icon + ' added')
+          }
+        })
+      }
+    }
 
     console.log('map mounted')
     this.map.on('load', this.onMapLoad)
@@ -91,7 +103,8 @@ export default {
         theme.layers = []
 
         // 1 layer et 1 source par theme et par type de géométrie (0=point, 1=polyline, 2=polygon)
-        for(let g = 0; g < 3; g++) {
+        // la layer ajoutée en dernier est affichée au-dessus des autres
+        for(let g = 3; g >= 0; g--) {
           const id = g + '/' + theme.id
           theme.sources.push(this.map.addSource(id, {
               type: "geojson",
@@ -102,7 +115,7 @@ export default {
           const paint = (g === 0 ? {
               'circle-color': theme.color,
               'circle-opacity': 1,
-              'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 10, 8],
+              'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 14, 12],
               'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
               'circle-stroke-width': 4
             } : (g === 1 ? {
@@ -124,6 +137,25 @@ export default {
               visibility: 'visible'
             }
           }))
+
+          if(g === 0 && theme.icon !== undefined) {
+            theme.layers.push(this.map.addLayer({
+              id: 'symbol/' + id,
+              source: id,
+              interactive: true,
+              type: "symbol",
+              "layout": {
+                  "icon-image": theme.icon,
+                  "icon-size": 1.0,
+                  "icon-allow-overlap": true,
+                  "icon-ignore-placement": true,
+                  visibility: 'visible'
+              },
+              "paint": {
+                  "icon-color": "#000000"
+              }
+            }))
+          }
 
           this.map.on('mousemove', id, (e) => {
               if(e.features.length > 0) {
@@ -153,7 +185,10 @@ export default {
       }
       for(let t in this.themes) {
         const theme = this.themes[t]
-        for(let g = 0; g < 3; g++) this.map.setLayoutProperty(g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
+        for(let g = 0; g < 3; g++) {
+          this.map.setLayoutProperty(g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
+          if(g === 0 && theme.icon !== undefined) this.map.setLayoutProperty('symbol/' + g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
+        }
         this.queries[theme.query].needed = this.queries[theme.query].needed || theme.visible
       }
 
@@ -245,7 +280,6 @@ export default {
               if(g >= 1) {
                 let pointFeature = (g == 2 ? pointOnFeature(feature) 
                   : along(feature, length(feature) / 2))
-                console.log(pointFeature.geometry.coordinates)
                 pointFeature.properties = feature.properties
                 pointFeature.id = feature.id
                 theme.geojsons[0].features.push(pointFeature)
