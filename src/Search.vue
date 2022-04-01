@@ -1,7 +1,6 @@
 <template>
     <div class="cat">
         <input id="input"
-            :type="text"
             @input="updateInput"
             placeholder="Rechercher"
         />
