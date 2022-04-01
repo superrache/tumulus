@@ -104,7 +104,7 @@ export default {
 
         // 1 layer et 1 source par theme et par type de géométrie (0=point, 1=polyline, 2=polygon)
         // la layer ajoutée en dernier est affichée au-dessus des autres
-        for(let g = 3; g >= 0; g--) {
+        for(let g = 2; g >= 0; g--) {
           const id = g + '/' + theme.id
           theme.sources.push(this.map.addSource(id, {
               type: "geojson",
