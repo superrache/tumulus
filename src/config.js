@@ -93,6 +93,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'ship', 'vehicle', 'wreck'],
+      icon: 'transport',
       visible: false
     },
     shrine: {
@@ -120,6 +121,7 @@ export const themes = {
       query: 'artwork',
       key: 'tourism',
       values: ['artwork'],
+      icon: 'artwork',
       visible: false
     },
     railway: {
@@ -129,6 +131,7 @@ export const themes = {
       query: 'railway',
       key: 'railway',
       values: ['abandoned'],
+      icon: 'railway',
       visible: false
     }
   }
