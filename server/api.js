@@ -6,6 +6,7 @@ module.exports = function(app, prod) {
     const request = require('request')
     const osmtogeojson = require('osmtogeojson')
 
+    const simpleCache = []
 
     app.get('/data', (req, res) => {
         if(!prod) { // parce que les ports server vue et server node sont différents en dev
@@ -24,28 +25,17 @@ module.exports = function(app, prod) {
                     + ');out body;>;out skel qt;'
             const fullUrl = url + encodeURIComponent(query)
             console.log('get /data request on ' + instance + ' filter: ' + req.query.filter + ' bounds: ' + req.query.bounds)
-            request(fullUrl, (error, response, data) => {
-                try {
-                    if(error) console.log(error)
-                    console.log(response.statusCode)
-                    const geojson = osmtogeojson(JSON.parse(data))
-                    res.json(geojson)
-                } catch(err) {
-                    //console.error(err)
-                    //console.error(data)
-                    res.json({error: 1})
-                }
-            })
-        } catch(err) {
-            //console.error(err)
-            res.json({error: 2})
-        }
-    })
-
+            if(simpleCache.hasOwnProperty(query)) {
+                console.log('[result in cache]')
+                res.json(simpleCache[query])
+            } else {
+                request(fullUrl, (error, response, data) => {
                     try {
                         if(error) console.log(error)
                         console.log(response.statusCode)
-                        
+                        const geojson = osmtogeojson(JSON.parse(data))
+                        simpleCache[query] = geojson
+                        res.json(geojson)
                     } catch(err) {
                         //console.error(err)
                         //console.error(data)
@@ -58,5 +48,4 @@ module.exports = function(app, prod) {
             res.json({error: 2})
         }
     })
-
  }
