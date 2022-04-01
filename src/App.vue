@@ -98,9 +98,9 @@ export default {
         document.removeEventListener("mousemove", this.onSidebarResize, false);
       }, false);
     })
-    resizer.addEventListener("touchdown", () => {
+    resizer.addEventListener("touchstart", () => {
       document.addEventListener("touchmove", this.onSidebarResize, false);
-      document.addEventListener("touchup", () => {
+      document.addEventListener("touchend", () => {
         document.removeEventListener("touchmove", this.onSidebarResize, false);
       }, false);
     })
@@ -113,11 +113,14 @@ export default {
   },
   methods: {
     onSidebarResize(e) {
-      console.log('onSidebarResize')
+      let [x, y] = [e.x, e.y]
+      if(e.type === 'touchmove') {
+        [x, y] = [e.touches[0].clientX, e.touches[0].clientY]
+      }
       if(window.innerWidth < 641) { // mobile
-        this.sidebar.style.height = `${window.innerHeight - e.y}px`
+        this.sidebar.style.height = (window.innerHeight - y + 10) + 'px'
       } else { // desktop
-        this.sidebar.style.width = `${e.x}px`
+        this.sidebar.style.width = (x + 2) + 'px'
       }
       this.map.map.resize()
     }
@@ -193,7 +196,7 @@ body {
   background-color: transparent;
 }
 
-#sidebar-resizer:hover {
+#sidebar-resizer:hover, #sidebar-resizer:active {
   background-color: #777;
 }
 
@@ -204,6 +207,7 @@ body {
   overflow-y: auto;
 }
 
+/* mobile sidebar */
 @media only screen and (max-width: 641px) {
   #sidebar {
     min-width: 100%;
@@ -221,7 +225,7 @@ body {
     position: relative;
     left: 40%;
     width: 20%;
-    height: 5px;
+    height: 10px;
     cursor: row-resize;
     background-color: #aaa;
     border-radius: 5px;
