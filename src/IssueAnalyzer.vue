@@ -36,7 +36,7 @@ export default {
             const feature = features[f]
             const properties = feature.properties
 
-            if(properties.name === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 0, message: 'Pas de nom'})
+            //if(properties.name === undefined) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 0, message: 'Pas de nom'})
 
             if(properties.wikipedia !== undefined && properties.wikipedia.indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence wikipedia'})
             if(properties['artist:wikipedia'] !== undefined && properties['artist:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, theme: theme, type: 'node', importance: 2, message: 'Langue manquante dans la référence artist:wikipedia'})
@@ -62,7 +62,7 @@ export default {
 <style scoped>
 
 .cat {
-  background-color: #aaaaaa33;
+  background-color: #444;
   border-radius: 10px;
   padding: 7px;
   padding-right: 15px;
@@ -83,7 +83,7 @@ export default {
     text-decoration: underline;
 }
 
-a{
+a {
     text-decoration: none;
     color: black;
 }

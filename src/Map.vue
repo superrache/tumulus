@@ -47,9 +47,7 @@ export default {
       for(let p in params) {
         let param = params[p]
         if(p == 0) {
-          console.log(param)
           let slashes = param.split('/')
-          console.log(slashes)
           if(slashes.length >= 4) {
             this.zoom = slashes[1]
             this.center = [ slashes[3], slashes[2] ]
@@ -60,7 +58,6 @@ export default {
             switch(kv[0]) {
               case 'themes': {
                 let themesParam = kv[1].split(',')
-                console.log(kv[1])
                 for(let t in this.themes) {
                   let theme = this.themes[t]
                   theme.visible = themesParam.indexOf(t) > -1

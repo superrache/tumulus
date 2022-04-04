@@ -130,6 +130,9 @@ export default {
 
 <style>
 
+/**
+  Pour tous les composants
+*/
 div {
   box-sizing: border-box;
   margin: 0;
@@ -155,6 +158,27 @@ body {
   margin: 0;
 }
 
+button {
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 10px;
+  color: white;
+  background-color: #555;
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #5599ff;
+  outline: solid 1px white;
+}
+
+button:active {
+  background-color: #aaa;
+}
+
+
+
 /* vaut pour la div #app dans le html et le container principal #app de ce composant */
 #app {
   position: relative;
@@ -173,6 +197,7 @@ body {
   position: relative;
   min-width: 235px;
   max-width: 85%;
+  width: 25%;
   min-height: 100%;
   max-height: 100%;
   height: 100%;
@@ -239,8 +264,6 @@ body {
 
 #main-content {
   position: relative;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
   height: 100%;
   z-index: 1;

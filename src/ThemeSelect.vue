@@ -53,7 +53,7 @@ export default {
 <style scoped>
 
 .cat {
-  background-color: #aaaaaa33;
+  background-color: #444;
   border-radius: 10px;
   padding: 5px;
   margin: 5px 0px 10px 0px;
@@ -66,8 +66,12 @@ export default {
   cursor: pointer;
 }
 
-.collapsible:hover, .collapsible:active {
-  background-color: #aaaaaa33;
+.collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible:active {
+  background-color: #777;
 }
 
 .theme {

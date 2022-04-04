@@ -3,6 +3,8 @@
         <input id="input"
             @input="updateInput"
             placeholder="Rechercher"
+            type="search"
+            autofocus
         />
         <div id="results" v-if="results.length > 0">
             <div class="result"
@@ -49,7 +51,7 @@ export default {
 <style scoped>
 
 .cat {
-  background-color: #aaaaaa33;
+  background-color: #444;
   border-radius: 10px;
   padding: 7px;
   padding-right: 15px;
@@ -61,12 +63,12 @@ export default {
     height: 27px;
     font-size: 16px;
     border-radius: 5px;
-    background-color: #aaaaaa11;
+    background-color: #444;
     color: white;
 }
 
 #input:hover, #input:active {
-    background-color: #aaaaaa33;
+    background-color: #555;
 }
 
 #results {
@@ -76,7 +78,7 @@ export default {
     left: 0px;
     width: 100%;
     height: 150px;
-    background-color: #00001277;
+    background-color: #333;
     color: #ffffff;
     font-size: 16px;
     border-radius: 5px;

@@ -142,25 +142,6 @@ a {
     text-decoration: none;
 }
 
-button {
-    cursor: pointer;
-    font-size: 16px;
-    padding: 5px 10px;
-    color: white;
-    background-color: #555;
-    border: none;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: dodgerblue;
-    color: black;
-}
-
-button:active {
-    background-color: lightblue;
-}
-
 .user-img {
     width: 20px;
     margin-bottom: -5px;
