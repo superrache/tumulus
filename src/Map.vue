@@ -7,7 +7,7 @@
 
 <script>
 
-import { Map, NavigationControl, GeolocateControl } from 'maplibre-gl'
+import { Map, NavigationControl, GeolocateControl, Marker } from 'maplibre-gl'
 import along from '@turf/along'
 import length from '@turf/length'
 import pointOnFeature from '@turf/point-on-feature'
@@ -29,7 +29,6 @@ export default {
       currentZoom: 0,
       currentCodename: '',
       selectedFeatureId: null,
-      selectedLayerId: null,
       queries: config.queries,
       themes: config.themes,
       themesSelection: '',
@@ -95,23 +94,6 @@ export default {
       })
     )
 
-    // Chargement des images
-    for(let t in this.themes) {
-      const theme = this.themes[t]
-      if(theme.icon !== undefined) {
-        console.log('loading icon ' + theme.icon)
-        this.map.loadImage(window.location.origin + '/img/' + theme.icon + '.png', (error, image) => {
-          if(error) {
-            console.log(error)
-            throw error
-          } else {
-            this.map.addImage(theme.icon, image, { 'sdf': true })
-            console.log(theme.icon + ' added')
-          }
-        })
-      }
-    }
-
     console.log('map mounted')
     this.map.on('load', this.onMapLoad)
   },
@@ -143,31 +125,27 @@ export default {
         theme.geojsons = [ {type: "FeatureCollection", features: []}, {type: "FeatureCollection", features: []}, {type: "FeatureCollection", features: []} ]
         theme.sources = []
         theme.layers = []
+        theme.markers = {}
 
         // 1 layer et 1 source par theme et par type de géométrie (0=point, 1=polyline, 2=polygon)
+        // on affiche uniquement les polylignes et polygones, les point étant affichés sous forme de markers
         // la layer ajoutée en dernier est affichée au-dessus des autres
-        for(let g = 2; g >= 0; g--) {
+        for(let g = 2; g >= 1; g--) {
           const id = g + '/' + theme.id
           theme.sources.push(this.map.addSource(id, {
               type: "geojson",
               data: theme.geojsons[g]
           }))
 
-          const type = (g === 0 ? 'circle' : (g === 1 ? 'line' : 'fill'))
-          const paint = (g === 0 ? {
-              'circle-color': theme.color,
-              'circle-opacity': 1,
-              'circle-radius': ['case', ['boolean', ['feature-state', 'selected'], false], 14, 12],
-              'circle-stroke-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ffff00", "#ffffff"],
-              'circle-stroke-width': 4
-            } : (g === 1 ? {
+          const type = (g === 1 ? 'line' : 'fill')
+          const paint = (g === 1 ? {
               'line-color': theme.color,
               'line-opacity': 1,
               'line-width': ['case', ['boolean', ['feature-state', 'selected'], false], 6, 4]
             } : {
               'fill-color': theme.color,
               'fill-opacity': ['case', ['boolean', ['feature-state', 'selected'], false], 0.7, 0.5]
-            }))
+            })
 
           theme.layers.push(this.map.addLayer({
             id: id,
@@ -180,59 +158,42 @@ export default {
             }
           }))
 
-          if(g === 0 && theme.icon !== undefined) {
-            theme.layers.push(this.map.addLayer({
-              id: 'symbol/' + id,
-              source: id,
-              interactive: true,
-              type: "symbol",
-              "layout": {
-                  "icon-image": theme.icon,
-                  "icon-size": 1.0,
-                  "icon-allow-overlap": true,
-                  "icon-ignore-placement": true,
-                  visibility: 'visible'
-              },
-              "paint": {
-                  "icon-color": "#000000"
-              }
-            }))
-          }
-
           this.map.on('mousemove', id, (e) => {
-              if(e.features.length > 0) {
-                  this.map.getCanvas().style.cursor = "pointer" //crosshair
-              }
+            if(e.features.length > 0) {
+                this.map.getCanvas().style.cursor = "pointer" //crosshair
+            }
           })
-
           this.map.on('mouseleave', id, () => {
-              this.map.getCanvas().style.cursor = ""
+            this.map.getCanvas().style.cursor = ""
           })
-
           this.map.on('click', id, (e) => {
-              if(e.features.length > 0) {
-                  this.onFeatureSelect(e.features[0], theme, e.lngLat)
-              } else { // TODO 'click' without layer
-                this.unselectFeature()
-                this.featureResult.unloadFeature()
-              }
+            if(e.features.length > 0) {
+              this.onFeatureLayerSelect(e.features[0], theme, e.lngLat)
+            }
           })
         }
 
+        let style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '.marker-' + theme.id + ' { background-color: ' + theme.color + '; }';
+        document.getElementsByTagName('head')[0].appendChild(style);
       }
     },
     updateThemesVisibility() {
-      for(let q in this.queries) {
-        this.queries[q].needed = false
-      }
+      for(let q in this.queries) this.queries[q].needed = false
 
       this.themesSelection = ''
       for(let t in this.themes) {
         const theme = this.themes[t]
-        for(let g = 0; g < 3; g++) {
+        for(let g = 2; g >= 1; g--) {
           this.map.setLayoutProperty(g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
-          if(g === 0 && theme.icon !== undefined) this.map.setLayoutProperty('symbol/' + g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
         }
+
+        for(let m in theme.markers) {
+          let marker = theme.markers[m]
+          marker.getElement().style.visibility = (theme.visible ? 'visible' : 'hidden')
+        }
+
         this.queries[theme.query].needed = this.queries[theme.query].needed || theme.visible
         this.themesSelection += (theme.visible ? ((this.themesSelection.length > 0 ? ',' : '') + theme.id) : '')
       }
@@ -332,39 +293,76 @@ export default {
             }
           }
         }
-        for(let g = 0; g < 3; g++) {
+        for(let g = 1; g < 3; g++) {
           this.map.getSource(g + '/' + theme.id).setData(theme.geojsons[g])
           console.log(codename + ' : ' + added[g] + ' features of type ' + g + ' added to theme ' + theme.id)
         }
+
+        const bounds = this.map.getBounds()
+
+        for(let feature of theme.geojsons[0].features) {
+          const lngLat = feature.geometry.coordinates
+
+          if(utils.pointInBounds(lngLat, bounds)) {
+            if(theme.markers[feature.id] === undefined) {
+              const el = document.createElement('div')
+              el.className = 'feature-marker marker-' + theme.id
+              el.style.visibility = (theme.visible ? 'visible' : 'hidden')
+
+              if(theme.icon !== undefined) {
+                const icon = document.createElement('img')
+                icon.src = window.location.origin + '/svg/' + theme.icon + '.svg'
+                el.appendChild(icon)
+              }
+              
+              const options = {
+                element: el,
+                clickTolerance: 2
+              }
+
+              const marker = new Marker(options).setLngLat(lngLat).addTo(this.map)
+              marker.feature = feature
+              marker.theme = theme
+              marker.lngLat = lngLat
+
+              el.addEventListener('click', () => {
+                this.onMarkerSelect(marker)
+              })
+
+              theme.markers[feature.id] = marker
+            }
+          } else {
+            if(theme.markers[feature.id] !== undefined) { // le point est hors-champ et son marker avait été ajouté à la carte, on doit le supprimer
+              console.log('remove marker ' + feature.id)
+              theme.markers[feature.id].remove()
+              delete theme.markers[feature.id]
+            }
+          }
+        }
+
       }
     },
-    onFeatureSelect(feature, theme, lngLat) {
-      feature.id = feature.properties.id
-      this.selectFeature(feature)
-      this.themeSelect.collapse()
-      this.featureResult.loadFeature(feature, theme, lngLat)
+    onMarkerSelect(marker) {
+      this.selectFeature(marker.feature, marker.theme, marker.lngLat)
     },
-    selectFeature(feature) {
-      this.unselectFeature(feature)
+    onFeatureLayerSelect(feature, theme, lngLat) {
+      this.selectFeature(feature, theme, lngLat)
+    },
+    selectFeature(feature, theme, lngLat) {
+      feature.id = feature.properties.id
+      this.themeSelect.collapse()
+      this.unselectFeature()
       this.selectedFeatureId = feature.id
-      this.selectedLayerId = feature.layer.id
       console.log('select ' + this.selectedFeatureId)
-      this.map.setFeatureState(
-        { source: this.selectedLayerId, id: this.selectedFeatureId },
-        { selected: true }
-      )
+      this.featureResult.loadFeature(feature, theme, lngLat)
       this.updateAppUrl()
     },
     unselectFeature() {
       if(this.selectedFeatureId !== null) {
         console.log('unselect ' + this.selectedFeatureId)
-        this.map.setFeatureState(
-          { source: this.selectedLayerId, id: this.selectedFeatureId },
-          { selected: false }
-        )
+        this.selectedFeatureId = null
+        this.updateAppUrl()
       }
-      this.selectedFeatureId = null
-      this.updateAppUrl()
     },
     flyTo(coords) {
       this.map.flyTo({

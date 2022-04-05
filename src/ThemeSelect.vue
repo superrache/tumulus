@@ -6,7 +6,7 @@
             :key="t"
             v-on:click="toogleThemeVisibility($event, t)"
             :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': themes[t].color, 'opacity': themes[t].visible ? '1' : '0.3' }">
-            <img v-if="themes[t].icon !== undefined" :src="'/img/' + themes[t].icon + '.png'" width=16 />  {{themes[t].label}}
+            <img v-if="themes[t].icon !== undefined" :src="'/svg/' + themes[t].icon + '.svg'" width=16 /> {{themes[t].label}}<span class="right" v-if="themes[t].markers !== undefined && Object.keys(themes[t].markers).length > 0">{{Object.keys(themes[t].markers).length}}</span>
         </div>
     </div>
 </template>
@@ -86,6 +86,10 @@ export default {
 .theme:hover {
     cursor: pointer;
     outline: solid 1px white;
+}
+
+.right {
+  float: right;
 }
 
 </style>

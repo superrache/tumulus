@@ -177,6 +177,18 @@ button:active {
   background-color: #aaa;
 }
 
+.feature-marker {
+  display: block;
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  padding: 3px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 
 /* vaut pour la div #app dans le html et le container principal #app de ce composant */
