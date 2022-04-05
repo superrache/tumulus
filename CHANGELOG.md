@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/superrache/tumulus/compare/v0.1.1...v0.1.2) (2022-04-05)
+
+
+### Features
+
+* add icons ([27dc1d9](https://github.com/superrache/tumulus/commit/27dc1d96c327a6e0f2d2d7987f6a9f09fc58852d))
+* add point symbol for polyline and polygone feature ([8f75951](https://github.com/superrache/tumulus/commit/8f759515b8059aaa165f4eafab114f252d6420c1))
+* add simple caching overpass request ([c8324e1](https://github.com/superrache/tumulus/commit/c8324e1b4796d60872c6c2477790b44fa7e3f3c0))
+* mobile behaviour ([43a93cd](https://github.com/superrache/tumulus/commit/43a93cd4f7fabcd6c17e2a22dcb949a51d3ec1d2))
+* selected feature id param updated in url but not yet applied ([b07ee61](https://github.com/superrache/tumulus/commit/b07ee616a540766f7c91fe4aad2157a3af4bf4d1))
+* theme icons ([94e848a](https://github.com/superrache/tumulus/commit/94e848afecb396788a1f9902363f9b5d6f5b0406))
+* touch event for sidebar size ([1144614](https://github.com/superrache/tumulus/commit/114461455bd373417f8a778aa5cb5b983bd115d9))
+* url state for themes selection ([96f9c72](https://github.com/superrache/tumulus/commit/96f9c7275a4294e5eec964cef4f952eaee5a14ce))
+
+
+### Bug Fixes
+
+* clean useless code ([d1e8064](https://github.com/superrache/tumulus/commit/d1e8064682de15401f770af7b7f0d8051fa3a17a))
+* error loading layers ([67ba650](https://github.com/superrache/tumulus/commit/67ba65020d6efe4e0772ec08475ee22443f54d9f))
+* osm edit link ([59b5f8d](https://github.com/superrache/tumulus/commit/59b5f8d1ceef76120699b6e48f31dac2a14560d3))
+* touch event and sidebar handle size ([d99c2c7](https://github.com/superrache/tumulus/commit/d99c2c7b8328534d70c3c02f6115b93f7136cef9))
+* vue warning ([370cf34](https://github.com/superrache/tumulus/commit/370cf347af4dfa407a31848ad3f99c24e3424593))
+
 ### 0.1.1 (2022-03-31)
 
 
