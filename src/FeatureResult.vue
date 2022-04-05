@@ -38,7 +38,7 @@
       <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('source')">Source : {{properties.source}}</div>
       
-      <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/edit?' + elementType + '=' + id + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer sur OpenStreetMap</a></div>
+      <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer sur OpenStreetMap</a></div>
     </div>
 
     <div class="cat" v-show="debug" v-if="properties !== null">
@@ -128,8 +128,6 @@ export default {
       this.loadWikiData('wikipedia', 'wikidata', '')
       this.loadWikiData('subject:wikipedia', 'subject:wikidata', 'Sujet : ')
       this.loadWikiData('artist:wikipedia', 'artist:wikidata', 'Artiste : ')
-
-      //this.getImageURL()
     },
     unloadFeature() {
       console.log('unloadFeature')
@@ -158,15 +156,6 @@ export default {
         }
       }
     }
-    /*async getImageURL() {
-      this.imageURL = ''
-      if(this.properties.wikidata !== undefined) {
-        const response = await fetch(env.getServerUrl() + "/image?type=wikidata&width=280&ref=" + this.properties.wikidata)
-        const data = await response.json()
-        this.imageURL = data.image
-      }
-    }*/
-
   }
 }
 
