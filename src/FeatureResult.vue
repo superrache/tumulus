@@ -14,6 +14,8 @@
       <div class="normal" v-if="properties.hasOwnProperty('artwork_subject')">Sujet de l'oeuvre : {{properties.artwork_subject}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('material')">Matériau : {{properties.material}}</div>
 
+      <div class="normal" v-if="properties.hasOwnProperty('historic')" v-html="historicDescription"></div>
+
       <div v-for="w in wikis" :key="w.pageId">
         <div class="subtitle" v-html="w.displaytitle"></div>
 
@@ -56,6 +58,7 @@
 //import * as env from './utils/env.js'
 import ExpandableImage from './ExpandableImage.vue'
 import * as config from './config.js'
+import * as types from './types.js'
 
 export default {
   name: 'FeatureResult',
@@ -65,13 +68,8 @@ export default {
   data () {
     return {
       debug: config.DEBUG,
-      historicTypes: config.historicTypes,
-      memorialTypes: config.memorialTypes,
-      artworkTypes: config.artworkTypes,
-      railwayTypes: config.railwayTypes,
       id: '',
       lngLat: {lng: 0, lat: 0},
-      elementType: '',
       properties: null,
       wikis: [],
       theme: {}
@@ -92,32 +90,44 @@ export default {
       }
     },
     type() {
-      let type = this.historicTypes[this.properties.historic]
-     
+      let type = types.historicTypes[this.properties.historic]
+      
+      if(this.properties.historic === 'yes') {
+        if(this.properties.man_made !== undefined) type = types.manMadeTypes[this.properties.man_made]
+        if(this.properties.amenity !== undefined) type = types.amenityTypes[this.properties.amenity]
+        if(this.properties.military !== undefined) type = types.militaryTypes[this.properties.military]
+      }
+
       if(this.properties.historic === 'memorial' && this.properties.memorial !== undefined) {
-        type = this.memorialTypes[this.properties.memorial]
+        type = types.memorialTypes[this.properties.memorial]
         if(type === undefined) type = this.properties.memorial
       }
       
       if(this.properties.tourism === 'artwork') {
         type = 'Oeuvre d\'art'
         if(this.properties.artwork_type !== undefined) {
-          type = this.artworkTypes[this.properties.artwork_type]
+          type = types.artworkTypes[this.properties.artwork_type]
           if(type === undefined) type = this.properties.artwork_type
         }
       }
 
       if(this.properties.railway === 'abandoned') {
-        type = this.railwayTypes[this.properties.railway]
+        type = types.railwayTypes[this.properties.railway]
       }
       
       return type
+    },
+    historicDescription() {
+      let hd = ''
+      if(this.properties.historic === 'archaeological_site' && this.properties.site_type !== undefined) hd += 'Type de site : ' + types.archaeologicalSiteType[this.properties.site_type] + '<br/>'
+      if(this.properties.site_type === 'megalith' && this.properties.megalith_type !== undefined) hd += 'Type de mégalithe : ' + types.megalithType[this.properties.megalith_type] + '<br/>'
+      if(this.properties.moved !== undefined) hd += 'Déplacé : ' + (this.properties.moved === 'yes' ? 'Oui' : 'Non') + '<br/>'
+      return hd
     }
   },
   methods: {
     loadFeature(feature, theme, lngLat) {
       this.id = feature.id
-      this.elementType = 'node' // TODO
       this.lngLat = lngLat
       this.properties = feature.properties
       this.theme = theme
