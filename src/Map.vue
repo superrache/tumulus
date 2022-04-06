@@ -141,11 +141,11 @@ export default {
 
           const type = (g === 1 ? 'line' : 'fill')
           const paint = (g === 1 ? {
-              'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], "yellow", theme.color],
+              'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ff7733", theme.color],
               'line-opacity': 1,
               'line-width': 4
             } : {
-              'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], "yellow", theme.color],
+              'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], "#ff7733", theme.color],
               'fill-opacity': 0.5
             })
 
@@ -345,7 +345,7 @@ export default {
       let marker = theme.markers[this.selectedFeatureId]
       if(marker !== undefined) {
         this.selectedMarker = marker
-        this.selectedMarker.getElement().style.outline = '4px solid yellow'
+        this.selectedMarker.getElement().style.outline = '4px solid #ff7733'
       } else {
         marker = null
       }

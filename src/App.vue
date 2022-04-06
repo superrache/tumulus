@@ -169,12 +169,13 @@ button {
 }
 
 button:hover {
-  background-color: #5599ff;
+  background-color: #ff7733;
+  color: black;
   outline:  solid 1px white;
 }
 
 button:active {
-  background-color: #aaa;
+  background-color: #ffaa77;
 }
 
 .feature-marker {
