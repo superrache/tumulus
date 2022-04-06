@@ -29,6 +29,8 @@ export default {
       currentZoom: 0,
       currentCodename: '',
       selectedFeatureId: null,
+      selectedMarker: null,
+      selectedSourceId: null,
       queries: config.queries,
       themes: config.themes,
       themesSelection: '',
@@ -99,7 +101,6 @@ export default {
   },
   methods: {
     updateAppUrl() {
-      console.log('updateAppUrl ' + this.selectedFeatureId)
       const {lng, lat} = this.map.getCenter()
       this.currentZoom = this.map.getZoom()
       window.history.pushState(config.appName, config.appName, 
@@ -107,7 +108,7 @@ export default {
         + '/' + utils.round6Digits(lat)
         + '/' + utils.round6Digits(lng) 
         + '&themes=' + this.themesSelection
-        + (this.selectedFeatureId !== null ? '&id=' + this.selectedFeatureId.replace('/', '-') : '')
+        + (this.selectedFeatureId !== null ? '&id=' + encodeURIComponent(this.selectedFeatureId) : '')
       )
     },
     onMapLoad() {
@@ -134,17 +135,18 @@ export default {
           const id = g + '/' + theme.id
           theme.sources.push(this.map.addSource(id, {
               type: "geojson",
-              data: theme.geojsons[g]
+              data: theme.geojsons[g],
+              promoteId: 'id'
           }))
 
           const type = (g === 1 ? 'line' : 'fill')
           const paint = (g === 1 ? {
-              'line-color': theme.color,
+              'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], "yellow", theme.color],
               'line-opacity': 1,
-              'line-width': ['case', ['boolean', ['feature-state', 'selected'], false], 6, 4]
+              'line-width': 4
             } : {
-              'fill-color': theme.color,
-              'fill-opacity': ['case', ['boolean', ['feature-state', 'selected'], false], 0.7, 0.5]
+              'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], "yellow", theme.color],
+              'fill-opacity': 0.5
             })
 
           theme.layers.push(this.map.addLayer({
@@ -158,19 +160,9 @@ export default {
             }
           }))
 
-          this.map.on('mousemove', id, (e) => {
-            if(e.features.length > 0) {
-                this.map.getCanvas().style.cursor = "pointer" //crosshair
-            }
-          })
-          this.map.on('mouseleave', id, () => {
-            this.map.getCanvas().style.cursor = ""
-          })
-          this.map.on('click', id, (e) => {
-            if(e.features.length > 0) {
-              this.onFeatureLayerSelect(e.features[0], theme, e.lngLat)
-            }
-          })
+          this.map.on('mousemove', id, (e) => { if(e.features.length > 0) { this.map.getCanvas().style.cursor = "pointer" } })
+          this.map.on('mouseleave', id, () => { this.map.getCanvas().style.cursor = "" })
+          this.map.on('click', id, (e) => { if(e.features.length > 0) { this.onFeatureLayerSelect(e.features[0], theme, e.lngLat) } })
         }
 
         let style = document.createElement('style');
@@ -254,7 +246,7 @@ export default {
     },
     loadGeojson(theme, geojson, codename) {
       if(geojson.features !== undefined) {
-        console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
+        //console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
         
         this.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
         
@@ -267,16 +259,8 @@ export default {
           if(!theme.dataCacheIds.has(feature.id)) {
             if(theme.values.indexOf(feature.properties[theme.key]) > -1) {
               theme.dataCacheIds.add(feature.id)
-              let g = 0
-              switch(feature.geometry.type) {
-                case 'Point': g = 0; break;
-                case 'LineString': g = 1; break;
-                case 'Polygon': g = 2; break;
-                case 'MultiPoint': g = 0; break;
-                case 'MultiLineString': g = 1; break;
-                case 'MultiPolygon': g = 2; break;
-                default: g = 0;
-              }
+              let g = utils.getGeometryInteger(feature)
+              feature.properties.g = g // retenir le type de géométrie d'origine pour la sélection
               theme.geojsons[g].features.push(feature)
               added[g]++
 
@@ -295,7 +279,7 @@ export default {
         }
         for(let g = 1; g < 3; g++) {
           this.map.getSource(g + '/' + theme.id).setData(theme.geojsons[g])
-          console.log(codename + ' : ' + added[g] + ' features of type ' + g + ' added to theme ' + theme.id)
+          if(added[g] > 0) console.log(codename + ' : ' + added[g] + ' features of type ' + g + ' added to theme ' + theme.id)
         }
 
         const bounds = this.map.getBounds()
@@ -325,15 +309,15 @@ export default {
               marker.theme = theme
               marker.lngLat = lngLat
 
-              el.addEventListener('click', () => {
+              el.addEventListener('click', (e) => {
                 this.onMarkerSelect(marker)
+                e.stopPropagation() // pour ne pas cliquer en plus sur la potentielle layer sous le marker
               })
 
               theme.markers[feature.id] = marker
             }
           } else {
             if(theme.markers[feature.id] !== undefined) { // le point est hors-champ et son marker avait été ajouté à la carte, on doit le supprimer
-              console.log('remove marker ' + feature.id)
               theme.markers[feature.id].remove()
               delete theme.markers[feature.id]
             }
@@ -349,17 +333,48 @@ export default {
       this.selectFeature(feature, theme, lngLat)
     },
     selectFeature(feature, theme, lngLat) {
-      feature.id = feature.properties.id
-      this.themeSelect.collapse()
       this.unselectFeature()
+      this.themeSelect.collapse()
+
+      feature.id = feature.properties.id
       this.selectedFeatureId = feature.id
       console.log('select ' + this.selectedFeatureId)
       this.featureResult.loadFeature(feature, theme, lngLat)
+
+      // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
+      let marker = theme.markers[this.selectedFeatureId]
+      if(marker !== undefined) {
+        this.selectedMarker = marker
+        this.selectedMarker.getElement().style.outline = '4px solid yellow'
+      } else {
+        marker = null
+      }
+      
+      if(feature.properties.g > 0) {
+        let sourceId = feature.properties.g + '/' + theme.id
+        this.selectedSourceId = sourceId
+        this.map.setFeatureState(
+          { source: this.selectedSourceId, 
+            id: this.selectedFeatureId },
+          { selected: true }
+        )
+      }
+
       this.updateAppUrl()
     },
     unselectFeature() {
       if(this.selectedFeatureId !== null) {
         console.log('unselect ' + this.selectedFeatureId)
+        if(this.selectedMarker !== null) {
+          this.selectedMarker.getElement().style.outline = '2px solid white'
+          this.selectedMarker = null
+        }
+        if(this.selectedSourceId !== null) {
+          this.map.setFeatureState(
+            { source: this.selectedSourceId, id: this.selectedFeatureId },
+            { selected: false }
+          )
+        }
         this.selectedFeatureId = null
         this.updateAppUrl()
       }

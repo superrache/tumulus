@@ -170,7 +170,7 @@ button {
 
 button:hover {
   background-color: #5599ff;
-  outline: solid 1px white;
+  outline:  solid 1px white;
 }
 
 button:active {
@@ -181,6 +181,7 @@ button:active {
   display: block;
   border: none;
   border-radius: 100%;
+  outline: 2px solid white;
   cursor: pointer;
   padding: 3px;
   width: 25px;
@@ -189,7 +190,6 @@ button:active {
   justify-content: center;
   align-items: center;
 }
-
 
 /* vaut pour la div #app dans le html et le container principal #app de ce composant */
 #app {

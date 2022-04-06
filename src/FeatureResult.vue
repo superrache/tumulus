@@ -116,8 +116,6 @@ export default {
   },
   methods: {
     loadFeature(feature, theme, lngLat) {
-      console.log('loadFeature')
-
       this.id = feature.id
       this.elementType = 'node' // TODO
       this.lngLat = lngLat
@@ -130,7 +128,6 @@ export default {
       this.loadWikiData('artist:wikipedia', 'artist:wikidata', 'Artiste : ')
     },
     unloadFeature() {
-      console.log('unloadFeature')
       this.id = null
       this.properties = null
       this.wikis = []
