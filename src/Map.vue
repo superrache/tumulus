@@ -15,6 +15,7 @@ import pointOnFeature from '@turf/point-on-feature'
 import * as env from './utils/env.js'
 import * as utils from './utils/utils.js'
 import * as config from './config.js'
+import * as URLParameters from './URLParameters.js'
 
 export default {
   name: 'Map',
@@ -26,7 +27,7 @@ export default {
       center: config.startingPosition,
       zoom: config.startingZoom,
       maxZoomToGetData: 13,
-      currentZoom: 0,
+      previousBounds: '',
       currentCodename: '',
       selectedFeatureId: null,
       selectedMarker: null,
@@ -42,47 +43,14 @@ export default {
   },
   mounted() {
     // prise en compte des paramètres de l'URL
-    console.log('params ' + location.pathname)
-    let params = location.pathname.split('&')
-    if(params.length > 0) {
-      for(let p in params) {
-        let param = params[p]
-        if(p == 0) {
-          let slashes = param.split('/')
-          if(slashes.length >= 4) {
-            this.zoom = slashes[1]
-            this.center = [ slashes[3], slashes[2] ]
-          }
-        } else {
-          let kv = param.split('=')
-          if(kv.length === 2) {
-            switch(kv[0]) {
-              case 'themes': {
-                let themesParam = kv[1].split(',')
-                for(let t in this.themes) {
-                  let theme = this.themes[t]
-                  theme.visible = themesParam.indexOf(t) > -1
-                }
-                break;
-              }
-              case 'id': {
-                let id = kv[1]
-                console.log('TODO select ' + id)
-                break;
-              }
-              default:
-                break;
-            }
-          }
-        }
-      }
-    }
+    URLParameters.applyURLParameters(this)
 
     this.map = new Map({
       container: this.$refs.map,
       style: this.style,
       center: this.center,
-      zoom: this.zoom
+      zoom: this.zoom,
+      hash: 'map'
     })
 
     this.map.addControl(new NavigationControl(), 'top-right')
@@ -100,17 +68,6 @@ export default {
     this.map.on('load', this.onMapLoad)
   },
   methods: {
-    updateAppUrl() {
-      const {lng, lat} = this.map.getCenter()
-      this.currentZoom = this.map.getZoom()
-      window.history.pushState(config.appName, config.appName, 
-        '/' + utils.round6Digits(this.currentZoom)
-        + '/' + utils.round6Digits(lat)
-        + '/' + utils.round6Digits(lng) 
-        + '&themes=' + this.themesSelection
-        + (this.selectedFeatureId !== null ? '&id=' + encodeURIComponent(this.selectedFeatureId) : '')
-      )
-    },
     onMapLoad() {
       console.log('map loaded')
       this.initThemes()
@@ -195,53 +152,56 @@ export default {
       this.onMapMove()
     },
     async onMapMove() {
-      const codename = btoa(Math.random().toString()).substr(10, 5)
-      this.currentCodename = codename
-      console.log(codename + ' : onMapMove ')
-
-      this.updateAppUrl()
-
       if(!this.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
         const ne = this.map.getBounds()._ne
-        const bounds = sw.lat + ',' + sw.lng + ',' + ne.lat + ',' + ne.lng
+        const bounds = utils.round6Digits(sw.lat) + ',' + utils.round6Digits(sw.lng) + ',' + utils.round6Digits(ne.lat) + ',' + utils.round6Digits(ne.lng)
+        if(bounds !== this.previousBounds) { // on recharge que si ça a bougé (en mode géolocalisation de l'utilisateur, onMapMove est lancée toutes les 2s)
+          this.previousBounds = bounds
 
-        this.app.loading = 'Chargement de la carte ...'
+          this.app.loading = 'Chargement de la carte ...'
 
-        this.issueAnalyzer.clear()
+          this.issueAnalyzer.clear()
 
-        // TODO lancer en parallèle
-        for(let q in this.queries) {
-          let query = this.queries[q]
-          let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
-          while(launch) {
-            console.log(codename + ' : launching query ' + q)
-            this.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
-            const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
-            if(codename !== this.currentCodename) return
-            
-            const data = await response.json()
-            if(codename !== this.currentCodename) return
+          const codename = btoa(Math.random().toString()).substr(10, 5)
+          this.currentCodename = codename
+          console.log(codename + ' : onMapMove ')
 
-            if(data.error !== undefined) {
-              console.log(codename + ' : query error ' + data.error)
-            } else {
-              query.cache = data
-              query.bounds = bounds
-              launch = false
+          URLParameters.updateAppUrl(this)
+    
+          // TODO lancer en parallèle
+          for(let q in this.queries) {
+            let query = this.queries[q]
+            let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
+            while(launch) {
+              console.log(codename + ' : launching query ' + q)
+              this.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
+              const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
+              if(codename !== this.currentCodename) return
+              
+              const data = await response.json()
+              if(codename !== this.currentCodename) return
 
-              // application de la donnée aux thèmes concernés (visible ou pas)
-              for(let t in this.themes) {
-                const theme = this.themes[t]
-                if(theme.query === q) {
-                  this.loadGeojson(theme, data, codename)
+              if(data.error !== undefined) {
+                console.log(codename + ' : query error ' + data.error)
+              } else {
+                query.cache = data
+                query.bounds = bounds
+                launch = false
+
+                // application de la donnée aux thèmes concernés (visible ou pas)
+                for(let t in this.themes) {
+                  const theme = this.themes[t]
+                  if(theme.query === q) {
+                    this.loadGeojson(theme, data, codename)
+                  }
                 }
               }
             }
           }
-        }
 
-        this.app.loading = ''
+          this.app.loading = ''
+        }
       }
     },
     loadGeojson(theme, geojson, codename) {
@@ -295,7 +255,7 @@ export default {
 
               if(theme.icon !== undefined) {
                 const icon = document.createElement('img')
-                icon.src = window.location.origin + '/svg/' + theme.icon + '.svg'
+                icon.src = '/svg/' + theme.icon + '.svg'
                 el.appendChild(icon)
               }
               
@@ -360,7 +320,7 @@ export default {
         )
       }
 
-      this.updateAppUrl()
+      URLParameters.updateAppUrl(this)
     },
     unselectFeature() {
       if(this.selectedFeatureId !== null) {
@@ -376,7 +336,7 @@ export default {
           )
         }
         this.selectedFeatureId = null
-        this.updateAppUrl()
+        URLParameters.updateAppUrl(this)
       }
     },
     flyTo(coords) {
