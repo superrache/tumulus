@@ -49,6 +49,7 @@ export default {
             if(properties['subject:wikipedia'] !== undefined && properties['subject:wikidata'] === undefined) this.issues.push({id: feature.id, theme: theme, importance: 1, message: 'Référence subject:wikipedia sans référence subject:wikidata'})
             if(properties['subject:wikidata'] !== undefined && properties['subject:wikipedia'] === undefined) this.issues.push({id: feature.id, theme: theme, importance: 1, message: 'Référence subject:wikidata sans référence subject:wikipedia'})
 
+            if(properties['age'] !== undefined) this.issues.push({id: feature.id, theme: theme, importance: 1, message: 'Attribut age peut-être mal utilisé (à remplacer par start_date)'})
         }
     },
     autoRepair() {
