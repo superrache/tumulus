@@ -300,6 +300,7 @@ export const historicTypes = {
     'roman_circus': 'Cirque romain',
     'roman_villa': 'Villa romaine',
     'settlement': 'Établissement humain',
+    'temple': 'Temple',
     'tumulus': 'Tumulus'
   }
 
@@ -317,4 +318,38 @@ export const historicTypes = {
     'nuraghe': 'Nuraghe',
     'well': 'Nuragic holy well',
     'chamber': 'Chambre'
+  }
+
+  export const materialTypes = {
+    'wood': 'Bois',
+    'palm_leaves': 'Feuille de palmier',
+    'bamboo': 'Bambou',
+    'metal': 'Métal',
+    'brass': 'Laiton',
+    'bronze': 'Bronze',
+    'steel': 'Acier',
+    'concrete': 'Béton',
+    'reinforced_concrete': 'Béton armé',
+    'stone': 'Pierre',
+    'granite': 'Granite',
+    'basalt': 'Basalte',
+    'sandstone': 'Grès',
+    'masonry': 'Maçonnerie',
+    'brick': 'Brique',
+    'silicate_brick': 'Brique de silicate',
+    'adobe': 'Adobe',
+    'plastic': 'Plastique',
+    'soil': 'Sol',
+    'rammed_earth': 'Pisé',
+    'glass': 'Verre',
+    'andesite': 'Andésite',
+    'limestone': 'Calcaire',
+    'dry_stone': 'Pierre sèche',
+    'marble': 'Marbre',
+    'iron': 'Fer',
+    'composite': 'Composite',
+    'light': 'Lumière',
+    'sand': 'Sable',
+    'mixed': 'Mix',
+    'aluminium': 'Aluminium'
   }

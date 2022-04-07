@@ -65,7 +65,7 @@ export const themes = {
       color: "green",
       query: 'historic',
       key: 'historic',
-      values: ['archaeological_site', 'stone'],
+      values: ['archaeological_site'],
       visible: true
     },
     monument: {
@@ -111,7 +111,7 @@ export const themes = {
       color: "steelblue",
       query: 'historic',
       key: 'historic',
-      values: ['yes'],
+      values: ['yes', 'stone'],
       visible: false
     },
     artwork: {
