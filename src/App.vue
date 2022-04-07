@@ -156,6 +156,7 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
+  font-family: sans-serif;
 }
 
 button {
@@ -203,7 +204,6 @@ button:active {
   z-index: 0;
   touch-action: none;
   user-select: none;
-  font-family: Ubuntu, Arial, Helvetica, sans-serif;
 }
 
 #sidebar {
@@ -299,6 +299,7 @@ button:active {
   text-decoration: none;
   color: white;
   font-size: 2.5em;
+  font-family: Ubuntu;
   font-weight: 700;
   margin: 5px;
 }

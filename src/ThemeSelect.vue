@@ -59,6 +59,11 @@ export default {
   margin: 5px 0px 10px 0px;
 }
 
+h3 {
+  font-weight: 700;
+  font-family: Ubuntu;
+}
+
 .collapsible {
   margin: 5px 5px 10px 5px;
   padding: 5px;
@@ -76,6 +81,7 @@ export default {
 
 .theme {
   font-size: 1.2em;
+  font-family: Ubuntu;
   font-weight: 500;
   padding: 3px;
   padding-left: 5px;
