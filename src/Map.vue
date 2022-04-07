@@ -30,6 +30,7 @@ export default {
       previousBounds: '',
       currentCodename: '',
       selectedFeatureId: null,
+      pendingSelectedFeatureId: null,
       selectedMarker: null,
       selectedSourceId: null,
       queries: config.queries,
@@ -149,6 +150,7 @@ export default {
 
       if(this.featureResult !== null) this.featureResult.unloadFeature()
 
+      URLParameters.updateAppUrl(this)
       this.onMapMove()
     },
     async onMapMove() {
@@ -275,6 +277,11 @@ export default {
               })
 
               theme.markers[feature.id] = marker
+
+              if(this.pendingSelectedFeatureId === feature.id) {
+                this.pendingSelectedFeatureId = null
+                this.selectFeature(feature, theme, lngLat)
+              }
             }
           } else {
             if(theme.markers[feature.id] !== undefined) { // le point est hors-champ et son marker avait été ajouté à la carte, on doit le supprimer

@@ -19,8 +19,7 @@ export function applyURLParameters(map) {
                         break;
                         }
                         case 'id': {
-                        let id = kv[1]
-                        console.log('TODO select ' + id)
+                        map.pendingSelectedFeatureId = decodeURIComponent(kv[1])
                         break;
                         }
                         default:
