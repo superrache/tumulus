@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/superrache/tumulus/compare/v0.1.3...v0.1.4) (2022-04-07)
+
+
+### Features
+
+* add /status ([6af30f7](https://github.com/superrache/tumulus/commit/6af30f79282a8b8064473bbc389e4c4f7596afff))
+* apply selected feature by id passed in url ([1c6693d](https://github.com/superrache/tumulus/commit/1c6693d3882038911fe04eea6bacc73168dc4e81))
+* improve debug and links to osm ([47ac0ae](https://github.com/superrache/tumulus/commit/47ac0ae75c8cba8be4831826835464bac525546a))
+* new types and attributes supported in feature description and issue detection ([fbaa66e](https://github.com/superrache/tumulus/commit/fbaa66e1f765b0a76bcf478fee5a61b22c45df8b))
+* node memory monitoring in logs ([0cf939c](https://github.com/superrache/tumulus/commit/0cf939c25822d9d976574e3e9c340076cce03057))
+* selection color ([97de61b](https://github.com/superrache/tumulus/commit/97de61b274dd522515ba497aa983b2fccf7e19b1))
+* selection for markers, ways and relations layers ([3d5b231](https://github.com/superrache/tumulus/commit/3d5b231318675fe16118d1d2070d4f6ac6b8672d))
+* types description ([df64146](https://github.com/superrache/tumulus/commit/df64146d82c009f14fbe6f7a47e0e5149f6329bf))
+* url parameters with maplibregl hash and user geolocation management ([4ed970c](https://github.com/superrache/tumulus/commit/4ed970ce259e81c076a4218cdbfcea9c703c9afe))
+* warning when attribute age is used ([beb24cf](https://github.com/superrache/tumulus/commit/beb24cfe7fd5e3b2d3e3604f3bdb34dd311ee873))
+
 ### [0.1.3](https://github.com/superrache/tumulus/compare/v0.1.2...v0.1.3) (2022-04-05)
 
 ### [0.1.2](https://github.com/superrache/tumulus/compare/v0.1.1...v0.1.2) (2022-04-05)
