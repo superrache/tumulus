@@ -40,7 +40,11 @@
       <div class="normal" v-if="properties.hasOwnProperty('inscription')">Inscription : {{properties.inscription}}</div>
       <div class="normal" v-if="properties.hasOwnProperty('source')">Source : {{properties.source}}</div>
       
-      <div class="small"><a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer sur OpenStreetMap</a></div>
+      <div class="small">
+        <a target="_blank" :href="'https://www.openstreetmap.org/' + id.split('/')[0] + '/' + id.split('/')[1]">Voir sur OpenStreetMap</a>
+        &nbsp;
+        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer</a>
+      </div>
     </div>
 
     <div class="cat" v-show="debug" v-if="properties !== null">
@@ -48,7 +52,7 @@
       <div class="small"
           v-for="p in Object.keys(properties)"
           :key="p">
-        {{p}}={{properties[p]}}
+          <span v-if="p !== 'g'">{{p}}={{properties[p]}}</span>
       </div>
     </div>
 </template>
