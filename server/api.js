@@ -10,12 +10,7 @@ module.exports = function(app, prod) {
 
     const formatMemoryUsage = (data) => `${Math.round(data / 1024 / 1024 * 100) / 100} MB`
 
-    app.get('/data', (req, res) => {
-        if(!prod) { // parce que les ports server vue et server node sont différents en dev
-            res.header('Access-Control-Allow-Origin', "*")
-            res.header('Access-Control-Allow-Headers', "*")
-        }
-
+    app.get('/status', (req, res) => {
         const memoryData = process.memoryUsage()
         const memoryUsage = {
             rss: `${formatMemoryUsage(memoryData.rss)} -> Resident Set Size - total memory allocated for the process execution`,
@@ -24,6 +19,14 @@ module.exports = function(app, prod) {
             external: `${formatMemoryUsage(memoryData.external)} -> V8 external memory`,
         }
         console.log(memoryUsage)
+        res.json(memoryUsage)
+    })
+
+    app.get('/data', (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
 
         try {
             const instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
