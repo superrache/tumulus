@@ -15,7 +15,6 @@ import pointOnFeature from '@turf/point-on-feature'
 import * as env from './utils/env.js'
 import * as utils from './utils/utils.js'
 import * as config from './config.js'
-import * as URLParameters from './URLParameters.js'
 
 export default {
   name: 'Map',
@@ -23,9 +22,10 @@ export default {
     return {
       app: null,
       map: null,
-      style: config.style,
       center: config.startingPosition,
       zoom: config.startingZoom,
+      pendingBasemapId: config.startingBasemap,
+      currentZoom: 0,
       maxZoomToGetData: 13,
       previousBounds: '',
       currentCodename: '',
@@ -37,38 +37,43 @@ export default {
       themes: config.themes,
       themesSelection: '',
       // external components
+      basemapSelect: null,
       themeSelect: null,
       featureResult: null,
       issueAnalyzer: null
     }
   },
   mounted() {
-    // prise en compte des paramètres de l'URL
-    URLParameters.applyURLParameters(this)
-
-    this.map = new Map({
-      container: this.$refs.map,
-      style: this.style,
-      center: this.center,
-      zoom: this.zoom,
-      hash: 'map'
-    })
-
-    this.map.addControl(new NavigationControl(), 'top-right')
-
-    this.map.addControl(
-      new GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true
-        },
-        trackUserLocation: true
-      })
-    )
-
     console.log('map mounted')
-    this.map.on('load', this.onMapLoad)
   },
   methods: {
+    createMap() {
+      this.map = new Map({
+        container: this.$refs.map,
+        style: this.basemapSelect.style,
+        center: this.center,
+        zoom: this.zoom,
+        hash: 'map'
+      })
+
+      this.map.addControl(new NavigationControl(), 'top-right')
+
+      this.map.addControl(
+        new GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true
+          },
+          trackUserLocation: true
+        })
+      )
+
+      this.map.on('load', this.onMapLoad)
+
+      if(this.pendingBasemapId) {
+        this.basemapSelect.selectBasemapById(this.pendingBasemapId)
+        this.pendingBasemapId = null
+      }
+    },
     onMapLoad() {
       console.log('map loaded')
       this.initThemes()
@@ -150,10 +155,11 @@ export default {
 
       if(this.featureResult !== null) this.featureResult.unloadFeature()
 
-      URLParameters.updateAppUrl(this)
+      this.updateParams()
       this.onMapMove()
     },
     async onMapMove() {
+      this.currentZoom = this.map.getZoom()
       if(!this.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
         const ne = this.map.getBounds()._ne
@@ -169,7 +175,7 @@ export default {
           this.currentCodename = codename
           console.log(codename + ' : onMapMove ')
 
-          URLParameters.updateAppUrl(this)
+          this.updateParams()
     
           // TODO lancer en parallèle
           for(let q in this.queries) {
@@ -301,6 +307,7 @@ export default {
     },
     selectFeature(feature, theme, lngLat) {
       this.unselectFeature()
+      this.basemapSelect.collapse()
       this.themeSelect.collapse()
 
       feature.id = feature.properties.id
@@ -327,7 +334,7 @@ export default {
         )
       }
 
-      URLParameters.updateAppUrl(this)
+      this.updateParams()
     },
     unselectFeature() {
       if(this.selectedFeatureId !== null) {
@@ -343,7 +350,7 @@ export default {
           )
         }
         this.selectedFeatureId = null
-        URLParameters.updateAppUrl(this)
+      this.updateParams()
       }
     },
     flyTo(coords) {
@@ -351,6 +358,9 @@ export default {
         center: coords,
         essential: true // this animation is considered essential with respect to prefers-reduced-motion
       })
+    },
+    updateParams() { // appelée aussi par BasemapSelect
+      this.app.updateAppUrl()
     }
 
   }

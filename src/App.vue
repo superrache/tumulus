@@ -8,6 +8,7 @@
         </a>
 
         <Search ref="search" />
+        <BasemapSelect ref="basemapSelect" />
         <ThemeSelect id="themeSelect" ref="themeSelect" />
         <FeatureResult ref="featureResult" />
         <IssueAnalyzer ref="issueAnalyzer" />
@@ -32,7 +33,9 @@
 </template>
 
 <script>
+import * as URLParameters from './URLParameters.js'
 import Search from './Search.vue'
+import BasemapSelect from './BasemapSelect.vue'
 import ThemeSelect from './ThemeSelect.vue'
 import FeatureResult from './FeatureResult.vue'
 import IssueAnalyzer from './IssueAnalyzer.vue'
@@ -45,6 +48,7 @@ export default {
     Map,
     OSMConnector,
     Search,
+    BasemapSelect,
     ThemeSelect,
     FeatureResult,
     IssueAnalyzer
@@ -52,6 +56,7 @@ export default {
   data () {
     return {
       map: null,
+      basemapSelect: null,
       themeSelect: null,
       osmConnector: null,
       issueAnalyzer: null,
@@ -72,6 +77,14 @@ export default {
     this.map.app = this
 
     this.$refs.search.map = this.map
+
+    this.basemapSelect = this.$refs.basemapSelect
+    this.map.basemapSelect = this.basemapSelect
+
+    // prise en compte des paramètres de l'URL
+    URLParameters.applyURLParameters(this.map)
+    this.basemapSelect.init(this.map)
+    this.map.createMap()
 
     this.themeSelect = this.$refs.themeSelect
     this.themeSelect.load(this.map)
@@ -112,6 +125,9 @@ export default {
     }
   },
   methods: {
+    updateAppUrl() {
+      URLParameters.updateAppUrl(this.map)
+    },
     onSidebarResize(e) {
       let [x, y] = [e.x, e.y]
       if(e.type === 'touchmove') {

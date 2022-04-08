@@ -2,10 +2,9 @@ export const appName = "tumulus"
 
 export const DEBUG = true
 
-export const style = 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d'
-
-export const startingZoom = 16.5
-export const startingPosition = [-1.55468, 47.21853]
+export const startingZoom = 14
+export const startingPosition = [-2.90024, 47.56926]
+export const startingBasemap = 'bdortho'
 
 export const nominatimInstance = 'https://nominatim.openstreetmap.org'
 
