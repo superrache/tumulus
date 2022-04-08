@@ -202,11 +202,29 @@ button:active {
   outline: 2px solid white;
   cursor: pointer;
   padding: 3px;
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.feature-marker:hover {
+  width: 35px;
+  height: 35px;
+}
+
+.maplibregl-popup-tip {
+  border: none;
+}
+
+.maplibregl-popup-content {
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  font-size: 1em;
+  padding: 2px 4px;
+  text-align: center;
 }
 
 /* vaut pour la div #app dans le html et le container principal #app de ce composant */

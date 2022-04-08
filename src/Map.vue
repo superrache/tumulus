@@ -7,7 +7,7 @@
 
 <script>
 
-import { Map, NavigationControl, GeolocateControl, Marker } from 'maplibre-gl'
+import { Map, NavigationControl, GeolocateControl, Marker, Popup } from 'maplibre-gl'
 import along from '@turf/along'
 import length from '@turf/length'
 import pointOnFeature from '@turf/point-on-feature'
@@ -40,7 +40,8 @@ export default {
       basemapSelect: null,
       themeSelect: null,
       featureResult: null,
-      issueAnalyzer: null
+      issueAnalyzer: null,
+      popup: null
     }
   },
   mounted() {
@@ -68,6 +69,13 @@ export default {
       )
 
       this.map.on('load', this.onMapLoad)
+
+      this.popup = new Popup({
+        anchor: 'center',
+        offset: [0, 35],
+        closeButton: false,
+        closeOnClick: false
+      }).setText('Loading')
 
       if(this.pendingBasemapId) {
         this.basemapSelect.selectBasemapById(this.pendingBasemapId)
@@ -281,6 +289,16 @@ export default {
                 this.onMarkerSelect(marker)
                 e.stopPropagation() // pour ne pas cliquer en plus sur la potentielle layer sous le marker
               })
+
+              if(feature.properties.name !== undefined) {
+                const popup = this.popup
+                el.addEventListener('mouseenter', () => {
+                  popup.setLngLat(lngLat).setHTML(`${feature.properties.name}`)
+                  marker.togglePopup()
+                })
+                el.addEventListener('mouseleave', () => marker.togglePopup())
+                marker.setPopup(this.popup)
+              }
 
               theme.markers[feature.id] = marker
 
