@@ -65,7 +65,7 @@ h3 {
 }
 
 .collapsible {
-  margin: 5px 5px 10px 5px;
+  margin: 5px 5px 5px 5px;
   padding: 5px;
   border-radius: 5px;
   cursor: pointer;

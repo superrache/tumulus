@@ -205,6 +205,9 @@ export default {
                 query.bounds = bounds
                 launch = false
 
+                // analyse de la donnée (affichée ou non, qq soit les thématiques)
+                this.issueAnalyzer.analyzeFeature(data.features)
+
                 // application de la donnée aux thèmes concernés (visible ou pas)
                 for(let t in this.themes) {
                   const theme = this.themes[t]
@@ -223,8 +226,6 @@ export default {
     loadGeojson(theme, geojson, codename) {
       if(geojson.features !== undefined) {
         //console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
-        
-        this.issueAnalyzer.analyzeFeature(geojson.features, theme.label)
         
         let added = [0, 0, 0]
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)

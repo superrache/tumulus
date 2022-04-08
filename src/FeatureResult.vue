@@ -8,6 +8,7 @@
       </div>
 
       <div class="normal" v-if="props.hasOwnProperty('alt_name')">Aussi appelé : {{props.alt_name}}</div>
+      <div class="normal" v-if="props.tourism === 'attraction'">Attraction touristique</div>
 
       <img v-if="props.hasOwnProperty('image')" :src="props.image"/>
 
