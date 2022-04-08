@@ -65,6 +65,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['archaeological_site'],
+      icon: 'archeo',
       visible: true
     },
     monument: {
@@ -74,6 +75,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['aqueduct', 'building', 'castle', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
+      icon: 'monument',
       visible: true
     },
     military: {
@@ -83,6 +85,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['battlefield', 'bomb_crater', 'cannon', 'castle_wall', 'citywalls', 'fort', 'pa', 'tank'],
+      icon: 'military',
       visible: false
     },
     transport: {
@@ -102,6 +105,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['wayside_cross', 'wayside_shrine', 'church', 'monastery', 'rune_stone'],
+      icon: 'shrine',
       visible: false
     },
     other: {
@@ -111,6 +115,7 @@ export const themes = {
       query: 'historic',
       key: 'historic',
       values: ['yes', 'stone'],
+      icon: 'other',
       visible: false
     },
     artwork: {
