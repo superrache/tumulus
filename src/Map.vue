@@ -24,6 +24,8 @@ export default {
       map: null,
       center: config.startingPosition,
       zoom: config.startingZoom,
+      bearing: 0,
+      pitch: 0,
       pendingBasemapId: config.startingBasemap,
       currentZoom: 0,
       maxZoomToGetData: 13,
@@ -54,7 +56,8 @@ export default {
         style: this.basemapSelect.style,
         center: this.center,
         zoom: this.zoom,
-        hash: 'map'
+        bearing: this.bearing,
+        pitch: this.pitch
       })
 
       this.map.addControl(new NavigationControl(), 'top-right')
@@ -167,6 +170,8 @@ export default {
       this.onMapMove()
     },
     async onMapMove() {
+      this.updateParams()
+
       this.currentZoom = this.map.getZoom()
       if(!this.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
@@ -182,8 +187,6 @@ export default {
           const codename = btoa(Math.random().toString()).substr(10, 5)
           this.currentCodename = codename
           console.log(codename + ' : onMapMove ')
-
-          this.updateParams()
     
           // TODO lancer en parallèle
           for(let q in this.queries) {
