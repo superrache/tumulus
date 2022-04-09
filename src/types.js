@@ -317,7 +317,8 @@ export const historicTypes = {
     'ring_cairn': 'Cairn circulaire',
     'nuraghe': 'Nuraghe',
     'well': 'Nuragic holy well',
-    'chamber': 'Chambre'
+    'chamber': 'Chambre',
+    'gallery_grave': 'Allée couverte'
   }
 
   export const materialTypes = {
