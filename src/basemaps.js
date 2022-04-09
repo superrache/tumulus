@@ -6,11 +6,11 @@ export const basemaps = {
         icon: 'default.png',
         url: 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d'
     },
-    stamen: {
+    watercolor: {
         label: "Peinture à l'eau",
         selected: false,
         color: "orange",
-        icon: 'stamen.png',
+        icon: 'watercolor.png',
         sources: {
             watercolor: {
                 type: 'raster',
