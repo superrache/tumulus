@@ -55,9 +55,9 @@
     <div class="cat" v-show="debug" v-if="props !== null">
       <div class="normal">key=value</div>
       <div class="small"
-          v-for="p in Object.keys(props)"
+          v-for="(prop, p) in props"
           :key="p">
-          <span v-if="p !== 'g'">{{p}}={{props[p]}}</span>
+          <span v-if="p !== 'g'">{{p}}={{prop}}</span>
       </div>
     </div>
 </template>

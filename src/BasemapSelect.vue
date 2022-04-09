@@ -3,12 +3,12 @@
         <h3 class="collapsible" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}} Fond de carte</h3>
         <div class="basemaps">
           <div class="basemap"
-            v-for="b in Object.keys(basemaps)"
+            v-for="(basemap, b) in basemaps"
             :key="b"
             v-on:click="onBasemapSelect($event, b)"
-            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': basemaps[b].color, 'opacity': basemaps[b].selected ? '1' : '0.5' }">
-            <img v-if="basemaps[b].icon !== undefined" :src="'/basemap-icon/' + basemaps[b].icon" width=128 />
-            <div class="basemap-label" :style="{ 'color': basemaps[b].color }">{{basemaps[b].label}}</div>
+            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': basemap.color, 'opacity': basemap.selected ? '1' : '0.5' }">
+            <img v-if="basemap.icon !== undefined" :src="'/basemap-icon/' + basemap.icon" width=128 />
+            <div class="basemap-label" :style="{ 'color': basemap.color }">{{basemap.label}}</div>
           </div>
         </div>
     </div>

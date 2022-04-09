@@ -2,11 +2,11 @@
     <div class="cat">
         <h3 class="collapsible" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}} Thématiques</h3>
         <div class="theme"
-            v-for="t in Object.keys(themes)"
+            v-for="(theme, t) in themes"
             :key="t"
             v-on:click="toogleThemeVisibility($event, t)"
-            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': themes[t].color, 'opacity': themes[t].visible ? '1' : '0.3' }">
-            <img v-if="themes[t].icon !== undefined" :src="'/svg/' + themes[t].icon + '.svg'" width=16 /> {{themes[t].label}}<span class="right" v-if="themes[t].markers !== undefined && Object.keys(themes[t].markers).length > 0">{{Object.keys(themes[t].markers).length}}</span>
+            :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': theme.color, 'opacity': theme.visible ? '1' : '0.3' }">
+            <img v-if="theme.icon !== undefined" :src="'/svg/' + theme.icon + '.svg'" width=16 /> {{theme.label}}<span class="right" v-if="theme.markers !== undefined && Object.keys(theme.markers).length > 0">{{Object.keys(theme.markers).length}}</span>
         </div>
     </div>
 </template>
