@@ -1,6 +1,6 @@
 <template>
     <div class="cat">
-        <div>
+        <div id="input-results-container">
             <input id="input"
                 ref="input"
                 @input="updateInput"
@@ -83,7 +83,11 @@ export default {
   padding: 7px;
   margin: 5px 0px 10px 0px;
   display: flex;
-  justify-content:right;
+  justify-content: right;
+}
+
+#input-results-container {
+    width: 100%;
 }
 
 #input {
