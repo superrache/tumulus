@@ -100,11 +100,12 @@ export default {
 }
 
 #clear {
-    position: absolute;
+    position: relative;
     width: 20px;
     height: 20px;
     border-radius: 100%;
     margin: 4px;
+    margin-right: 0px;
     padding: 1px;
 }
 
