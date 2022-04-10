@@ -11,6 +11,7 @@
         <BasemapSelect ref="basemapSelect" />
         <ThemeSelect id="themeSelect" ref="themeSelect" />
         <FeatureResult ref="featureResult" />
+        <FeatureEditor ref="featureEditor" />
         <IssueAnalyzer ref="issueAnalyzer" />
       </div>
     </div>
@@ -38,6 +39,7 @@ import Search from './Search.vue'
 import BasemapSelect from './BasemapSelect.vue'
 import ThemeSelect from './ThemeSelect.vue'
 import FeatureResult from './FeatureResult.vue'
+import FeatureEditor from './FeatureEditor.vue'
 import IssueAnalyzer from './IssueAnalyzer.vue'
 import Map from './Map.vue'
 import OSMConnector from './OSMConnector.vue'
@@ -51,6 +53,7 @@ export default {
     BasemapSelect,
     ThemeSelect,
     FeatureResult,
+    FeatureEditor,
     IssueAnalyzer
   },
   data () {
@@ -91,6 +94,8 @@ export default {
     this.map.themeSelect = this.themeSelect
 
     this.map.featureResult = this.$refs.featureResult
+    this.map.featureEditor = this.$refs.featureEditor
+    this.$refs.featureEditor.osmConnector = this.$refs.osmConnector
 
     this.issueAnalyzer = this.$refs.issueAnalyzer
     this.issueAnalyzer.osmConnector = this.$refs.osmConnector

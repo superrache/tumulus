@@ -44,6 +44,11 @@ export default {
         oauthSecret: config.DEBUG ? config.osmApiDebug.oauthSecret : config.osmApiProd.oauthSecret
     })
   },
+  computed: {
+      connected() {
+          return this.userName !== ''
+      }
+  },
   methods: {
     update() {
         this.authenticated = this.auth.authenticated()
@@ -85,11 +90,7 @@ export default {
 
         const comment = 'add and correct wiki attributes'
         const changesetId = await this.osmRequest.createChangeset('tumulus', comment)
-        //const isChangesetStillOpen = await osmRequest.isChangesetStillOpen(changesetId)
-
-        let changeset = '<osm><changeset>'
-        changeset += '<tag k="created_by" v="tumulus 0.1.0"/>'
-        changeset += '<tag k="comment" v="correct wikipedia tags"/>'
+        console.log('autoRepair changesetId=' + changesetId)
 
         for(let f in this.features) {
             const feature = this.features[f]
@@ -110,16 +111,11 @@ export default {
                     element = this.osmRequest.setVersion(element, newElementVersion)
                 }
             }
+
  
         }
 
-        changeset += '</changeset>'
-        changeset += '</osm>'
-        console.log(changeset)
-        // PUT '/api/0.6/changeset/create'
-        // récupérer l'id du changeset (text/plain)
-        // PUT '/api/0.6/changeset/#id/close'
-
+        await this.osmRequest.closeChangeset(changesetId)
     }
   }
 }

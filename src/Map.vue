@@ -42,6 +42,7 @@ export default {
       basemapSelect: null,
       themeSelect: null,
       featureResult: null,
+      featureEditor: null,
       issueAnalyzer: null,
       popup: null
     }
@@ -165,6 +166,7 @@ export default {
       }
 
       if(this.featureResult !== null) this.featureResult.unloadFeature()
+      this.featureEditor.unloadFeature()
 
       this.updateParams()
       this.onMapMove()
@@ -336,6 +338,7 @@ export default {
       this.selectedFeatureId = feature.id
       console.log('select ' + this.selectedFeatureId)
       this.featureResult.loadFeature(feature, theme, lngLat)
+      this.featureEditor.loadFeature(feature)
 
       // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
       let marker = theme.markers[this.selectedFeatureId]
