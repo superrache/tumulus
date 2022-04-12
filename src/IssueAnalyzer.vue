@@ -9,7 +9,7 @@
                 <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + i.id.split('/')[0] + '=' + i.id.split('/')[1] + '&hashtags=tumulus'">{{i.message}}</a>
             </div>
         </div>
-        <button @click="autoRepair">Auto-repair</button>
+        <button @click="autoRepair" :disabled="!osmConnector.connected">Auto-repair</button>
     </div>
 </template>
 

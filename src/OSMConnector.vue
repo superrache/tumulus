@@ -1,10 +1,15 @@
 <template>
     <div class="panel">
-        <button @click="onLogin" v-show="!authenticated"><img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> Se connecter</button>
-        <button id="user" v-show="authenticated"><img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{userName}}</button>
+        <button @click="onLogin" v-show="!authenticated">
+            <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> Se connecter
+        </button>
+        <button id="user" v-show="authenticated">
+            <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{userName}} {{Object.keys(editedFeatures).length}}
+        </button>
 
         <nav id="menu">
             <a target="_blank" :href="'https://www.openstreetmap.org/user/' + userName"><div class="item">Mon compte</div></a>
+            <div class="item" @click="sendEdits">Enregistrer</div>
             <div class="item" @click="onLogout">Se déconnecter</div>
         </nav>
     </div>
@@ -21,11 +26,11 @@ export default {
   name: 'OSMConnector',
   data() {
     return {
-        features: null,
         auth: null,
         authenticated: false,
         osmRequest: null,
-        userName: ''
+        userName: '',
+        editedFeatures: {}
     }
   },
   created() {
@@ -83,17 +88,12 @@ export default {
         this.userName = ''
         this.update()
     },
+    addEditedFeature(feature) {
+        this.editedFeatures[feature.id] = feature
+    },
     async autoRepair(features) {
-        this.features = features
-
-        this.onLogin()
-
-        const comment = 'add and correct wiki attributes'
-        const changesetId = await this.osmRequest.createChangeset('tumulus', comment)
-        console.log('autoRepair changesetId=' + changesetId)
-
-        for(let f in this.features) {
-            const feature = this.features[f]
+        for(let f in features) {
+            const feature = features[f]
             const properties = feature.properties
 
             // manque la langue
@@ -104,18 +104,39 @@ export default {
                 if(response.code === 200) {
                     console.log('wikipedia=' + lang + ':' + properties.wikipedia + ' [OK]')
                     // édition du node id=feature.id
-                    let element = await this.osmRequest.fetchElement('node/' + feature.id)
                     properties.wikipedia = lang + ':' + properties.wikipedia
-                    element = this.osmRequest.setTag(element, 'wikipedia', properties.wikipedia)
-                    const newElementVersion = await this.osmRequest.sendElement(element, changesetId);
-                    element = this.osmRequest.setVersion(element, newElementVersion)
+                    this.addEditedFeature(feature)
                 }
             }
-
- 
         }
+    },
+    async sendEdits() {
+        if(Object.keys(this.editedFeatures).length) {
+            console.log('sending ' + Object.keys(this.editedFeatures).length + ' features to OSM')
+            const comment = 'add and correct wiki attributes'
+            const changesetId = await this.osmRequest.createChangeset('tumulus', comment)
+            console.log('changeset created changesetId=' + changesetId)
 
-        await this.osmRequest.closeChangeset(changesetId)
+            for(let f in this.editedFeatures) {
+                const feature = this.editedFeatures[f]
+                const properties = feature.properties
+                
+                console.log('get element ' + feature.id)
+                let element = await this.osmRequest.fetchElement(feature.id) // id=node/123456789
+                
+                console.log('setTags')
+                element = this.osmRequest.setTags(element, properties) // pas sûr du format de properties
+                
+                console.log('sendElement')
+                const newElementVersion = await this.osmRequest.sendElement(element, changesetId)
+                element = this.osmRequest.setVersion(element, newElementVersion)
+            }
+
+            console.log('closeChangeset')
+            await this.osmRequest.closeChangeset(changesetId)
+
+            this.editedFeatures = []
+        }
     }
   }
 }

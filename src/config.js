@@ -8,6 +8,8 @@ export const startingBasemap = 'bdortho'
 
 export const nominatimInstance = 'https://nominatim.openstreetmap.org'
 
+export const tagInfoInstance = 'https://taginfo.openstreetmap.org'
+
 export const osmApiDebug = {
   instance: 'https://master.apis.dev.openstreetmap.org',
   oauthConsumerKey: 'J0kI4dFGwwWfEk3GRj8KRat3bnalmFvKRp95av2Y',
