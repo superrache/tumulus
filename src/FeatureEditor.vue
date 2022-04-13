@@ -136,17 +136,10 @@ export default {
 <style scoped>
 
 .cat {
-  background-color: #aaaaaa33;
+  background-color: #575;
   border-radius: 10px;
-  padding: 0px 0px 10px 0px;
+  padding: 10px;
   margin: 5px 0px 10px 0px;
-}
-
-.key-container {
-  float: left;
-    position: relative;
-    left: 0px;
-    width: 100%;
 }
 
 .normal {

@@ -102,8 +102,19 @@ export default {
   position: relative;
   display: grid;
   grid-template-columns: auto;
-  justify-content: start;    
+  justify-content: start;
 }
+
+input {
+    width: 100%;
+    height: 27px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+}
+
+li { list-style: none;}
 
 .suggestions {
   position: absolute;
@@ -112,7 +123,7 @@ export default {
   right: 0;
   width: auto;
   grid-row: 2;
-  padding: 2px;
+  padding: 0px;
   text-align: left;
   border: 2px solid #ececec;
   border-top: none;
