@@ -4,12 +4,12 @@
             <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> Se connecter
         </button>
         <button id="user" v-show="authenticated">
-            <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{userName}} {{Object.keys(editedFeatures).length}}
+            <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{userName}} ({{modifications}})
         </button>
 
         <nav id="menu">
             <a target="_blank" :href="'https://www.openstreetmap.org/user/' + userName"><div class="item">Mon compte</div></a>
-            <div class="item" @click="sendEdits">Enregistrer</div>
+            <div class="item" @click="sendEdits">Enregistrer {{modifications}} modifications</div>
             <div class="item" @click="onLogout">Se déconnecter</div>
         </nav>
     </div>
@@ -33,6 +33,14 @@ export default {
         editedFeatures: {}
     }
   },
+  computed: {
+      connected() {
+          return this.userName !== ''
+      },
+      modifications() {
+          return Object.keys(this.editedFeatures).length
+      }
+  },
   created() {
     this.auth = OsmAuth({
         url: config.DEBUG ? config.osmApiDebug.instance : config.osmApiProd.instance,
@@ -48,11 +56,6 @@ export default {
         oauthConsumerKey: config.DEBUG ? config.osmApiDebug.oauthConsumerKey : config.osmApiProd.oauthConsumerKey,
         oauthSecret: config.DEBUG ? config.osmApiDebug.oauthSecret : config.osmApiProd.oauthSecret
     })
-  },
-  computed: {
-      connected() {
-          return this.userName !== ''
-      }
   },
   methods: {
     update() {
@@ -111,7 +114,7 @@ export default {
         }
     },
     async sendEdits() {
-        if(Object.keys(this.editedFeatures).length) {
+        if(this.modifications > 0) {
             console.log('sending ' + Object.keys(this.editedFeatures).length + ' features to OSM')
             const comment = 'add and correct wiki attributes'
             const changesetId = await this.osmRequest.createChangeset('tumulus', comment)
@@ -119,13 +122,38 @@ export default {
 
             for(let f in this.editedFeatures) {
                 const feature = this.editedFeatures[f]
-                const properties = feature.properties
-                
+                const newTags = {} // copie de feature.properties sans les propriétés internes 'id' et 'g'
+                for(let key in feature.properties) {
+                    if(key !== 'id' && key !== 'g') {
+                        newTags[key] = feature.properties[key]
+                    }
+                }
+                console.log(newTags)
+
                 console.log('get element ' + feature.id)
-                let element = await this.osmRequest.fetchElement(feature.id) // id=node/123456789
-                
-                console.log('setTags')
-                element = this.osmRequest.setTags(element, properties) // pas sûr du format de properties
+                let fullId = 'node/4330823815' // feature.id TODO debug
+                let element = await this.osmRequest.fetchElement(fullId) // id=node/123456789
+                console.log(element)
+
+                // tags à supprimer
+                let tagsToRemove = []
+                for(let index in element.tag) {
+                    if(element.tag[index] !== undefined) {
+                        let key = element.tag[index]['$'].k
+                        if(newTags[key] === undefined) { // suppression d'un tag
+                            tagsToRemove.push(key)
+                            element = this.osmRequest.removeTag(element, key)
+                        }
+                    }
+                }
+                while(tagsToRemove.length > 0) {
+                    let tag = tagsToRemove.pop()
+                    console.log('removeTag ' + tag)
+                    element = this.osmRequest.removeTag(element, tag)
+                }
+
+                console.log('setTags') // pour les créations et mises à jour
+                element = this.osmRequest.setTags(element, newTags)
                 
                 console.log('sendElement')
                 const newElementVersion = await this.osmRequest.sendElement(element, changesetId)

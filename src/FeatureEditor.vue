@@ -108,16 +108,25 @@ export default {
     save() {
       console.log('save feature id = ' + this.originalFeature.id)
       
+      const newProperties = {}
       for(let e in this.editedProperties) {
-        let ed = this.editedProperties[e]
-        console.log(ed.key + '=' + ed.value)
+        let editedProperty = this.editedProperties[e]
+        if(editedProperty.key !== '') {
+            console.log(editedProperty.key + '=' + editedProperty.value)
+            newProperties[editedProperty.key] = editedProperty.value
+        }
       }
 
-      this.originalFeature.properties = this.editedProperties
+      // on ajoute les propriétés internes 'g' et 'id'
+      newProperties.id = this.originalFeature.properties.id
+      newProperties.g = this.originalFeature.properties.g
+    
+      this.originalFeature.properties = newProperties
       this.osmConnector.addEditedFeature(this.originalFeature)
+      this.loadFeature(this.originalFeature) // reset
     },
     cancel() {
-      this.loadFeature(this.originalProperties)
+      this.loadFeature(this.originalFeature)
     }
   }
 }
