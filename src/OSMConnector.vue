@@ -43,18 +43,18 @@ export default {
   },
   created() {
     this.auth = OsmAuth({
-        url: config.DEBUG ? config.osmApiDebug.instance : config.osmApiProd.instance,
-        oauth_consumer_key: config.DEBUG ? config.osmApiDebug.oauthConsumerKey : config.osmApiProd.oauthConsumerKey,
-        oauth_secret: config.DEBUG ? config.osmApiDebug.oauthSecret : config.osmApiProd.oauthSecret,
+        url: config.osmApi.instance,
+        oauth_consumer_key: config.osmApi.oauthConsumerKey,
+        oauth_secret: config.osmApi.oauthSecret,
         //auto: true,
         //singlepage: true, // Load the auth-window in the current window, with a redirect,
         //landing: window.location.href // Come back to the current page
     })
 
     this.osmRequest = new OsmRequest({
-        endpoint: config.DEBUG ? config.osmApiDebug.instance : config.osmApiProd.instance,
-        oauthConsumerKey: config.DEBUG ? config.osmApiDebug.oauthConsumerKey : config.osmApiProd.oauthConsumerKey,
-        oauthSecret: config.DEBUG ? config.osmApiDebug.oauthSecret : config.osmApiProd.oauthSecret
+        endpoint: config.osmApi.instance,
+        oauthConsumerKey: config.osmApi.oauthConsumerKey,
+        oauthSecret: config.osmApi.oauthSecret
     })
   },
   methods: {
@@ -116,8 +116,8 @@ export default {
     async sendEdits() {
         if(this.modifications > 0) {
             console.log('sending ' + Object.keys(this.editedFeatures).length + ' features to OSM')
-            const comment = 'add and correct wiki attributes'
-            const changesetId = await this.osmRequest.createChangeset('tumulus', comment)
+            const comment = 'add and correct attributes'
+            const changesetId = await this.osmRequest.createChangeset(config.appName, comment)
             console.log('changeset created changesetId=' + changesetId)
 
             for(let f in this.editedFeatures) {
@@ -131,8 +131,8 @@ export default {
                 console.log(newTags)
 
                 console.log('get element ' + feature.id)
-                let fullId = 'node/4330823815' // feature.id TODO debug
-                let element = await this.osmRequest.fetchElement(fullId) // id=node/123456789
+                let fullId = config.osmApi.nodeIdToEdit !== undefined ? config.osmApi.nodeIdToEdit : feature.id
+                let element = await this.osmRequest.fetchElement(fullId) // id au format node/123456789
                 console.log(element)
 
                 // tags à supprimer

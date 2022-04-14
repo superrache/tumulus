@@ -1,5 +1,5 @@
 <template>
-    <div class="cat" v-if="osmConnector !== null && osmConnector.connected && editedProperties !== null">
+    <div class="cat" v-if="osmConnector !== null && osmConnector.connected" >
         <h3>Editeur d'attributs</h3>
         <table>
             <tr>
@@ -42,23 +42,29 @@ export default {
       osmConnector: null,
       originalFeature: null,
       originalProperties: null,
-      editedProperties: null
+      editedProperties: []
     }
   },
   methods: {
-    loadFeature(feature) {
-        this.originalFeature = feature
-        this.originalProperties = feature.properties
+    loadFeature(feature) {      
+      if(feature !== null && feature.properties !== null) {
         this.editedProperties = []
-        for(let key in this.originalProperties) {
-            if(key !== 'g' && key !== 'id') this.editedProperties.push({key: key, value: this.originalProperties[key]})
-        }
-        this.editedProperties.push({key: '', value: ''})
+
+        this.$nextTick(() => { // on attend que vue refasse le rendu avec editedProperties vide
+          this.originalFeature = feature
+          this.originalProperties = feature.properties
+          for(let key in this.originalProperties) {
+              if(key !== 'g' && key !== 'id') this.editedProperties.push({key: key, value: this.originalProperties[key]})
+          }
+          this.editedProperties.push({key: '', value: ''})
+
+        })
+      }
     },
     unloadFeature() {
       this.originalFeature = null
       this.originalProperties = null
-      this.editedProperties = null
+      this.editedProperties = []
     },
     async onInputKey(searchTerm) {
       const url = `${config.tagInfoInstance}/api/4/keys/all?page=1&rp=10&sortname=count_all&sortorder=desc&query=${encodeURIComponent(searchTerm)}`
@@ -123,6 +129,7 @@ export default {
     
       this.originalFeature.properties = newProperties
       this.osmConnector.addEditedFeature(this.originalFeature)
+
       this.loadFeature(this.originalFeature) // reset
     },
     cancel() {
@@ -136,10 +143,14 @@ export default {
 <style scoped>
 
 .cat {
-  background-color: #575;
+  background-color: #565;
   border-radius: 10px;
-  padding: 10px;
+  padding: 5px;
   margin: 5px 0px 10px 0px;
+}
+
+h3 {
+  margin: 5px;
 }
 
 .normal {
@@ -157,6 +168,8 @@ export default {
   flex-wrap: wrap;
   width: 100%;
   margin: 0px auto;
+  margin-top: 5px;
+  margin-bottom: 2px;
   position: relative;
 }
 
