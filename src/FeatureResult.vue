@@ -48,7 +48,7 @@
       <div class="small">
         <a target="_blank" :href="'https://www.openstreetmap.org/' + id.split('/')[0] + '/' + id.split('/')[1]">Voir sur OpenStreetMap</a>
         &nbsp;
-        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer</a>
+        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer avec iD</a>
       </div>
     </div>
 

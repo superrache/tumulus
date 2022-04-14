@@ -1,14 +1,14 @@
 <template>
   <div class="cat" v-if="osmConnector !== null" >
-    <h3>Editeur d'attributs</h3>
+    <h3>Attributs OpenStreetMap</h3>
     <div v-if="!osmConnector.connected">Connectez-vous à OpenStreetMap pour pouvoir éditer cet objet</div>
 
-    <table v-if="!osmConnector.connected" >
-      <tr><th>Clé</th><th>=</th><th>Valeur</th></tr>
+    <table v-if="!osmConnector.connected && originalFeature !== null && originalFeature.properties !== undefined" >
+      <tr><th class="right">Clé</th><th>=</th><th class="left">Valeur</th></tr>
       <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g'))" :key="key">
-        <td>{{key}}</td>
+        <td class="right">{{key}}</td>
         <td>=</td>
-        <td>{{originalFeature.properties[key]}}</td>
+        <td class="left">{{originalFeature.properties[key]}}</td>
       </tr>
     </table>
     
@@ -28,8 +28,8 @@
       </tr>
     </table>
 
-    <div id="buttons">
-      <button @click="save">Enregistrer</button>
+    <div id="buttons" v-if="osmConnector.connected">
+      <button @click="save" :disabled="!editing">Enregistrer</button>
       <button @click="cancel">Annuler</button>
     </div>
   </div>
@@ -50,7 +50,8 @@ export default {
       osmConnector: null,
       originalFeature: null,
       originalProperties: null,
-      editedProperties: []
+      editedProperties: [],
+      editing: true
     }
   },
   methods: {
@@ -65,7 +66,7 @@ export default {
               if(key !== 'g' && key !== 'id') this.editedProperties.push({key: key, value: this.originalProperties[key]})
           }
           this.editedProperties.push({key: '', value: ''})
-
+          this.editing = false
         })
       }
     },
@@ -73,6 +74,7 @@ export default {
       this.originalFeature = null
       this.originalProperties = null
       this.editedProperties = []
+      this.editing = false
     },
     async onInputKey(searchTerm) {
       const url = `${config.tagInfoInstance}/api/4/keys/all?page=1&rp=10&sortname=count_all&sortorder=desc&query=${encodeURIComponent(searchTerm)}`
@@ -96,6 +98,7 @@ export default {
     },
     onInputChange() {      
       this.forceUpdateModeleFromVue()
+      this.editing = true
 
       // ajout d'une ligne vide à la fin si nécessaire
       let last = this.editedProperties[this.editedProperties.length - 1]
@@ -104,6 +107,7 @@ export default {
     onDeleteTag(e, index) {
       if(index == this.editedProperties.length - 1) return // pas le dernier
       if(this.editedProperties.length > 1) this.editedProperties.splice(index, 1)
+      this.editing = true
       this.forceUpdateVueFromModele()
     },
     forceUpdateModeleFromVue() {
@@ -169,6 +173,14 @@ h3 {
 .small {
   padding: 0px 5px;
   font-size: 0.7em;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
 }
 
 #buttons {
