@@ -108,7 +108,7 @@ export default {
 input {
     width: 100%;
     height: 27px;
-    font-size: 16px;
+    font-size: 12px;
     border-radius: 5px;
     background-color: #444;
     color: white;

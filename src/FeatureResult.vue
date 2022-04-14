@@ -34,7 +34,7 @@
         </div>
         <div class="normal" v-if="w.hasOwnProperty('wikibase_item')">
           <a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a>
-        </div>      
+        </div>
       </div>
 
       <div class="normal" v-if="props.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + props['ref:mhs']">Base Mérimée {{props['ref:mhs']}}</a></div>
@@ -52,14 +52,6 @@
       </div>
     </div>
 
-    <div class="cat" v-show="debug" v-if="props !== null">
-      <div class="normal">key=value</div>
-      <div class="small"
-          v-for="(prop, p) in props"
-          :key="p">
-          <span v-if="p !== 'g'">{{p}}={{prop}}</span>
-      </div>
-    </div>
 </template>
 
 <script>

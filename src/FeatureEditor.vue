@@ -1,30 +1,38 @@
 <template>
-    <div class="cat" v-if="osmConnector !== null && osmConnector.connected" >
-        <h3>Editeur d'attributs</h3>
-        <table>
-            <tr>
-                <th>Clé</th>
-                <th>Valeur</th>
-            </tr>
-            <tr v-for="(property, index) in editedProperties"
-                :key="index">
-              <td>
-                <AutocompleteInput :ref="`input-key-${index}`" v-model:value="property.key" :suggestionsFunction="onInputKey" @inputChanged="onInputChange" />
-              </td>
-              <td>
-                <AutocompleteInput :ref="`input-value-${index}`" v-model:value="property.value" v-model:other="property.key" :suggestionsFunction="onInputValue" @inputChanged="onInputChange" />
-              </td>
-              <td>
-                <button @click="onDeleteTag($event, index)">x</button>
-              </td>
-            </tr>
-        </table>
+  <div class="cat" v-if="osmConnector !== null" >
+    <h3>Editeur d'attributs</h3>
+    <div v-if="!osmConnector.connected">Connectez-vous à OpenStreetMap pour pouvoir éditer cet objet</div>
 
-        <div id="buttons">
-          <button @click="save">Enregistrer</button>
-          <button @click="cancel">Annuler</button>
-        </div>
+    <table v-if="!osmConnector.connected" >
+      <tr><th>Clé</th><th>=</th><th>Valeur</th></tr>
+      <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g'))" :key="key">
+        <td>{{key}}</td>
+        <td>=</td>
+        <td>{{originalFeature.properties[key]}}</td>
+      </tr>
+    </table>
+    
+    <table v-if="osmConnector.connected" >
+      <tr><th>Clé</th><th>=</th><th>Valeur</th></tr>
+      <tr v-for="(property, index) in editedProperties" :key="index">
+        <td>
+          <AutocompleteInput :ref="`input-key-${index}`" v-model:value="property.key" :suggestionsFunction="onInputKey" @inputChanged="onInputChange" />
+        </td>
+        <td>=</td>
+        <td>
+          <AutocompleteInput :ref="`input-value-${index}`" v-model:value="property.value" v-model:other="property.key" :suggestionsFunction="onInputValue" @inputChanged="onInputChange" />
+        </td>
+        <td>
+          <button @click="onDeleteTag($event, index)">x</button>
+        </td>
+      </tr>
+    </table>
+
+    <div id="buttons">
+      <button @click="save">Enregistrer</button>
+      <button @click="cancel">Annuler</button>
     </div>
+  </div>
 </template>
 
 <script>
@@ -46,7 +54,7 @@ export default {
     }
   },
   methods: {
-    loadFeature(feature) {      
+    loadFeature(feature) {
       if(feature !== null && feature.properties !== null) {
         this.editedProperties = []
 
@@ -94,6 +102,7 @@ export default {
       if(last.key !== '' || last.value !== '') this.editedProperties.push({key: '', value: ''})
     },
     onDeleteTag(e, index) {
+      if(index == this.editedProperties.length - 1) return // pas le dernier
       if(this.editedProperties.length > 1) this.editedProperties.splice(index, 1)
       this.forceUpdateVueFromModele()
     },
