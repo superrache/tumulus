@@ -30,6 +30,8 @@
 
     </div>
 
+    <CommentDialog id="comment-dialog" ref="commentDialog"></CommentDialog>
+
   </div>
 </template>
 
@@ -43,6 +45,7 @@ import FeatureEditor from './FeatureEditor.vue'
 import IssueAnalyzer from './IssueAnalyzer.vue'
 import Map from './Map.vue'
 import OSMConnector from './OSMConnector.vue'
+import CommentDialog from './CommentDialog.vue'
 
 export default {
   name: 'App',
@@ -54,7 +57,8 @@ export default {
     ThemeSelect,
     FeatureResult,
     FeatureEditor,
-    IssueAnalyzer
+    IssueAnalyzer,
+    CommentDialog
   },
   data () {
     return {
@@ -106,6 +110,8 @@ export default {
     this.search = this.$refs.search
     this.themeSelect = this.$refs.themeSelect
     this.issueAnalyzer = this.$refs.issueAnalyzer
+
+    this.$refs.osmConnector.commentDialog = this.$refs.commentDialog
 
     // resizer
     this.sidebar = this.$el.querySelector("#sidebar")
@@ -198,6 +204,11 @@ button:hover {
 
 button:active {
   background-color: #ffaa77;
+}
+
+button:disabled {
+  background-color: #777;
+  color: #ccc;
 }
 
 .feature-marker {
@@ -393,6 +404,16 @@ button:active {
   top: 15px;
   right: 50px;
   z-index: 30;
+}
+
+#comment-dialog {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  background-color: rgb(0, 0, 0, 0.8);
 }
 
 </style>

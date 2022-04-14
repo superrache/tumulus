@@ -9,7 +9,7 @@
 
         <nav id="menu">
             <a target="_blank" :href="'https://www.openstreetmap.org/user/' + userName"><div class="item">Mon compte</div></a>
-            <div class="item" @click="sendEdits">Enregistrer {{modifications}} modifications</div>
+            <div class="item" @click="save" v-if="modifications > 0">Enregistrer {{modifications}} modifications</div>
             <div class="item" @click="onLogout">Se déconnecter</div>
         </nav>
     </div>
@@ -30,7 +30,8 @@ export default {
         authenticated: false,
         osmRequest: null,
         userName: '',
-        editedFeatures: {}
+        editedFeatures: {},
+        commentDialog: null
     }
   },
   computed: {
@@ -113,10 +114,12 @@ export default {
             }
         }
     },
-    async sendEdits() {
+    save() {
+        this.commentDialog.show('', this.sendEdits)
+    },
+    async sendEdits(comment) {
         if(this.modifications > 0) {
             console.log('sending ' + Object.keys(this.editedFeatures).length + ' features to OSM')
-            const comment = 'add and correct attributes'
             const changesetId = await this.osmRequest.createChangeset(config.appName, comment)
             console.log('changeset created changesetId=' + changesetId)
 
