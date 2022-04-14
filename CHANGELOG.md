@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/superrache/tumulus/compare/v0.1.5...v0.1.6) (2022-04-14)
+
+
+### Features
+
+* add basemap selection ([e73a127](https://github.com/superrache/tumulus/commit/e73a1270cfa423b5b2c694ad8caf2afe3dfebd76))
+* add land.html for osm connection ([e115747](https://github.com/superrache/tumulus/commit/e11574747e63ae3caf7d12a3f3cc7d4cfbaffd93))
+* add popup and width height increased on mouse over feature ([aef75d1](https://github.com/superrache/tumulus/commit/aef75d1323957efb4e2458389ff0337eaae4bea5))
+* add symbol for each theme ([761a592](https://github.com/superrache/tumulus/commit/761a592399ea15251a3c80e08b5beba464143fb3))
+* add user comment to osm changeset ([c4714cd](https://github.com/superrache/tumulus/commit/c4714cd6b27d9e8f71cea69bc37650e98f31a0da))
+* feature editor component with read only mode ([53ded1e](https://github.com/superrache/tumulus/commit/53ded1e9792e94e387e07e1eb33ca2e043f01c6b))
+* feature editor layout ([5b94a6b](https://github.com/superrache/tumulus/commit/5b94a6bd65ab080741ff3f85ec4ab38c98ae1950))
+* feature editor with taginfo API autocomplete ([5547bc7](https://github.com/superrache/tumulus/commit/5547bc76dc2bc4e24544094d3c0f0aaa688fbad4))
+* feature tag editor (beginning) ([989062b](https://github.com/superrache/tumulus/commit/989062bc99a381faf7197d5e9662d83e7999b1a3))
+* search input keyup.enter and clear button ([4494776](https://github.com/superrache/tumulus/commit/4494776dc738fadd2513198b1f2e2477616ce0f5))
+
+
+### Bug Fixes
+
+* clear button in absolute ([c8e2032](https://github.com/superrache/tumulus/commit/c8e2032b5fb58a970c43cb18233802a8ae1ec699))
+* feature editor re-render and test osm production db ([786778b](https://github.com/superrache/tumulus/commit/786778bdaa343053c1997d048c12308899a3a8a2))
+* map url params intern management instead of maplibregl-js hash feature ([46a517a](https://github.com/superrache/tumulus/commit/46a517ab354fa4dcc17c908cb8d5c05b8acb16c3))
+* misc style and duplicate issue analyse ([4623f83](https://github.com/superrache/tumulus/commit/4623f8339855ee7206051b00ca7375acab17c678))
+* readme ([c52e0c5](https://github.com/superrache/tumulus/commit/c52e0c5672d2395ca8e0e3a7d9d635221effcb96))
+* rename stamen basemap ([b5c40b6](https://github.com/superrache/tumulus/commit/b5c40b6af3e04a34752365ae4010311d8b207acd))
+* send edited elements with osm dev instance ([4478a35](https://github.com/superrache/tumulus/commit/4478a35b839dcf18e61425f45daf7098dde7fa1c))
+* watercolor basemap id ([9e75f34](https://github.com/superrache/tumulus/commit/9e75f34e1d2f428e02a547c73ddb44bb8afbcd2b))
+
 ### [0.1.5](https://github.com/superrache/tumulus/compare/v0.1.4...v0.1.5) (2022-04-07)
 
 ### [0.1.4](https://github.com/superrache/tumulus/compare/v0.1.3...v0.1.4) (2022-04-07)
