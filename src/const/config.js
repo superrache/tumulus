@@ -3,7 +3,7 @@ export const appName = "tumulus"
 export const DEBUG = process.env.NODE_ENV !== 'production'
 
 export const startingZoom = 14
-export const startingPosition = [-2.90024, 47.56926]
+export const startingPosition = [4.82289, 45.76184]
 export const startingBasemap = 'default'
 
 export const nominatimInstance = 'https://nominatim.openstreetmap.org'

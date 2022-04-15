@@ -160,7 +160,8 @@ export default {
         console.log('has ' + wikipediaKey + '=' + this.props[wikipediaKey])
         const s = this.props[wikipediaKey].split(':')
         if(s.length > 1) {
-          const response = await fetch("https://" + s[0] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(s[1]))
+          const pageTitle = s[1].split('?')[0].split('#')[0]
+          const response = await fetch("https://" + s[0] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(pageTitle))
           const data = await response.json()
           data.displaytitle = titlePrefix + data.displaytitle
           this.wikis.push(data)
