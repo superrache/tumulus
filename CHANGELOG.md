@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/superrache/tumulus/compare/v0.1.7...v0.1.8) (2022-04-15)
+
+
+### Bug Fixes
+
+* no get param in wiki links for wiki rest api ([b328065](https://github.com/superrache/tumulus/commit/b32806537fa287977cb8a60656dc66fe61152a95))
+
 ### [0.1.7](https://github.com/superrache/tumulus/compare/v0.1.6...v0.1.7) (2022-04-15)
 
 ### [0.1.6](https://github.com/superrache/tumulus/compare/v0.1.5...v0.1.6) (2022-04-14)
