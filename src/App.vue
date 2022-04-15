@@ -36,16 +36,16 @@
 </template>
 
 <script>
-import * as URLParameters from './URLParameters.js'
-import Search from './Search.vue'
-import BasemapSelect from './BasemapSelect.vue'
-import ThemeSelect from './ThemeSelect.vue'
-import FeatureResult from './FeatureResult.vue'
-import FeatureEditor from './FeatureEditor.vue'
-import IssueAnalyzer from './IssueAnalyzer.vue'
-import Map from './Map.vue'
-import OSMConnector from './OSMConnector.vue'
-import CommentDialog from './CommentDialog.vue'
+import * as URLParameters from './utils/URLParameters.js'
+import Search from './components/Search.vue'
+import BasemapSelect from './components/BasemapSelect.vue'
+import ThemeSelect from './components/ThemeSelect.vue'
+import FeatureResult from './components/FeatureResult.vue'
+import FeatureEditor from './components/FeatureEditor.vue'
+import IssueAnalyzer from './components/IssueAnalyzer.vue'
+import Map from './components/Map.vue'
+import OSMConnector from './components/OSMConnector.vue'
+import CommentDialog from './components/CommentDialog.vue'
 
 export default {
   name: 'App',

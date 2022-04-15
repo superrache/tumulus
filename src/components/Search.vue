@@ -32,7 +32,7 @@ c0.4-0.4,1-0.4,1.4,0l2.8,2.8c0.4,0.4,0.4,1,0,1.4l-7.8,7.8C30.6,25.8,30.6,26.4,30
 
 <script>
 
-import * as config from './config.js'
+import * as config from '../const/config.js'
 
 export default {
   name: 'Search',

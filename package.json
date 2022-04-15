@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "express": "node server/server.dev.js",
-    "start": "node server/server.prod.js",
+    "start": "NODE_ENV=production node server/server.prod.js",
     "prepare": "husky install",
     "release": "standard-version"
   },

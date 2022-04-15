@@ -37,7 +37,7 @@
 
 <script>
 
-import * as config from './config.js' 
+import * as config from '../const/config.js' 
 import AutocompleteInput from './AutocompleteInput.vue'
 
 export default {

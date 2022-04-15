@@ -20,7 +20,7 @@
 
 import OsmAuth from 'osm-auth'
 import OsmRequest from 'osm-request'
-import * as config from './config.js'
+import * as config from '../const/config.js'
 
 export default {
   name: 'OSMConnector',

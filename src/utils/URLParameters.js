@@ -1,5 +1,5 @@
-import * as config from './config.js'
-import * as utils from './utils/utils.js'
+import * as config from '../const/config.js'
+import * as utils from './utils.js'
 
 export function applyURLParameters(map) {
     let parts = window.location.search.split('?')

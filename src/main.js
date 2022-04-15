@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import FeatureEditor from './FeatureEditor.vue'
+import FeatureEditor from './components/FeatureEditor.vue'
 
 const testFeatureEditor = false
 

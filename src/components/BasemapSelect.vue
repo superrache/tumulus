@@ -16,7 +16,7 @@
 
 <script>
 
-import * as basemaps from './basemaps.js'
+import * as basemaps from '../const/basemaps.js'
 
 export default {
   name: 'BasemapSelect',

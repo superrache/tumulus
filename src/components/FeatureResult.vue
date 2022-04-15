@@ -58,8 +58,8 @@
 
 //import * as env from './utils/env.js'
 import ExpandableImage from './ExpandableImage.vue'
-import * as config from './config.js'
-import * as types from './types.js'
+import * as config from '../const/config.js'
+import * as types from '../const/types.js'
 
 export default {
   name: 'FeatureResult',

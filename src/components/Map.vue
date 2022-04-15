@@ -12,9 +12,10 @@ import along from '@turf/along'
 import length from '@turf/length'
 import pointOnFeature from '@turf/point-on-feature'
 
-import * as env from './utils/env.js'
-import * as utils from './utils/utils.js'
-import * as config from './config.js'
+import * as env from '../utils/env.js'
+import * as utils from '../utils/utils.js'
+import * as config from '../const/config.js'
+import * as themes from '../const/themes.js'
 
 export default {
   name: 'Map',
@@ -35,8 +36,8 @@ export default {
       pendingSelectedFeatureId: null,
       selectedMarker: null,
       selectedSourceId: null,
-      queries: config.queries,
-      themes: config.themes,
+      queries: themes.queries,
+      themes: themes.themes,
       themesSelection: '',
       // external components
       basemapSelect: null,
