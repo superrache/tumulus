@@ -24,7 +24,7 @@
     "osm-request": "^1.2.10",
     "osmtogeojson": "^3.0.0-beta.4",
     "request": "^2.88.2",
-    "vue": "^3.0.0"
+    "vue": "^3.2.33"
   },
   "devDependencies": {
     "@commitlint/cli": "^15.0.0",
