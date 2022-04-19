@@ -12,9 +12,7 @@ export function detect(feature) {
                     importance: 2,
                     message: `Langue manquante dans la référence ${wikipediaTagName}=${props[wikipediaTagName]}`,
                     autoRepair: async () => {
-                        // on teste 'fr'
-                        let lang = 'fr'
-                        const wikipediaValue = lang + ':' + feature.properties[wikipediaTagName]
+                        const wikipediaValue = feature.lang + ':' + feature.properties[wikipediaTagName]
                         const data = await wikipediaApi(wikipediaValue)
                         if(data !== null) {
                             feature.properties[wikipediaTagName] = wikipediaValue

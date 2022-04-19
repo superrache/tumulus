@@ -1,3 +1,5 @@
+import * as env from './env.js'
+
 export async function wikipediaApi(wikipediaPage) {
     const s = wikipediaPage.split(':')
     if(s.length > 1) {
@@ -15,6 +17,6 @@ export async function wikipediaApi(wikipediaPage) {
 }
 
 export async function wikidataApi(wikibaseItem) {
-    let response = await fetch(`https://www.wikidata.org/w/api.php?action=wbgetentities&props=sitelinks/urls&ids=${wikibaseItem}&format=json`)
+    let response = await fetch(`${env.getServerUrl()}/wikidata?q=${wikibaseItem}`)
     return await response.json()
 }

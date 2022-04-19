@@ -62,4 +62,25 @@ module.exports = function(app, prod) {
             res.json({error: 2})
         }
     })
- }
+
+    app.get('/wikidata', (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
+        try {
+            console.log(`get /wikidata q=${req.query.q}`)
+            request(`https://www.wikidata.org/w/api.php?action=wbgetentities&props=sitelinks&ids=${req.query.q}&format=json`, (error, response, data) => {
+                try {
+                    res.header("Content-Type", "application/json")
+                    res.send(data)
+                } catch(err) {
+                    res.json({error: 4})
+                }
+            })
+        } catch(err) {
+            res.json({error: 3})
+        }
+    })
+
+}

@@ -9,7 +9,7 @@
                 @click="editFeature(issue)">
                 {{issue.message}}
                 <button @click="editFeature(issue)">E</button>
-                <button @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected">R</button>
+                <button @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">R</button>
             </div>
         </div>
         <button @click="autoRepairAll" :disabled="!connected">Tout réparer automatiquement</button>
@@ -19,7 +19,10 @@
 <script>
 
 import * as wikipediaWithoutWikidata from '../issues/WikipediaWithoutWikidata.js'
+import * as wikidataWithoutWikipedia from '../issues/WikidataWithoutWikipedia.js'
 import * as wikipediaMissingLanguage from '../issues/WikipediaMissingLanguage.js'
+import * as badUseOfAge from '../issues/BadUseOfAge.js'
+import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMissingSiteType.js'
 
 export default {
   name: 'IssueAnalyzer',
@@ -47,13 +50,13 @@ export default {
         for(let f in features) {
             const feature = features[f]
 
-            this.issues.push(...wikipediaWithoutWikidata.detect(feature))
-            this.issues.push(...wikipediaMissingLanguage.detect(feature))
-/*
-            if(props['age'] !== undefined) this.issues.push({id: feature.id, importance: 1, message: 'Attribut age peut-être mal utilisé (à remplacer par start_date)'})
+            feature.lang = 'fr' // TODO
 
-            if(props['historic'] === 'archaeological_site' && props['site_type'] === undefined) this.issues.push({id: feature.id, importance: 2, message: 'Attribut site_type manquant pour le site archéologique'})
-*/
+            this.issues.push(...wikipediaWithoutWikidata.detect(feature))
+            this.issues.push(...wikidataWithoutWikipedia.detect(feature))
+            this.issues.push(...wikipediaMissingLanguage.detect(feature))
+            this.issues.push(...badUseOfAge.detect(feature))
+            this.issues.push(...archeologicalSiteMissingSiteType.detect(feature))
         }
     },
     editFeature(issue) {
@@ -65,6 +68,7 @@ export default {
         if(feature !== null) {
             console.log(feature)
             console.log('[OK]')
+            issue.repaired = true
             this.osmConnector.addEditedFeature(feature)
         } else {
             console.log('[NOK]')
@@ -105,6 +109,10 @@ export default {
 
 .issue:hover, .issue:active {
     text-decoration: underline;
+}
+
+.repaired {
+    text-decoration: line-through;
 }
 
 </style>
