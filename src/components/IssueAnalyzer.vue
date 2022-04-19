@@ -8,8 +8,8 @@
                 :style="{ 'background-color': importances[issue.importance]}"
                 @click="editFeature(issue)">
                 {{issue.message}}
-                <button @click="editFeature(issue)">E</button>
-                <button @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">R</button>
+                <button title="Editer" @click="editFeature(issue)">E</button>
+                <button title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">R</button>
             </div>
         </div>
         <button @click="autoRepairAll" :disabled="!connected">Tout réparer automatiquement</button>

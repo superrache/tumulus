@@ -11,6 +11,7 @@
         <BasemapSelect ref="basemapSelect" />
         <ThemeSelect id="themeSelect" ref="themeSelect" />
         <FeatureResult ref="featureResult" />
+        <Thanks ref="thanks" />
         <FeatureEditor ref="featureEditor" />
         <IssueAnalyzer ref="issueAnalyzer" />
       </div>
@@ -40,6 +41,7 @@ import * as URLParameters from './utils/URLParameters.js'
 import Search from './components/Search.vue'
 import BasemapSelect from './components/BasemapSelect.vue'
 import ThemeSelect from './components/ThemeSelect.vue'
+import Thanks from './components/Thanks.vue'
 import FeatureResult from './components/FeatureResult.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
@@ -55,6 +57,7 @@ export default {
     Search,
     BasemapSelect,
     ThemeSelect,
+    Thanks,
     FeatureResult,
     FeatureEditor,
     IssueAnalyzer,
@@ -113,6 +116,7 @@ export default {
     this.issueAnalyzer = this.$refs.issueAnalyzer
 
     this.$refs.osmConnector.commentDialog = this.$refs.commentDialog
+    this.$refs.osmConnector.thanks = this.$refs.thanks
 
     // resizer
     this.sidebar = this.$el.querySelector("#sidebar")
@@ -175,7 +179,12 @@ li {
 }
 
 a {
-  color: #5eb793;
+  color: #ff7733;
+}
+
+a:hover {
+  color: white;
+  background-color: #ff7733;
 }
 
 body {

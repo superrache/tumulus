@@ -31,7 +31,8 @@ export default {
         osmRequest: null,
         userName: '',
         editedFeatures: {},
-        commentDialog: null
+        commentDialog: null,
+        thanks: null
     }
   },
   computed: {
@@ -148,6 +149,8 @@ export default {
             await this.osmRequest.closeChangeset(changesetId)
 
             this.editedFeatures = []
+
+            this.thanks.changeset = changesetId
         }
     }
   }

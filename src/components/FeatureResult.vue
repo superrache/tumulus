@@ -224,8 +224,4 @@ img {
   font-size: 0.7em;
 }
 
-a {
-  color: aquamarine;
-}
-
 </style>
