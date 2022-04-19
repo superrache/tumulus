@@ -14,7 +14,7 @@ export function detect(feature) {
 
             if(props[wikidataTagName] === undefined) {
                 issues.push({
-                    id: feature.id,
+                    feature: feature,
                     importance: 1,
                     message: `Référence ${wikipediaTagName} sans référence ${wikidataTagName}`,
                     autoRepair: async () => {
@@ -22,7 +22,7 @@ export function detect(feature) {
                         const data = await wikipediaApi(wikipediaValue)
                         if(data !== null && data.wikibase_item !== undefined) {
                             feature.properties[wikidataTagName] = data.wikibase_item
-                            console.log(`[REPAIRED] ${wikipediaTagName}=${wikipediaValue} => ${wikidataTagName}=${data.wikibase_item}`)
+                            console.log(`[REPAIRED] add wikidata for ${wikipediaTagName}=${wikipediaValue} => ${wikidataTagName}=${data.wikibase_item}`)
                             return feature
                         } else {
                             return null

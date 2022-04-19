@@ -95,25 +95,6 @@ export default {
     addEditedFeature(feature) {
         this.editedFeatures[feature.id] = feature
     },
-   /* async autoRepair(features) {
-        for(let f in features) {
-            const feature = features[f]
-            const properties = feature.properties
-
-            // manque la langue
-            if(properties.wikipedia !== undefined && properties.wikipedia.indexOf(':') < 0) {
-                // on teste 'fr'
-                var lang = 'fr'
-                const response = await fetch("https://" + lang + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(properties.wikipedia))
-                if(response.code === 200) {
-                    console.log('wikipedia=' + lang + ':' + properties.wikipedia + ' [OK]')
-                    // édition du node id=feature.id
-                    properties.wikipedia = lang + ':' + properties.wikipedia
-                    this.addEditedFeature(feature)
-                }
-            }
-        }
-    },*/
     save() {
         this.commentDialog.show('', this.sendEdits)
     },
