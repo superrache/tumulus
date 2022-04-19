@@ -60,6 +60,7 @@
 import ExpandableImage from './ExpandableImage.vue'
 import * as config from '../const/config.js'
 import * as types from '../const/types.js'
+import {wikipediaApi} from '../utils/WikiApi.js'
 
 export default {
   name: 'FeatureResult',
@@ -158,15 +159,10 @@ export default {
     async loadWikiData(wikipediaKey, wikidataKey, titlePrefix) {
       if(this.props[wikipediaKey] !== undefined) {
         console.log('has ' + wikipediaKey + '=' + this.props[wikipediaKey])
-        const s = this.props[wikipediaKey].split(':')
-        if(s.length > 1) {
-          const pageTitle = s[1].split('?')[0].split('#')[0]
-          const response = await fetch("https://" + s[0] + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(pageTitle))
-          const data = await response.json()
+        const data = await wikipediaApi(this.props[wikipediaKey])
+        if(data !== null) {
           data.displaytitle = titlePrefix + data.displaytitle
           this.wikis.push(data)
-        } else {
-          console.log('il manque la lang fr: ou en: sur le wiki osm id=' + this.props.id)
         }
       } else {
         if(this.props[wikidataKey] !== undefined) {

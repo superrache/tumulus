@@ -8,9 +8,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "express": "node server/server.dev.js",
-    "start": "NODE_ENV=production node server/server.prod.js",
     "prepare": "husky install",
-    "release": "standard-version"
+    "release": "standard-version",
+    "start": "NODE_ENV=production node server/server.prod.js"
   },
   "dependencies": {
     "@turf/along": "^6.5.0",
@@ -59,14 +59,14 @@
     "last 2 versions",
     "not dead"
   ],
+  "bugs": {
+    "url": "https://github.com/superrache/tumulus/issues"
+  },
   "engines": {
     "node": "14.x",
     "npm": "8.1.x"
   },
   "homepage": "https://github.com/superrache/tumulus",
-  "bugs": {
-    "url": "https://github.com/superrache/tumulus/issues"
-  },
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"

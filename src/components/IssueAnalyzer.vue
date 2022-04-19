@@ -15,6 +15,8 @@
 
 <script>
 
+import * as wikipediaWithoutWikidata from '../issues/WikipediaWithoutWikidata.js'
+
 export default {
   name: 'IssueAnalyzer',
   data() {
@@ -34,11 +36,11 @@ export default {
 
         for(let f in features) {
             const feature = features[f]
-            const props = feature.properties
 
-            //if(props.name === undefined) this.issues.push({id: feature.id, importance: 0, message: 'Pas de nom'})
+            this.issues.push(...wikipediaWithoutWikidata.detect(feature))
 
-            if(props.wikipedia !== undefined && props.wikipedia.indexOf(':') < 0) this.issues.push({id: feature.id, importance: 2, message: 'Langue manquante dans la référence wikipedia'})
+
+            /*if(props.wikipedia !== undefined && props.wikipedia.indexOf(':') < 0) this.issues.push({id: feature.id, importance: 2, message: 'Langue manquante dans la référence wikipedia'})
             if(props['artist:wikipedia'] !== undefined && props['artist:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, importance: 2, message: 'Langue manquante dans la référence artist:wikipedia'})
             if(props['architect:wikipedia'] !== undefined && props['architect:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, importance: 2, message: 'Langue manquante dans la référence architect:wikipedia'})
             if(props['subject:wikipedia'] !== undefined && props['subject:wikipedia'].indexOf(':') < 0) this.issues.push({id: feature.id, importance: 2, message: 'Langue manquante dans la référence subject:wikipedia'})
@@ -55,10 +57,24 @@ export default {
             if(props['age'] !== undefined) this.issues.push({id: feature.id, importance: 1, message: 'Attribut age peut-être mal utilisé (à remplacer par start_date)'})
 
             if(props['historic'] === 'archaeological_site' && props['site_type'] === undefined) this.issues.push({id: feature.id, importance: 2, message: 'Attribut site_type manquant pour le site archéologique'})
+*/
         }
     },
-    autoRepair() {
-        this.osmConnector.autoRepair(this.features)
+    async autoRepair() {
+        for(let i in this.issues) {
+            let issue = this.issues[i]
+            if(typeof issue.autoRepair == 'function') {
+                console.log('repairing ' + issue.id + ' ' + issue.message)
+                const feature = await issue.autoRepair()
+                if(feature !== null) {
+                    console.log(feature)
+                    console.log('[OK]')
+                    this.osmConnector.addEditedFeature(feature)
+                } else {
+                    console.log('[NOK]')
+                }
+            }
+        }
     }
   }
 }

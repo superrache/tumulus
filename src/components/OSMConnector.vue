@@ -95,7 +95,7 @@ export default {
     addEditedFeature(feature) {
         this.editedFeatures[feature.id] = feature
     },
-    async autoRepair(features) {
+   /* async autoRepair(features) {
         for(let f in features) {
             const feature = features[f]
             const properties = feature.properties
@@ -113,7 +113,7 @@ export default {
                 }
             }
         }
-    },
+    },*/
     save() {
         this.commentDialog.show('', this.sendEdits)
     },
