@@ -37,8 +37,15 @@
         </div>
       </div>
 
+      <div class="normal" v-if="props.hasOwnProperty('heritage')">Niveau de protection du patrimoine : {{props['heritage']}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('heritage:operator')">Opérateur de protection du patrimoine : {{heritageOperator}}</div>
+      
+      <div class="normal" v-if="props.hasOwnProperty('mhs:inscription_date')">Date d'inscription : {{dispDate(props['mhs:inscription_date'])}}</div>
+
+      <div class="normal" v-if="props.hasOwnProperty('ref:whc')">Référence UNSECO {{props['ref:whc']}}</div>
       <div class="normal" v-if="props.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + props['ref:mhs']">Base Mérimée {{props['ref:mhs']}}</a></div>
       <div class="normal" v-if="props.hasOwnProperty('website')"><a target="_blank" :href="props['website']">{{props['website']}}</a></div>
+      <div class="normal" v-if="props.hasOwnProperty('heritage:website')"><a target="_blank" :href="props['heritage:website']">{{props['heritage:website']}}</a></div>
 
       <div class="normal" v-if="props.hasOwnProperty('fixme')">Note : {{props.fixme}}</div>
       <div class="normal" v-if="props.hasOwnProperty('description')">Description : {{props.description}}</div>
@@ -137,6 +144,11 @@ export default {
       let m = types.materialTypes[this.props.material]
       if(m === undefined) m = this.props.material
       return m
+    },
+    heritageOperator() {
+      let ho = types.heritageOperators[this.props['heritage:operator']]
+      if(ho) return ho
+      return this.props['heritage:operator']
     }
   },
   methods: {

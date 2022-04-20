@@ -354,3 +354,10 @@ export const historicTypes = {
     'mixed': 'Mix',
     'aluminium': 'Aluminium'
   }
+
+export const heritageOperators = {
+  'whc': 'UNESCO, World Heritage Centre',
+  'OnroerendErfgoed': 'Onroerend Erfgoed',
+  'mhs': 'Monuments historiques et sites',
+  'ssmn': 'Service des sites et monuments nationaux'
+}

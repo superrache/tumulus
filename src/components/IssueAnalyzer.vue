@@ -25,6 +25,7 @@ import * as wikidataWithoutWikipedia from '../issues/WikidataWithoutWikipedia.js
 import * as wikipediaMissingLanguage from '../issues/WikipediaMissingLanguage.js'
 import * as badUseOfAge from '../issues/BadUseOfAge.js'
 import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMissingSiteType.js'
+import * as mhs from '../issues/Mhs.js'
 
 export default {
   name: 'IssueAnalyzer',
@@ -55,6 +56,7 @@ export default {
             this.issues.push(...wikipediaMissingLanguage.detect(feature, theme))
             this.issues.push(...badUseOfAge.detect(feature, theme))
             this.issues.push(...archeologicalSiteMissingSiteType.detect(feature, theme))
+            this.issues.push(...mhs.detect(feature, theme))
         }
     },
     selectFeature(issue) {
@@ -67,7 +69,6 @@ export default {
         console.log('repairing ' + issue.feature.id + ' ' + issue.message)
         const feature = await issue.autoRepair()
         if(feature !== null) {
-            console.log(feature)
             console.log('[OK]')
             issue.repaired = true
             this.components.osmConnector.addEditedFeature(feature)
