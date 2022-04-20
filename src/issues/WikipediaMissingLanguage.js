@@ -5,7 +5,7 @@ export function detect(feature, theme) {
     const issues = []
 
     for(let wikipediaTagName in props) {
-        if(wikipediaTagName.indexOf('wikipedia') > 0) {
+        if(wikipediaTagName.indexOf('wikipedia') > -1) {
             if(props[wikipediaTagName].indexOf(':') < 0) {
                 issues.push({
                     feature: feature,

@@ -5,7 +5,7 @@ export function detect(feature, theme) {
     const issues = []
 
     for(let wikipediaTagName in props) {
-        if(wikipediaTagName.indexOf('wikipedia') > 0) {
+        if(wikipediaTagName.indexOf('wikipedia') > -1) {
             let wikidataTagName = 'wikidata'
             let s = wikipediaTagName.split(':')
             if(s.length == 2) {
