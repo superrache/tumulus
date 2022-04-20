@@ -171,12 +171,12 @@ li {
 }
 
 a {
-  color: #ff7733;
+  color: #FE7434;
 }
 
 a:hover {
   color: white;
-  background-color: #ff7733;
+  background-color: #FE7434;
 }
 
 body {
@@ -199,13 +199,13 @@ button {
 }
 
 button:hover {
-  background-color: #ff7733;
+  background-color: #FE7434;
   color: black;
   outline:  solid 1px white;
 }
 
 button:active {
-  background-color: #ffaa77;
+  background-color: #FF9454;
 }
 
 button:disabled {
