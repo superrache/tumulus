@@ -22,16 +22,15 @@ export default {
   name: 'BasemapSelect',
   data () {
     return {
+        components: null,
         basemaps: basemaps.basemaps,
         style: null,
-        map: null,
         collapsed: true,
         currentBasemapId: null
     }
   },
   methods: {
-    init(map) {
-      this.map = map
+    init() {
       this.style = this.basemaps.default.url
     },
     onBasemapSelect(e, id) {
@@ -52,7 +51,7 @@ export default {
     },
     saveBasemapIdInURL(id) {
       this.currentBasemapId = (id === 'default' ? null : id)
-      this.map.updateParams()
+      this.components.map.updateParams()
     },
     async selectBasemap(basemap) {
       if(basemap.url !== undefined) {
@@ -93,7 +92,7 @@ export default {
         this.style = style
       }
       console.log('apply new style')
-      this.map.map.setStyle(this.style)      
+      this.components.map.map.setStyle(this.style)      
     },
     collapse() {
       this.collapsed = true

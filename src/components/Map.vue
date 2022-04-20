@@ -21,7 +21,7 @@ export default {
   name: 'Map',
   data () {
     return {
-      app: null,
+      components: null,
       map: null,
       center: config.startingPosition,
       zoom: config.startingZoom,
@@ -39,12 +39,6 @@ export default {
       queries: themes.queries,
       themes: themes.themes,
       themesSelection: '',
-      // external components
-      basemapSelect: null,
-      themeSelect: null,
-      featureResult: null,
-      featureEditor: null,
-      issueAnalyzer: null,
       popup: null
     }
   },
@@ -55,7 +49,7 @@ export default {
     createMap() {
       this.map = new Map({
         container: this.$refs.map,
-        style: this.basemapSelect.style,
+        style: this.components.basemapSelect.style,
         center: this.center,
         zoom: this.zoom,
         bearing: this.bearing,
@@ -83,7 +77,7 @@ export default {
       }).setText('Loading')
 
       if(this.pendingBasemapId) {
-        this.basemapSelect.selectBasemapById(this.pendingBasemapId)
+        this.components.basemapSelect.selectBasemapById(this.pendingBasemapId)
         this.pendingBasemapId = null
       }
     },
@@ -166,8 +160,8 @@ export default {
         this.themesSelection += (theme.visible ? ((this.themesSelection.length > 0 ? ',' : '') + theme.id) : '')
       }
 
-      if(this.featureResult !== null) this.featureResult.unloadFeature()
-      this.featureEditor.unloadFeature()
+      this.components.featureResult.unloadFeature()
+      this.components.featureEditor.unloadFeature()
 
       this.updateParams()
       this.onMapMove()
@@ -176,16 +170,16 @@ export default {
       this.updateParams()
 
       this.currentZoom = this.map.getZoom()
-      if(!this.app.dispZoomMore) {
+      if(!this.components.app.dispZoomMore) {
         const sw = this.map.getBounds()._sw
         const ne = this.map.getBounds()._ne
         const bounds = utils.round6Digits(sw.lat) + ',' + utils.round6Digits(sw.lng) + ',' + utils.round6Digits(ne.lat) + ',' + utils.round6Digits(ne.lng)
         if(bounds !== this.previousBounds) { // on recharge que si ça a bougé (en mode géolocalisation de l'utilisateur, onMapMove est lancée toutes les 2s)
           this.previousBounds = bounds
 
-          this.app.loading = 'Chargement de la carte ...'
+          this.components.app.loading = 'Chargement de la carte ...'
 
-          this.issueAnalyzer.clear()
+          this.components.issueAnalyzer.clear()
 
           const codename = btoa(Math.random().toString()).substr(10, 5)
           this.currentCodename = codename
@@ -197,7 +191,7 @@ export default {
             let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
             while(launch) {
               console.log(codename + ' : launching query ' + q)
-              this.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
+              this.components.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
               const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
               if(codename !== this.currentCodename) return
               
@@ -216,14 +210,14 @@ export default {
                   const theme = this.themes[t]
                   if(theme.query === q) {
                     this.loadGeojson(theme, data, codename)
-                    this.issueAnalyzer.analyzeFeature(data.features, theme)
+                    this.components.issueAnalyzer.analyzeFeature(data.features, theme)
                   }
                 }
               }
             }
           }
 
-          this.app.loading = ''
+          this.components.app.loading = ''
         }
       }
     },
@@ -340,14 +334,14 @@ export default {
       if(lngLat === undefined) lngLat = feature.lngLat
 
       this.unselectFeature()
-      this.basemapSelect.collapse()
-      this.themeSelect.collapse()
+      this.components.basemapSelect.collapse()
+      this.components.themeSelect.collapse()
 
       feature.id = feature.properties.id
       this.selectedFeatureId = feature.id
       console.log('select ' + this.selectedFeatureId)
-      this.featureResult.loadFeature(feature, theme, lngLat)
-      this.featureEditor.loadFeature(feature)
+      this.components.featureResult.loadFeature(feature, theme, lngLat)
+      this.components.featureEditor.loadFeature(feature)
 
       // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
       let marker = theme.markers[this.selectedFeatureId]
@@ -394,7 +388,7 @@ export default {
       })
     },
     updateParams() { // appelée aussi par BasemapSelect
-      this.app.updateAppUrl()
+      this.components.app.updateAppUrl()
     }
 
   }

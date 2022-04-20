@@ -30,16 +30,14 @@ export default {
   name: 'IssueAnalyzer',
   data() {
     return {
+        components: null,
         issues: [],
-        importances: ["missing-data", "warning", "error"],
-        osmConnector: null,
-        featureEditor: null,
-        map: null
+        importances: ["missing-data", "warning", "error"]
     }
   },
   computed: {
       connected() {
-          return this.osmConnector.connected
+          return this.components && this.components.osmConnector && this.components.osmConnector.connected
       }
   },
   methods: {
@@ -60,10 +58,10 @@ export default {
         }
     },
     selectFeature(issue) {
-        this.map.selectFeature(issue.feature, issue.theme)
+        this.components.map.selectFeature(issue.feature, issue.theme)
     },
     editFeature(issue) {
-        this.featureEditor.loadFeature(issue.feature)
+        this.components.featureEditor.loadFeature(issue.feature)
     },
     async autoRepairFeature(issue) {
         console.log('repairing ' + issue.feature.id + ' ' + issue.message)
@@ -72,7 +70,7 @@ export default {
             console.log(feature)
             console.log('[OK]')
             issue.repaired = true
-            this.osmConnector.addEditedFeature(feature)
+            this.components.osmConnector.addEditedFeature(feature)
         } else {
             console.log('[NOK]')
         }

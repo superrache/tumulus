@@ -65,11 +65,7 @@ export default {
   },
   data () {
     return {
-      map: null,
-      basemapSelect: null,
-      themeSelect: null,
-      osmConnector: null,
-      issueAnalyzer: null,
+      components: null,
       loading: '',
       sidebar: null
     }
@@ -83,41 +79,36 @@ export default {
     console.log('app mounted, linking components')
 
     // liens entre les composants
-    this.map = this.$refs.map
-    this.map.app = this
+    this.components = {
+      app: this,
+      map: this.$refs.map,
+      osmConnector: this.$refs.osmConnector,
+      basemapSelect: this.$refs.basemapSelect,
+      search: this.$refs.search,
+      themeSelect: this.$refs.themeSelect,
+      thanks: this.$refs.thanks,
+      featureResult: this.$refs.featureResult,
+      featureEditor: this.$refs.featureEditor,
+      issueAnalyzer: this.$refs.issueAnalyzer,
+      commentDialog: this.$refs.commentDialog
+    }
 
-    this.$refs.search.map = this.map
+    this.components.map.components = this.components
+    this.components.osmConnector.components = this.components
+    this.components.basemapSelect.components = this.components
+    this.components.search.components = this.components
+    this.components.themeSelect.components = this.components
+    this.components.thanks.components = this.components
+    this.components.featureResult.components = this.components
+    this.components.featureEditor.components = this.components
+    this.components.issueAnalyzer.components = this.components
+    this.components.commentDialog.components = this.components
 
-    this.basemapSelect = this.$refs.basemapSelect
-    this.map.basemapSelect = this.basemapSelect
-
-    // prise en compte des paramètres de l'URL
-    URLParameters.applyURLParameters(this.map)
-    this.basemapSelect.init(this.map)
-    this.map.createMap()
-
-    this.themeSelect = this.$refs.themeSelect
-    this.themeSelect.load(this.map)
-    this.map.themeSelect = this.themeSelect
-
-    this.map.featureResult = this.$refs.featureResult
-    this.map.featureEditor = this.$refs.featureEditor
-    this.$refs.featureEditor.osmConnector = this.$refs.osmConnector
-
-    this.issueAnalyzer = this.$refs.issueAnalyzer
-    this.issueAnalyzer.osmConnector = this.$refs.osmConnector
-    this.issueAnalyzer.featureEditor = this.$refs.featureEditor
-    this.issueAnalyzer.map = this.map
-    this.map.issueAnalyzer = this.issueAnalyzer
-
-    this.themeSelect.map = this
-
-    this.search = this.$refs.search
-    this.themeSelect = this.$refs.themeSelect
-    this.issueAnalyzer = this.$refs.issueAnalyzer
-
-    this.$refs.osmConnector.commentDialog = this.$refs.commentDialog
-    this.$refs.osmConnector.thanks = this.$refs.thanks
+    // prise en compte des paramètres de l'URL et initialisation des composants
+    URLParameters.applyURLParameters(this.components.map)
+    this.components.basemapSelect.init()
+    this.components.map.createMap()
+    this.components.themeSelect.load()
 
     // resizer
     this.sidebar = this.$el.querySelector("#sidebar")
@@ -137,13 +128,13 @@ export default {
   },
   computed: {
     dispZoomMore() {
-      if(this.map) return this.map.currentZoom < this.map.maxZoomToGetData
+      if(this.components && this.components.map) return this.components.map.currentZoom < this.components.map.maxZoomToGetData
       else return false
     }
   },
   methods: {
     updateAppUrl() {
-      URLParameters.updateAppUrl(this.map)
+      URLParameters.updateAppUrl(this.components.map)
     },
     onSidebarResize(e) {
       let [x, y] = [e.x, e.y]
@@ -155,7 +146,7 @@ export default {
       } else { // desktop
         this.sidebar.style.width = (x + 2) + 'px'
       }
-      this.map.map.resize()
+      this.components.map.map.resize()
     }
   }
 }

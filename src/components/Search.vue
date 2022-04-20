@@ -38,7 +38,7 @@ export default {
   name: 'Search',
   data() {
     return {
-        map: null,
+        components: null,
         results: [],
         inputStr: ''
     }
@@ -54,14 +54,14 @@ export default {
       //this.$emit("update:modelValue", e.target.value);
     },
     onResultClic(e, result) {
-        this.map.flyTo([result.lon, result.lat])
+        this.components.map.flyTo([result.lon, result.lat])
         this.results = []
     },
     enter() { // entrer => premier résultat
     console.log('enter')
         if(this.results.length > 0) {
             let result = this.results[0]
-            this.map.flyTo([result.lon, result.lat])
+            this.components.map.flyTo([result.lon, result.lat])
             this.results = []
         }
     },

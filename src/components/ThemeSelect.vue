@@ -17,6 +17,7 @@ export default {
   name: 'ThemeSelect',
   data () {
     return {
+        components: null,
         themes: {
           loading: {
             id: "loading",
@@ -24,14 +25,12 @@ export default {
             color: "transparent"
           }
         },
-        updateThemesVisibility: null,
         collapsed: false
     }
   },
   methods: {
-      load(map) {
-        this.updateThemesVisibility = map.updateThemesVisibility
-        this.themes = map.themes
+      load() {
+        this.themes = this.components.map.themes
       },
       toogleThemeVisibility(e, id) {
           for(let t in this.themes) {
@@ -40,7 +39,7 @@ export default {
               console.log('toogleThemeVisibility ' + id + ' to ' + (this.themes[t].visible ? 'visible' : 'invisible'))
             }
           }
-          this.updateThemesVisibility()
+          this.components.map.updateThemesVisibility()
       },
       collapse() {
         this.collapsed = true

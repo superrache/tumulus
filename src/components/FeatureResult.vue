@@ -69,6 +69,7 @@ export default {
   },
   data () {
     return {
+      components: null,
       debug: config.DEBUG,
       id: '',
       lngLat: {lng: 0, lat: 0},

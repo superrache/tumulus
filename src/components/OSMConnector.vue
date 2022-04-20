@@ -26,13 +26,12 @@ export default {
   name: 'OSMConnector',
   data() {
     return {
+        components: null,
         auth: null,
         authenticated: false,
         osmRequest: null,
         userName: '',
-        editedFeatures: {},
-        commentDialog: null,
-        thanks: null
+        editedFeatures: {}
     }
   },
   computed: {
@@ -94,10 +93,11 @@ export default {
         this.update()
     },
     addEditedFeature(feature) {
+        console.log('osmConnector added edited feature ' + feature.id)
         this.editedFeatures[feature.id] = feature
     },
     save() {
-        this.commentDialog.show('', this.sendEdits)
+        this.components.commentDialog.show('', this.sendEdits)
     },
     async sendEdits(comment) {
         if(this.modifications > 0) {
@@ -148,9 +148,9 @@ export default {
             console.log('closeChangeset')
             await this.osmRequest.closeChangeset(changesetId)
 
-            this.editedFeatures = []
+            this.editedFeatures = {}
 
-            this.thanks.changeset = changesetId
+            this.components.thanks.changeset = changesetId
         }
     }
   }
@@ -188,7 +188,7 @@ a {
     visibility: hidden;
     position: fixed;
     z-index: 31;
-    top: 48px;
+    top: 52px;
     right: 15px;
     width: 200px;
     border-radius: 10px;

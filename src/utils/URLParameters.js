@@ -56,7 +56,7 @@ export function updateAppUrl(map) {
 
     let params = 'themes=' + map.themesSelection 
         + (map.selectedFeatureId !== null ? '&id=' + encodeURIComponent(map.selectedFeatureId) : '')
-        + (map.basemapSelect.currentBasemapId !== null ? '&basemap=' + map.basemapSelect.currentBasemapId : '')
+        + (map.components.basemapSelect.currentBasemapId !== null ? '&basemap=' + map.components.basemapSelect.currentBasemapId : '')
         + '&map=' + mapParam
 
     window.history.pushState(config.appName, config.appName, '?' + params)

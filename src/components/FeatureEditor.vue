@@ -1,9 +1,9 @@
 <template>
-  <div class="cat" v-if="osmConnector !== null" >
+  <div class="cat">
     <h3>Attributs OpenStreetMap</h3>
-    <div v-if="!osmConnector.connected">Connectez-vous à OpenStreetMap pour pouvoir éditer cet objet</div>
+    <div v-if="!connected">Connectez-vous à OpenStreetMap pour pouvoir éditer cet objet</div>
 
-    <table v-if="!osmConnector.connected && originalFeature !== null && originalFeature.properties !== undefined" >
+    <table v-if="!connected && originalFeature !== null && originalFeature.properties !== undefined" >
       <tr><th class="right">Clé</th><th>=</th><th class="left">Valeur</th></tr>
       <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g'))" :key="key">
         <td class="right">{{key}}</td>
@@ -12,7 +12,7 @@
       </tr>
     </table>
     
-    <table v-if="osmConnector.connected" >
+    <table v-if="connected" >
       <tr><th>Clé</th><th>=</th><th>Valeur</th></tr>
       <tr v-for="(property, index) in editedProperties" :key="index">
         <td>
@@ -28,7 +28,7 @@
       </tr>
     </table>
 
-    <div id="buttons" v-if="osmConnector.connected">
+    <div id="buttons" v-if="connected">
       <button @click="save" :disabled="!editing">Enregistrer</button>
       <button @click="cancel">Annuler</button>
     </div>
@@ -47,11 +47,16 @@ export default {
   },
   data () {
     return {
-      osmConnector: null,
+      components: null,
       originalFeature: null,
       originalProperties: null,
       editedProperties: [],
       editing: true
+    }
+  },
+  computed: {
+    connected() {
+      return this.components && this.components.osmConnector && this.components.osmConnector.connected
     }
   },
   methods: {
@@ -141,7 +146,7 @@ export default {
       newProperties.g = this.originalFeature.properties.g
     
       this.originalFeature.properties = newProperties
-      this.osmConnector.addEditedFeature(this.originalFeature)
+      this.components.osmConnector.addEditedFeature(this.originalFeature)
 
       this.loadFeature(this.originalFeature) // reset
     },
