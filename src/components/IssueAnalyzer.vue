@@ -48,7 +48,7 @@ export default {
         for(let f in features) {
             const feature = features[f]
 
-            feature.lang = 'fr' // TODO
+            feature.lang = this.components.map.countryCode
 
             this.issues.push(...wikipediaWithoutWikidata.detect(feature, theme))
             this.issues.push(...wikidataWithoutWikipedia.detect(feature, theme))

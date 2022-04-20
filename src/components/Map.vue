@@ -16,6 +16,7 @@ import * as env from '../utils/env.js'
 import * as utils from '../utils/utils.js'
 import * as config from '../const/config.js'
 import * as themes from '../const/themes.js'
+import * as nominatim from '../utils/Nominatim.js'
 
 export default {
   name: 'Map',
@@ -39,7 +40,8 @@ export default {
       queries: themes.queries,
       themes: themes.themes,
       themesSelection: '',
-      popup: null
+      popup: null,
+      countryCode: null
     }
   },
   mounted() {
@@ -178,6 +180,8 @@ export default {
           this.previousBounds = bounds
 
           this.components.app.loading = 'Chargement de la carte ...'
+
+          this.countryCode = await nominatim.getCountryCode({lat: utils.round6Digits(sw.lat), lng: utils.round6Digits(sw.lng)})
 
           this.components.issueAnalyzer.clear()
 

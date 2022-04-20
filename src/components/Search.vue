@@ -32,7 +32,7 @@ c0.4-0.4,1-0.4,1.4,0l2.8,2.8c0.4,0.4,0.4,1,0,1.4l-7.8,7.8C30.6,25.8,30.6,26.4,30
 
 <script>
 
-import * as config from '../const/config.js'
+import * as nominatim from '../utils/Nominatim.js'
 
 export default {
   name: 'Search',
@@ -47,9 +47,7 @@ export default {
     async updateInput(e) {
         const q = e.target.value
         if(q.length > 2) {
-            const url = config.nominatimInstance + '/search.php?format=jsonv2&q=' + encodeURIComponent(q)
-            const response = await fetch(url)
-            this.results = await response.json()
+            this.results = await nominatim.search(q)
         }
       //this.$emit("update:modelValue", e.target.value);
     },
