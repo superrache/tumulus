@@ -264,6 +264,7 @@ export default {
             }
           }
         }
+
         for(let g = 1; g < 3; g++) {
           this.map.getSource(g + '/' + theme.id).setData(theme.geojsons[g])
           if(added[g] > 0) console.log(codename + ' : ' + added[g] + ' features of type ' + g + ' added to theme ' + theme.id)

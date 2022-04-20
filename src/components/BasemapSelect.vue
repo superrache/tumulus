@@ -40,20 +40,39 @@ export default {
           if(b === id) {
             console.log('select basemap ' + id)
             this.saveBasemapIdInURL(id)
-            this.selectBasemap(basemap)
+            this.selectBasemap(basemap, true)
           }
         }
     },
     selectBasemapById(id) {
       this.saveBasemapIdInURL(id)
       for(let b in this.basemaps) this.basemaps[b].selected = (b === id)
-      this.selectBasemap(this.basemaps[id])
+      this.selectBasemap(this.basemaps[id], false)
     },
     saveBasemapIdInURL(id) {
       this.currentBasemapId = (id === 'default' ? null : id)
       this.components.map.updateParams()
     },
-    async selectBasemap(basemap) {
+    async selectBasemap(basemap, backupAndRestore) {
+      // sauvegarde des sources et layers des thématiques     
+      let themeSources = {}
+      let themeLayers = []
+      if(backupAndRestore) {
+        let actualStyle = this.components.map.map.getStyle()
+        for(let s in actualStyle.sources) {
+          if(s.indexOf('1/') == 0 || s.indexOf('2/') == 0) {
+            themeSources[s] = actualStyle.sources[s]
+          }
+        }
+        for(let l in actualStyle.layers) {
+          let layer = actualStyle.layers[l]
+          console.log(layer)
+          if(layer.id.indexOf('1/') == 0 || layer.id.indexOf('2/') == 0) {
+            themeLayers.push(layer)
+          }
+        }
+      }
+
       if(basemap.url !== undefined) {
         this.style = basemap.url
       } else {
@@ -91,8 +110,29 @@ export default {
         style.layers = newLayers
         this.style = style
       }
+
+      // suppression des sources et layers thématiques
+      if(backupAndRestore) {
+        console.log('suppressions...')
+        console.log(themeLayers)
+        for(let l in themeLayers) {
+          console.log('remove layer ' + themeLayers[l].id)
+          this.components.map.map.removeLayer(themeLayers[l].id)
+        }
+        for(let s in themeSources) this.components.map.map.removeSource(s)
+      }
+      
       console.log('apply new style')
-      this.components.map.map.setStyle(this.style)      
+      this.components.map.map.setStyle(this.style)
+
+      // restauration des sources et layers thématiques
+      if(backupAndRestore) {
+        for(let s in themeSources) this.components.map.map.addSource(s, themeSources[s])
+        for(let l in themeLayers) {
+          console.log('readd layer ' + themeLayers[l].id)
+          this.components.map.map.addLayer(themeLayers[l])
+        }
+      }
     },
     collapse() {
       this.collapsed = true
