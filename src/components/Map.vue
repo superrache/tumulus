@@ -210,7 +210,7 @@ export default {
                   const theme = this.themes[t]
                   if(theme.query === q) {
                     this.loadGeojson(theme, data, codename)
-                    this.components.issueAnalyzer.analyzeFeature(data.features, theme)
+                    this.components.issueAnalyzer.analyzeFeature(theme.geojsons[0].features, theme)
                   }
                 }
               }
