@@ -55,7 +55,7 @@
       <div class="small">
         <a target="_blank" :href="'https://www.openstreetmap.org/' + id.split('/')[0] + '/' + id.split('/')[1]">Voir sur OpenStreetMap</a>
         &nbsp;
-        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + lngLat.lat + '/' + lngLat.lng">Editer avec iD</a>
+        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + props.lat + '/' + props.lng">Editer avec iD</a>
       </div>
     </div>
 
@@ -79,7 +79,6 @@ export default {
       components: null,
       debug: config.DEBUG,
       id: '',
-      lngLat: {lng: 0, lat: 0},
       props: null,
       wikis: [],
       theme: {}
@@ -152,9 +151,8 @@ export default {
     }
   },
   methods: {
-    loadFeature(feature, theme, lngLat) {
+    loadFeature(feature, theme) {
       this.id = feature.id
-      this.lngLat = lngLat
       this.props = feature.properties
       this.theme = theme
 

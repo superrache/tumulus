@@ -5,7 +5,7 @@
 
     <table v-if="!connected && originalFeature !== null && originalFeature.properties !== undefined" >
       <tr><th class="right">Clé</th><th>=</th><th class="left">Valeur</th></tr>
-      <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g'))" :key="key">
+      <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g') && !key.includes('lng') && !key.includes('lat'))" :key="key">
         <td class="right">{{key}}</td>
         <td>=</td>
         <td class="left">{{originalFeature.properties[key]}}</td>
@@ -68,7 +68,7 @@ export default {
           this.originalFeature = feature
           this.originalProperties = feature.properties
           for(let key in this.originalProperties) {
-              if(key !== 'g' && key !== 'id') this.editedProperties.push({key: key, value: this.originalProperties[key]})
+              if(key !== 'g' && key !== 'id' && key !== 'lng' && key !== 'lat') this.editedProperties.push({key: key, value: this.originalProperties[key]})
           }
           this.editedProperties.push({key: '', value: ''})
           this.editing = false

@@ -134,7 +134,7 @@ export default {
 
           this.map.on('mousemove', id, (e) => { if(e.features.length > 0) { this.map.getCanvas().style.cursor = "pointer" } })
           this.map.on('mouseleave', id, () => { this.map.getCanvas().style.cursor = "" })
-          this.map.on('click', id, (e) => { if(e.features.length > 0) { this.onFeatureLayerSelect(e.features[0], theme, e.lngLat) } })
+          this.map.on('click', id, (e) => { if(e.features.length > 0) { this.onFeatureLayerSelect(e.features[0], theme) } })
         }
 
         let style = document.createElement('style');
@@ -251,14 +251,18 @@ export default {
                 pointFeature.id = feature.id
 
                 // on garde le centre pour pouvoir zoomer direct dessus en ouvrant l'éditeur iD
-                const lngLat = {lng: pointFeature.geometry.coordinates[0], lat: pointFeature.geometry.coordinates[1]}
-                pointFeature.lngLat = lngLat
-                feature.lngLat = lngLat
-                
+                const lng = pointFeature.geometry.coordinates[0], lat = pointFeature.geometry.coordinates[1]
+                pointFeature.properties.lng = lng
+                pointFeature.properties.lat = lat
+                feature.properties.lng = lng
+                feature.properties.lat = lat
+
                 theme.geojsons[0].features.push(pointFeature)
                 added[0]++
               } else {
-                feature.lngLat = {lng: feature.geometry.coordinates[0], lat: feature.geometry.coordinates[1]}
+                const lng = feature.geometry.coordinates[0], lat = feature.geometry.coordinates[1]
+                feature.properties.lng = lng
+                feature.properties.lat = lat
               }
 
             }
@@ -316,7 +320,7 @@ export default {
 
               if(this.pendingSelectedFeatureId === feature.id) {
                 this.pendingSelectedFeatureId = null
-                this.selectFeature(feature, theme, lngLat)
+                this.selectFeature(feature, theme)
               }
             }
           } else {
@@ -330,14 +334,12 @@ export default {
       }
     },
     onMarkerSelect(marker) {
-      this.selectFeature(marker.feature, marker.theme, marker.lngLat)
+      this.selectFeature(marker.feature, marker.theme)
     },
-    onFeatureLayerSelect(feature, theme, lngLat) {
-      this.selectFeature(feature, theme, lngLat)
+    onFeatureLayerSelect(feature, theme) {
+      this.selectFeature(feature, theme)
     },
-    selectFeature(feature, theme, lngLat) {
-      if(lngLat === undefined) lngLat = feature.lngLat
-
+    selectFeature(feature, theme) {
       this.unselectFeature()
       this.components.basemapSelect.collapse()
       this.components.themeSelect.collapse()
@@ -345,7 +347,7 @@ export default {
       feature.id = feature.properties.id
       this.selectedFeatureId = feature.id
       console.log('select ' + this.selectedFeatureId)
-      this.components.featureResult.loadFeature(feature, theme, lngLat)
+      this.components.featureResult.loadFeature(feature, theme)
       this.components.featureEditor.loadFeature(feature)
 
       // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
