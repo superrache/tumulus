@@ -60,12 +60,13 @@ export default {
 
 h3 {
   font-weight: 700;
-  font-family: Ubuntu;
+  font-family: Helvetica, sans-serif;
 }
 
 .collapsible {
   margin: 5px 5px 5px 5px;
   padding: 5px;
+  padding-top: 7px;
   border-radius: 5px;
   cursor: pointer;
 }
@@ -80,10 +81,9 @@ h3 {
 
 .theme {
   font-size: 1.2em;
-  font-family: Ubuntu;
+  font-family: Helvetica, sans-serif;
   font-weight: 500;
-  padding: 3px;
-  padding-left: 5px;
+  padding: 5px 5px 3px 3px;
   margin: 5px;
   border-radius: 5px;
 }

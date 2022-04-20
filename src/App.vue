@@ -351,7 +351,7 @@ button:disabled {
   text-decoration: none;
   color: white;
   font-size: 2.5em;
-  font-family: Ubuntu;
+  font-family: Ubuntu, Helvetica, sans-serif;
   font-weight: 700;
   margin: 5px;
 }
