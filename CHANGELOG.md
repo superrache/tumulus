@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.9](https://github.com/superrache/tumulus/compare/v0.1.8...v0.1.9) (2022-04-20)
+
+
+### Features
+
+* add nominatim API country code ([c7b4355](https://github.com/superrache/tumulus/commit/c7b43556b17abc525412abbcfa18f1fa196cd3fb))
+* add thanks message after send to osm ([e9ab0eb](https://github.com/superrache/tumulus/commit/e9ab0ebacb90ee02a16a9d25eda2f0509b6f0fd2))
+* add wiki apis and group issue detector and autorepair corresponding function ([1def364](https://github.com/superrache/tumulus/commit/1def364d1398701be056abfdea2a6455941356a8))
+* add wikipedia missing language issue and add repair and edit button on issues element ([a35edb0](https://github.com/superrache/tumulus/commit/a35edb0b9cfa4292abf7ac84f43e298e773722fd))
+* implements other issue analyser and repair ([d38702d](https://github.com/superrache/tumulus/commit/d38702dbb0b20202086db16febef5e6f72b1f97c))
+* mhs fields ([59faae0](https://github.com/superrache/tumulus/commit/59faae069b8c907df2d0b895224804618533f7ed))
+* select feature from issue analyzer ([6c12c94](https://github.com/superrache/tumulus/commit/6c12c941af218809344eadb0c6d96964d4160e4a))
+
+
+### Bug Fixes
+
+* backup and restore layers and source while changing basemap (no yet fixed) ([2256ee3](https://github.com/superrache/tumulus/commit/2256ee34da61d7f8108a693652a1830a2cbcee56))
+* case wikipedia or wikidata value ([4db6f5d](https://github.com/superrache/tumulus/commit/4db6f5d4672cfd9a9578b507cdb71383c1adfce4))
+* lng, lat in properties to get coords in editor for ways and relations ([db8d66d](https://github.com/superrache/tumulus/commit/db8d66d9be79b86cd806032014dde16dec430d3f))
+* one issue by theme ([3a9bc01](https://github.com/superrache/tumulus/commit/3a9bc0199fdaa9dbd11cff8366b14aa9a83dd1ef))
+
 ### [0.1.8](https://github.com/superrache/tumulus/compare/v0.1.7...v0.1.8) (2022-04-15)
 
 
