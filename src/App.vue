@@ -107,6 +107,7 @@ export default {
     this.issueAnalyzer = this.$refs.issueAnalyzer
     this.issueAnalyzer.osmConnector = this.$refs.osmConnector
     this.issueAnalyzer.featureEditor = this.$refs.featureEditor
+    this.issueAnalyzer.map = this.map
     this.map.issueAnalyzer = this.issueAnalyzer
 
     this.themeSelect.map = this

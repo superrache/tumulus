@@ -211,14 +211,12 @@ export default {
                 query.bounds = bounds
                 launch = false
 
-                // analyse de la donnée (affichée ou non, qq soit les thématiques)
-                this.issueAnalyzer.analyzeFeature(data.features)
-
                 // application de la donnée aux thèmes concernés (visible ou pas)
                 for(let t in this.themes) {
                   const theme = this.themes[t]
                   if(theme.query === q) {
                     this.loadGeojson(theme, data, codename)
+                    this.issueAnalyzer.analyzeFeature(data.features, theme)
                   }
                 }
               }
@@ -236,7 +234,7 @@ export default {
         let added = [0, 0, 0]
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
         for(let f in geojson.features) {
-          let feature = geojson.features[f]
+          const feature = geojson.features[f]
           feature.id = feature.properties.id
 
           if(!theme.dataCacheIds.has(feature.id)) {
@@ -253,8 +251,16 @@ export default {
                   : along(feature, length(feature) / 2))
                 pointFeature.properties = feature.properties
                 pointFeature.id = feature.id
+
+                // on garde le centre pour pouvoir zoomer direct dessus en ouvrant l'éditeur iD
+                const lngLat = {lng: pointFeature.geometry.coordinates[0], lat: pointFeature.geometry.coordinates[1]}
+                pointFeature.lngLat = lngLat
+                feature.lngLat = lngLat
+                
                 theme.geojsons[0].features.push(pointFeature)
                 added[0]++
+              } else {
+                feature.lngLat = {lng: feature.geometry.coordinates[0], lat: feature.geometry.coordinates[1]}
               }
 
             }
@@ -331,6 +337,8 @@ export default {
       this.selectFeature(feature, theme, lngLat)
     },
     selectFeature(feature, theme, lngLat) {
+      if(lngLat === undefined) lngLat = feature.lngLat
+
       this.unselectFeature()
       this.basemapSelect.collapse()
       this.themeSelect.collapse()

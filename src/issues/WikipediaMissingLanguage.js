@@ -1,6 +1,6 @@
 import {wikipediaApi} from '../utils/WikiApi.js'
 
-export function detect(feature) {
+export function detect(feature, theme) {
     const props = feature.properties
     const issues = []
 
@@ -9,6 +9,7 @@ export function detect(feature) {
             if(props[wikipediaTagName].indexOf(':') < 0) {
                 issues.push({
                     feature: feature,
+                    theme: theme,
                     importance: 2,
                     message: `Langue manquante dans la référence ${wikipediaTagName}=${props[wikipediaTagName]}`,
                     autoRepair: async () => {

@@ -1,6 +1,6 @@
 import {wikidataApi} from '../utils/WikiApi.js'
 
-export function detect(feature) {
+export function detect(feature, theme) {
     const props = feature.properties
     const issues = []
 
@@ -15,6 +15,7 @@ export function detect(feature) {
             if(props[wikipediaTagName] === undefined) {
                 issues.push({
                     feature: feature,
+                    theme: theme,
                     importance: 1,
                     message: `Référence ${wikidataTagName} sans référence ${wikipediaTagName}`,
                     autoRepair: async () => {
