@@ -2,8 +2,8 @@ export function detect(feature, theme) {
     const props = feature.properties
     const issues = []
 
-    if(props['historic'] && props.historic === 'monument') {
-        if(!props('heritage')) {
+    if(props.historic && props.historic === 'monument') {
+        if(!props.heritage) {
             issues.push({
                 feature: feature,
                 theme: theme,
