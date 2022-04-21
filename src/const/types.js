@@ -1,5 +1,4 @@
 export const historicTypes = {
-    'yes': 'intérêt historique',
     'aircraft': 'Aéronef',
     'aqueduct': 'Aqueduc',
     'archaeological_site': 'Site archéologique',
@@ -41,6 +40,7 @@ export const historicTypes = {
     'wayside_cross': 'Croix ou calvaire',
     'wayside_shrine': 'Oratoire',
     'wreck': 'Epave'
+    // ne pas mettre 'yes'
   }
   
   export const manMadeTypes = {

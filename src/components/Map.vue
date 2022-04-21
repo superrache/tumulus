@@ -196,7 +196,7 @@ export default {
             while(launch) {
               console.log(codename + ' : launching query ' + q)
               this.components.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
-              const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filter=" + query.filter)
+              const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filters=" + query.filters.join(","))
               if(codename !== this.currentCodename) return
               
               const data = await response.json()
@@ -236,7 +236,7 @@ export default {
           feature.id = feature.properties.id
 
           if(!theme.dataCacheIds.has(feature.id)) {
-            if(theme.values.indexOf(feature.properties[theme.key]) > -1) {
+            if(theme.values.indexOf(feature.properties[theme.key]) > -1 || (theme.values.indexOf('!') > -1 && !feature.properties[theme.key])) {
               theme.dataCacheIds.add(feature.id)
               let g = utils.getGeometryInteger(feature)
               feature.properties.g = g // retenir le type de géométrie d'origine pour la sélection

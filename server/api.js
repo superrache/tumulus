@@ -32,13 +32,21 @@ module.exports = function(app, prod) {
             const instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
             const instance = instances[Math.floor(Math.random() * instances.length)]
             const url = instance + '/api/interpreter?data='
-            const query = '[out:json][timeout:10];('
-                    + 'node[' + req.query.filter + '](' + req.query.bounds + ');'
-                    + 'way[' + req.query.filter + '](' + req.query.bounds + ');'
-                    + 'relation[' + req.query.filter + '](' + req.query.bounds + ');'                    
-                    + ');out body;>;out skel qt;'
+            
+            const bounds = req.query.bounds
+            console.log('get /data request on ' + instance + ' filters: ' + req.query.filters + ' bounds: ' + bounds)
+
+            const filters = req.query.filters.split(',')
+            let query = '[out:json][timeout:25];('
+            for(let f in filters) {
+                let filter = filters[f]
+                query += `node${filter}(${bounds});way${filter}(${bounds});relation${filter}(${bounds});`
+            }
+            query += ');out body;>;out skel qt;'
+
             const fullUrl = url + encodeURIComponent(query)
-            console.log('get /data request on ' + instance + ' filter: ' + req.query.filter + ' bounds: ' + req.query.bounds)
+            //console.log(query)
+
             if(simpleCache.hasOwnProperty(query)) {
                 console.log('[result in cache]')
                 res.json(simpleCache[query])

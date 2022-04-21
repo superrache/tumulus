@@ -1,6 +1,6 @@
 export const queries = {
     historic: {
-      filter: '"historic"',
+      filters: ['["historic"]', '["heritage"][!"historic"]'],
       label: "Eléments d'intérêt historique",
       bounds: '',
       cache: {},
@@ -8,7 +8,7 @@ export const queries = {
       loading: false
     },
     artwork: {
-      filter: '"tourism"="artwork"',
+      filters: ['["tourism"="artwork"]'],
       label: "Oeuvres d'art",
       bounds: '',
       cache: {},
@@ -16,7 +16,7 @@ export const queries = {
       loading: false
     },
     railway: {
-      filter: '"railway"="abandoned"',
+      filters: ['["railway"="abandoned"]'],
       label: 'Ferroviaire',
       bounds: '',
       cache: {},
@@ -52,7 +52,7 @@ export const queries = {
         color: '#1184A7',
         query: 'historic',
         key: 'historic',
-        values: ['aqueduct', 'building', 'castle', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
+        values: ['!', 'aqueduct', 'building', 'castle', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
         icon: 'monument',
         visible: true
       },
