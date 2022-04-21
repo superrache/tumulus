@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.10](https://github.com/superrache/tumulus/compare/v0.1.9...v0.1.10) (2022-04-21)
+
+
+### Features
+
+* add editor console log ([a51e0be](https://github.com/superrache/tumulus/commit/a51e0be896cc2e7f68db83744c89785f1fae0279))
+* add heritage* to monument query ([2aaf41f](https://github.com/superrache/tumulus/commit/2aaf41fa3cf19a8eae382c516c5808c4f2790827))
+* add issue monument without heritage ([78a993b](https://github.com/superrache/tumulus/commit/78a993be8de02a4eede589ea20fe6df7024c1b54))
+* refresh result and editor after repair and add repair messages to console ([2add950](https://github.com/superrache/tumulus/commit/2add95095170bed34f7cbbf3a9e0e5945dc6360f))
+* reload map button (optional) ([fc30503](https://github.com/superrache/tumulus/commit/fc3050377f328f597522588b1c0a9bfde5184fb1))
+
+
+### Bug Fixes
+
+* add site type ([c64662c](https://github.com/superrache/tumulus/commit/c64662c273119d82a86e839f7284b424c2bbeaaa))
+* amenity type not appeared ([abe4fab](https://github.com/superrache/tumulus/commit/abe4fab527f5877e39bb7b9f94fc9eb4ef6c7fe6))
+* correct mhs issue ([9101472](https://github.com/superrache/tumulus/commit/91014725ae4098dd5be8ba577ce7a089a1883f25))
+* issue not working ([db3caa3](https://github.com/superrache/tumulus/commit/db3caa3289c49eb4e443f2447ef8432a732a84dd))
+
 ### [0.1.9](https://github.com/superrache/tumulus/compare/v0.1.8...v0.1.9) (2022-04-20)
 
 
