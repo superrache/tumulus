@@ -10,7 +10,8 @@ export function detect(feature, theme) {
             message: 'Attribut age peut-être mal utilisé (à remplacer par start_date)',
             autoRepair: async () => {
                 feature.properties['start_date'] = feature.properties.age
-                return feature
+                delete feature.properties.age
+                return {feature: feature, message: 'Tag age remplacé par start_date'}
             }
         })
     }

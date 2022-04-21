@@ -17,8 +17,7 @@ export function detect(feature, theme) {
                         const data = await wikipediaApi(wikipediaValue)
                         if(data !== null) {
                             feature.properties[wikipediaTagName] = wikipediaValue
-                            console.log(`[REPAIRED] added lang ${wikipediaTagName}=${wikipediaValue}`)
-                            return feature
+                            return {feature: feature, message: `Ajout de la langue dans la référence wikipedia : ${wikipediaTagName}=${wikipediaValue}`}
                         } else {
                             return null
                         }

@@ -23,8 +23,7 @@ export function detect(feature, theme) {
                         const data = await wikipediaApi(wikipediaValue)
                         if(data !== null && data.wikibase_item !== undefined) {
                             feature.properties[wikidataTagName] = data.wikibase_item
-                            console.log(`[REPAIRED] add wikidata for ${wikipediaTagName}=${wikipediaValue} => ${wikidataTagName}=${data.wikibase_item}`)
-                            return feature
+                            return {feature: feature, message: `Ajout du tag ${wikidataTagName}=${data.wikibase_item} relatif à ${wikipediaTagName}=${wikipediaValue}`}
                         } else {
                             return null
                         }

@@ -10,7 +10,7 @@ export function detect(feature, theme) {
             message: 'ref:mhs sans heritage:operator=mhs',
             autoRepair: async () => {
                 feature.properties['heritage:operator'] = 'mhs'
-                return feature
+                return {feature: feature, message: 'Ajout du tag heritage:operator=mhs'}
             }
         })
     }
@@ -24,21 +24,21 @@ export function detect(feature, theme) {
         })
     }
 
-    if(props['ref:mhs'] && !props['mhs:inscription']) {
+    if(props['ref:mhs'] && !props['mhs:inscription_date']) {
         issues.push({
             feature: feature,
             theme: theme,
             importance: 0,
-            message: 'ref:mhs sans date mhs:inscription'
+            message: 'ref:mhs sans date mhs:inscription_date'
         })
     }
 
-    if(props['mhs:inscription'] && !props['ref:mhs']) {
+    if(props['mhs:inscription_date'] && !props['ref:mhs']) {
         issues.push({
             feature: feature,
             theme: theme,
             importance: 0,
-            message: 'mhs:inscription sans ref:mhs'
+            message: 'mhs:inscription_date sans ref:mhs'
         })
     }
 

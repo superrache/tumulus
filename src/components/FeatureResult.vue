@@ -148,6 +148,9 @@ export default {
     }
   },
   methods: {
+    isLoaded(other) {
+      return other.properties.id === this.id
+    },
     loadFeature(feature, theme) {
       this.id = feature.id
       this.props = feature.properties
