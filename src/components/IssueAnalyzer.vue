@@ -70,17 +70,19 @@ export default {
         this.components.featureEditor.loadFeature(issue.feature)
     },
     async autoRepairFeature(issue) {
-        console.log('repairing ' + issue.feature.id + ' ' + issue.message)
+        this.components.editorLog.add('Tentative de réparation du problème : ' + issue.message + ' sur l\'élément ' + issue.feature.id)
         const feature = await issue.autoRepair()
         if(feature !== null) {
-            console.log('[OK]')
+            this.components.editorLog.addInline(' <span style="color: lightgreen;">[Réussi]</span>')
             issue.repaired = true
             this.components.osmConnector.addEditedFeature(feature)
         } else {
-            console.log('[NOK]')
+            this.components.editorLog.addInline(' <span style="color: #ffaaaa;">[Echec]</span>')
         }
     },
     async autoRepairAll() {
+        this.components.editorLog.clear()
+
         for(let i in this.issues) {
             let issue = this.issues[i]
             if(typeof issue.autoRepair == 'function') {

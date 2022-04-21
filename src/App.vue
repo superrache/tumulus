@@ -12,6 +12,7 @@
         <ThemeSelect id="themeSelect" ref="themeSelect" />
         <FeatureResult ref="featureResult" />
         <Thanks ref="thanks" />
+        <EditorLog ref="editorLog" />
         <FeatureEditor ref="featureEditor" />
         <IssueAnalyzer ref="issueAnalyzer" />
       </div>
@@ -42,6 +43,7 @@ import Search from './components/Search.vue'
 import BasemapSelect from './components/BasemapSelect.vue'
 import ThemeSelect from './components/ThemeSelect.vue'
 import Thanks from './components/Thanks.vue'
+import EditorLog from './components/EditorLog.vue'
 import FeatureResult from './components/FeatureResult.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
@@ -58,6 +60,7 @@ export default {
     BasemapSelect,
     ThemeSelect,
     Thanks,
+    EditorLog,
     FeatureResult,
     FeatureEditor,
     IssueAnalyzer,
@@ -87,6 +90,7 @@ export default {
       search: this.$refs.search,
       themeSelect: this.$refs.themeSelect,
       thanks: this.$refs.thanks,
+      editorLog: this.$refs.editorLog,
       featureResult: this.$refs.featureResult,
       featureEditor: this.$refs.featureEditor,
       issueAnalyzer: this.$refs.issueAnalyzer,
@@ -98,7 +102,6 @@ export default {
     this.components.basemapSelect.components = this.components
     this.components.search.components = this.components
     this.components.themeSelect.components = this.components
-    this.components.thanks.components = this.components
     this.components.featureResult.components = this.components
     this.components.featureEditor.components = this.components
     this.components.issueAnalyzer.components = this.components

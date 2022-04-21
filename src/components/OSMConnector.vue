@@ -93,7 +93,6 @@ export default {
         this.update()
     },
     addEditedFeature(feature) {
-        console.log('osmConnector added edited feature ' + feature.id)
         this.editedFeatures[feature.id] = feature
     },
     save() {
@@ -101,9 +100,11 @@ export default {
     },
     async sendEdits(comment) {
         if(this.modifications > 0) {
-            console.log('sending ' + Object.keys(this.editedFeatures).length + ' features to OSM')
+            this.components.editorLog.clear()
+
+            this.components.editorLog.add('Envoi de ' + Object.keys(this.editedFeatures).length + ' éléments vers OpenStreetMap')
             const changesetId = await this.osmRequest.createChangeset(config.appName, comment)
-            console.log('changeset created changesetId=' + changesetId)
+            this.components.editorLog.add('Groupe de modification créé : changeset=' + changesetId)
 
             for(let f in this.editedFeatures) {
                 const feature = this.editedFeatures[f]
@@ -113,12 +114,9 @@ export default {
                         newTags[key] = feature.properties[key]
                     }
                 }
-                console.log(newTags)
-
-                console.log('get element ' + feature.id)
+                this.components.editorLog.add('Préparation de la mise à jour de l\'élément ' + feature.id)
                 let fullId = config.osmApi.nodeIdToEdit !== undefined ? config.osmApi.nodeIdToEdit : feature.id
                 let element = await this.osmRequest.fetchElement(fullId) // id au format node/123456789
-                console.log(element)
 
                 // tags à supprimer
                 let tagsToRemove = []
@@ -127,25 +125,24 @@ export default {
                         let key = element.tag[index]['$'].k
                         if(newTags[key] === undefined) { // suppression d'un tag
                             tagsToRemove.push(key)
-                            element = this.osmRequest.removeTag(element, key)
                         }
                     }
                 }
                 while(tagsToRemove.length > 0) {
                     let tag = tagsToRemove.pop()
-                    console.log('removeTag ' + tag)
+                    this.components.editorLog.add('Suppression du tag ' + tag)
                     element = this.osmRequest.removeTag(element, tag)
                 }
 
-                console.log('setTags') // pour les créations et mises à jour
+                this.components.editorLog.add('Ajout ou mise à jour des autres tags') // pour les créations et mises à jour
                 element = this.osmRequest.setTags(element, newTags)
                 
-                console.log('sendElement')
+                this.components.editorLog.add('Envoi de l\'élément')
                 const newElementVersion = await this.osmRequest.sendElement(element, changesetId)
                 element = this.osmRequest.setVersion(element, newElementVersion)
             }
 
-            console.log('closeChangeset')
+            this.components.editorLog.add('Fermeture du groupe de modification')
             await this.osmRequest.closeChangeset(changesetId)
 
             this.editedFeatures = {}
