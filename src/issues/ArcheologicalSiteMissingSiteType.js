@@ -2,7 +2,7 @@ export function detect(feature, theme) {
     const props = feature.properties
     const issues = []
 
-    if(props['historic'] === 'archaeological_site' && props['site_type'] === undefined) {
+    if(props['historic'] === 'archaeological_site' && !props['site_type']) {
         issues.push({
             feature: feature,
             theme: theme,
