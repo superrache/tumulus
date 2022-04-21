@@ -8,7 +8,9 @@
                 :style="{ 'background-color': issue.theme.color}"
                 @click="selectFeature(issue)">
                 <div class="importance" :class="importances[issue.importance]"></div>
-                {{issue.message}}
+                <span class="name">{{issue.feature.properties.name}}</span>
+                <br/>
+                <span class="message">{{issue.message}}</span>
                 <button title="Carte" @click="selectFeature(issue)" :disabled="!issue.theme.visible">C</button>
                 <button title="Editer" @click="editFeature(issue)">E</button>
                 <button title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">R</button>
@@ -26,6 +28,7 @@ import * as wikipediaMissingLanguage from '../issues/WikipediaMissingLanguage.js
 import * as badUseOfAge from '../issues/BadUseOfAge.js'
 import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMissingSiteType.js'
 import * as mhs from '../issues/Mhs.js'
+import * as monumentWithoutHeritage from '../issues/MonumentWithoutHeritage.js'
 
 export default {
   name: 'IssueAnalyzer',
@@ -57,6 +60,7 @@ export default {
             this.issues.push(...badUseOfAge.detect(feature, theme))
             this.issues.push(...archeologicalSiteMissingSiteType.detect(feature, theme))
             this.issues.push(...mhs.detect(feature, theme))
+            this.issues.push(...monumentWithoutHeritage.detect(feature, theme))
         }
     },
     selectFeature(issue) {
@@ -102,7 +106,7 @@ export default {
 .issue {
     font-size: 12px;
     border-radius: 5px;
-    color: black;
+    color: white;
     cursor: pointer;
     user-select: none;
     padding: 5px;
@@ -138,6 +142,15 @@ button {
 
 .error {
   background-color: red;
+}
+
+.name {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.message {
+    font-size: 10px;
 }
 
 </style>
