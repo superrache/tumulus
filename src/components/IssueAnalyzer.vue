@@ -5,18 +5,24 @@
             <div class="issue"
                 v-for="issue in issues"
                 :key="issue"
-                :style="{ 'background-color': issue.theme.color}"
+                :style="{ 'background-color': issue.theme.color, 'opacity': issue.theme.visible ? '1' : '0.3' }"
                 @click="selectFeature(issue)">
                 <div class="importance" :class="importances[issue.importance]"></div>
                 <span class="name">{{issue.feature.properties.name}}</span>
                 <br/>
                 <span class="message">{{issue.message}}</span>
-                <button title="Carte" @click="selectFeature(issue)" :disabled="!issue.theme.visible">C</button>
-                <button title="Editer" @click="editFeature(issue)">E</button>
-                <button title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">R</button>
+                <button class="little" title="Editer" @click="editFeature(issue)">
+                    <img src="/ui/edit.svg" width=18 />
+                </button>
+                <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">
+                    <img src="/ui/repair.svg" width=18 />
+                </button>
+                <button class="little" title="Masquer" @click="deleteIssue(issue)">
+                    <img src="/ui/clear.svg" width=18 />
+                </button>
             </div>
         </div>
-        <button @click="autoRepairAll" :disabled="!connected">Tout réparer automatiquement</button>
+        <button @click="autoRepairAll" :disabled="!connected"><img src="/ui/repair.svg" width=18 />Tout réparer automatiquement</button>
     </div>
 </template>
 
@@ -47,6 +53,9 @@ export default {
   methods: {
     clear() {
         this.issues = []
+    },
+    deleteIssue(issue) {
+        this.issues.splice(this.issues.indexOf(issue), 1)
     },
     analyzeFeature(features, theme) {
         for(let f in features) {
@@ -123,11 +132,16 @@ export default {
 }
 
 .repaired {
-    text-decoration: line-through;
+    background-color: blue;
 }
 
-button {
-    margin-left: 2px;
+.little {
+    width: 24px;
+    height: 24px;
+    border-radius: 20%;
+    margin: 4px;
+    margin-right: 0px;
+    padding: 3px;
 }
 
 .importance {
