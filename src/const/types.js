@@ -301,6 +301,7 @@ export const historicTypes = {
     'roman_villa': 'Villa romaine',
     'settlement': 'Établissement humain',
     'temple': 'Temple',
+    'theatre': 'Théâtre',
     'tumulus': 'Tumulus'
   }
 
