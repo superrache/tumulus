@@ -43,7 +43,6 @@ export default {
     }
   },
   created() {
-    console.log('ExpandableImage created with thumbnail=' + this.$attrs.thumbnail + ' and original=' + this.$attrs.original)
     this.imageSrc = this.$attrs.thumbnail
   },
   methods: {

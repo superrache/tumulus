@@ -397,8 +397,7 @@ button:disabled {
   transform: translate(-50%, 0%);
   width:180px;
   text-align:center;
-  padding-top:20px;
-  padding-bottom:20px;
+  padding: 20px 10px;
   z-index: 24;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 10px;
