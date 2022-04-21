@@ -100,23 +100,20 @@ export default {
     },
     type() {
       let type = types.historicTypes[this.props.historic]
-      
-      if(this.props.historic === 'yes') {
-        if(this.props.man_made !== undefined) type = types.manMadeTypes[this.props.man_made]
-        if(this.props.amenity !== undefined) type = types.amenityTypes[this.props.amenity]
-        if(this.props.military !== undefined) type = types.militaryTypes[this.props.military]
-      }
+      if(!type && this.props.man_made) type = types.manMadeTypes[this.props.man_made]
+      if(!type && this.props.amenity) type = types.amenityTypes[this.props.amenity]
+      if(!type && this.props.military) type = types.militaryTypes[this.props.military]
 
-      if(this.props.historic === 'memorial' && this.props.memorial !== undefined) {
+      if(this.props.historic === 'memorial' && this.props.memorial) {
         type = types.memorialTypes[this.props.memorial]
-        if(type === undefined) type = this.props.memorial
+        if(!type) type = this.props.memorial
       }
       
       if(this.props.tourism === 'artwork') {
         type = 'Oeuvre d\'art'
-        if(this.props.artwork_type !== undefined) {
+        if(this.props.artwork_type) {
           type = types.artworkTypes[this.props.artwork_type]
-          if(type === undefined) type = this.props.artwork_type
+          if(!type) type = this.props.artwork_type
         }
       }
 
