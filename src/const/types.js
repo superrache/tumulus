@@ -302,6 +302,7 @@ export const historicTypes = {
     'settlement': 'Établissement humain',
     'temple': 'Temple',
     'theatre': 'Théâtre',
+    'amphitheatre': 'Amphithéâtre',
     'tumulus': 'Tumulus'
   }
 

@@ -168,62 +168,71 @@ export default {
       this.updateParams()
       this.onMapMove()
     },
+    generateBounds() {
+      const sw = this.map.getBounds()._sw
+      const ne = this.map.getBounds()._ne
+      return utils.round6Digits(sw.lat) + ',' + utils.round6Digits(sw.lng) + ',' + utils.round6Digits(ne.lat) + ',' + utils.round6Digits(ne.lng)
+    },
     async onMapMove() {
       this.updateParams()
 
       this.currentZoom = this.map.getZoom()
-      if(!this.components.app.dispZoomMore) {
-        const sw = this.map.getBounds()._sw
-        const ne = this.map.getBounds()._ne
-        const bounds = utils.round6Digits(sw.lat) + ',' + utils.round6Digits(sw.lng) + ',' + utils.round6Digits(ne.lat) + ',' + utils.round6Digits(ne.lng)
+
+      if(!this.components.app.dispZoomMore && config.reloadOnMove) {
+        let bounds = this.generateBounds()
         if(bounds !== this.previousBounds) { // on recharge que si ça a bougé (en mode géolocalisation de l'utilisateur, onMapMove est lancée toutes les 2s)
           this.previousBounds = bounds
+          await this.reload()
+        }
+      }
+    },
+    async reload() {
+      this.components.app.loading = 'Chargement de la carte ...'
 
-          this.components.app.loading = 'Chargement de la carte ...'
+      let {lng, lat} = this.map.getCenter()
+      this.countryCode = await nominatim.getCountryCode({lat: utils.round6Digits(lat), lng: utils.round6Digits(lng)})
 
-          this.countryCode = await nominatim.getCountryCode({lat: utils.round6Digits(sw.lat), lng: utils.round6Digits(sw.lng)})
+      this.components.issueAnalyzer.clear()
 
-          this.components.issueAnalyzer.clear()
+      const codename = btoa(Math.random().toString()).substr(10, 5)
+      this.currentCodename = codename
+      console.log('reload ' + codename)
 
-          const codename = btoa(Math.random().toString()).substr(10, 5)
-          this.currentCodename = codename
-          console.log(codename + ' : onMapMove ')
-    
-          // TODO lancer en parallèle
-          for(let q in this.queries) {
-            let query = this.queries[q]
-            let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
-            while(launch) {
-              console.log(codename + ' : launching query ' + q)
-              this.components.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
-              const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filters=" + query.filters.join(","))
-              if(codename !== this.currentCodename) return
-              
-              const data = await response.json()
-              if(codename !== this.currentCodename) return
+      let bounds = this.generateBounds()
+      
+      // TODO lancer en parallèle
+      for(let q in this.queries) {
+        let query = this.queries[q]
+        let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
+        while(launch) {
+          console.log(codename + ' : launching query ' + q)
+          this.components.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
+          const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filters=" + query.filters.join(","))
+          if(codename !== this.currentCodename) return
+          
+          const data = await response.json()
+          if(codename !== this.currentCodename) return
 
-              if(data.error !== undefined) {
-                console.log(codename + ' : query error ' + data.error)
-              } else {
-                query.cache = data
-                query.bounds = bounds
-                launch = false
+          if(data.error !== undefined) {
+            console.log(codename + ' : query error ' + data.error)
+          } else {
+            query.cache = data
+            query.bounds = bounds
+            launch = false
 
-                // application de la donnée aux thèmes concernés (visible ou pas)
-                for(let t in this.themes) {
-                  const theme = this.themes[t]
-                  if(theme.query === q) {
-                    this.loadGeojson(theme, data, codename)
-                    this.components.issueAnalyzer.analyzeFeature(theme.geojsons[0].features, theme)
-                  }
-                }
+            // application de la donnée aux thèmes concernés (visible ou pas)
+            for(let t in this.themes) {
+              const theme = this.themes[t]
+              if(theme.query === q) {
+                this.loadGeojson(theme, data, codename)
+                this.components.issueAnalyzer.analyzeFeature(theme.geojsons[0].features, theme)
               }
             }
           }
-
-          this.components.app.loading = ''
         }
       }
+
+      this.components.app.loading = ''
     },
     loadGeojson(theme, geojson, codename) {
       if(geojson.features !== undefined) {

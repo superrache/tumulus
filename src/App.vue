@@ -26,6 +26,10 @@
         <div id="loading-message">{{loading}}</div>
       </div>
 
+      <button id="reload" v-show="!dispZoomMore" @click="reload">
+        Rechercher des données dans cette zone
+      </button>
+
       <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
 
       <OSMConnector id="osmConnector" ref="osmConnector" />
@@ -136,6 +140,13 @@ export default {
     }
   },
   methods: {
+    reload() {
+      if(this.components) {
+        if(this.components.featureResult) this.components.featureResult.unloadFeature()
+        if(this.components.featureEditor) this.components.featureEditor.unloadFeature()
+        if(this.components.map) this.components.map.reload()
+      }
+    },
     updateAppUrl() {
       URLParameters.updateAppUrl(this.components.map)
     },
@@ -357,6 +368,13 @@ button:disabled {
   font-family: Ubuntu, Helvetica, sans-serif;
   font-weight: 700;
   margin: 5px;
+}
+
+#reload {
+  position: relative;
+  top: 15px;
+  left: 50%;
+  transform: translate(-50%, 0%);
 }
 
 #loading {
