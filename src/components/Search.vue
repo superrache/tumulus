@@ -20,7 +20,7 @@
             </div>
         </div>
         <button id="clear" @click="clear" title="Effacer la recherche">
-            <img src="svg/clear.svg" width=18 />
+            <img src="/ui/clear.svg" width=18 />
         </button>
     </div>
 </template>

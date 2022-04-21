@@ -287,7 +287,7 @@ export default {
 
               if(theme.icon !== undefined) {
                 const icon = document.createElement('img')
-                icon.src = '/svg/' + theme.icon + '.svg'
+                icon.src = '/theme/' + theme.icon + '.svg'
                 el.appendChild(icon)
               }
               

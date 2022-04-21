@@ -3,7 +3,7 @@
     <div id="thanks">
         <h3>Merci pour votre contribution à OpenStreetMap</h3>
         <button id="close" @click="close" title="Fermer">
-            <img src="svg/clear.svg" width=18 />  
+            <img src="/ui/clear.svg" width=18 />  
         </button>
     </div>
     <div>

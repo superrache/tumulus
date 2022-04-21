@@ -6,7 +6,7 @@
             :key="t"
             v-on:click="toogleThemeVisibility($event, t)"
             :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': theme.color, 'opacity': theme.visible ? '1' : '0.3' }">
-            <img v-if="theme.icon !== undefined" :src="'/svg/' + theme.icon + '.svg'" width=16 /> {{theme.label}}<span class="right" v-if="theme.markers !== undefined && Object.keys(theme.markers).length > 0">{{Object.keys(theme.markers).length}}</span>
+            <img v-if="theme.icon !== undefined" :src="'/theme/' + theme.icon + '.svg'" width=16 /> {{theme.label}}<span class="right" v-if="theme.markers !== undefined && Object.keys(theme.markers).length > 0">{{Object.keys(theme.markers).length}}</span>
         </div>
     </div>
 </template>
