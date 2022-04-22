@@ -158,6 +158,7 @@ h3 {
 
 .text {
     margin: 5px;
+    padding-right: 65px;
 }
 
 .buttons {

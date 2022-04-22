@@ -3,7 +3,7 @@ import App from './App.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
 
-const test = 2
+const test = 0
 
 switch(test) {
     case 0: {
