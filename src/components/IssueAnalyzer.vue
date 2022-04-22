@@ -8,21 +8,27 @@
                 :style="{ 'background-color': issue.theme.color, 'opacity': issue.theme.visible ? '1' : '0.3' }"
                 @click="selectFeature(issue)">
                 <div class="importance" :class="importances[issue.importance]"></div>
-                <span class="name">{{issue.feature.properties.name}}</span>
-                <br/>
-                <span class="message">{{issue.message}}</span>
-                <button class="little" title="Editer" @click="editFeature(issue)">
-                    <img src="/ui/edit.svg" width=18 />
-                </button>
-                <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired !== undefined && issue.repaired ? 'repaired' : ''">
-                    <img src="/ui/repair.svg" width=18 />
-                </button>
-                <button class="little" title="Masquer" @click="deleteIssue(issue)">
-                    <img src="/ui/clear.svg" width=18 />
-                </button>
+                <div class="text">
+                    <div class="name">{{issue.feature.properties.name}}</div>
+                    <div class="message">{{issue.message}}</div>
+                </div>
+                <div class="buttons">
+                    <button class="little" title="Editer" @click="editFeature(issue)">
+                        <img src="/ui/edit.svg" width=18 />
+                    </button>
+                    <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired === undefined ? '' : (issue.repaired == 1 ? 'repaired' : 'irreparable')">
+                        <img src="/ui/repair.svg" width=18 />
+                    </button>
+                    <button class="little" title="Masquer" @click="deleteIssue(issue)">
+                        <img src="/ui/clear.svg" width=18 />
+                    </button>
+                </div>
             </div>
         </div>
-        <button @click="autoRepairAll" :disabled="!connected"><img src="/ui/repair.svg" width=18 />Tout réparer automatiquement</button>
+        <button id="autorepairall" @click="autoRepairAll" :disabled="!connected">
+            <img src="/ui/repair.svg" width=18 />
+            <span>Tout réparer automatiquement</span>
+        </button>
     </div>
 </template>
 
@@ -83,13 +89,14 @@ export default {
         const reparation = await issue.autoRepair()
         if(reparation !== null) {
             this.components.editorLog.addInline(reparation.message + ' <span style="color: lightgreen;">[Réussi]</span>')
-            issue.repaired = true
+            issue.repaired = 1
             let feature = reparation.feature
             this.components.osmConnector.addEditedFeature(feature)
             if(this.components.featureResult.isLoaded(feature)) this.components.featureResult.loadFeature(feature, issue.theme)
             if(this.components.featureEditor.isLoaded(feature)) this.components.featureEditor.loadFeature(feature)
         } else {
             this.components.editorLog.addInline(' <span style="color: #ffaaaa;">[Echec]</span>')
+            issue.repaired = 2
         }
     },
     async autoRepairAll() {
@@ -115,6 +122,13 @@ export default {
   padding: 7px;
   padding-right: 15px;
   margin: 5px 0px 10px 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  margin: 5px 5px 5px 5px;
 }
 
 .issue {
@@ -124,15 +138,40 @@ export default {
     cursor: pointer;
     user-select: none;
     padding: 5px;
-    margin: 2px 0px;
+    margin: 5px 0px;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .issue:hover, .issue:active {
     text-decoration: underline;
 }
 
+.importance {
+  margin: 2px;
+  width: 15px;
+  height: 15px;
+  margin: 5px;
+  border-radius: 100%;
+}
+
+.text {
+    margin: 5px;
+}
+
+.buttons {
+    position: absolute;
+    right: 5px;
+    margin: 5px;
+}
+
 .repaired {
-    background-color: blue;
+    background-color: #00aa00;
+}
+
+.irreparable {
+    background-color: #ff5555;
 }
 
 .little {
@@ -142,13 +181,6 @@ export default {
     margin: 4px;
     margin-right: 0px;
     padding: 3px;
-}
-
-.importance {
-  margin: 2px;
-  width: 15px;
-  height: 15px;
-  border-radius: 100%;
 }
 
 .missing-data {
@@ -169,7 +201,17 @@ export default {
 }
 
 .message {
-    font-size: 10px;
+    font-size: 12px;
+}
+
+#autorepairall {
+    margin: 5px 0px;
+    padding-bottom: 8px;
+}
+
+#autorepairall > img, #autorepairall > span {
+    vertical-align: middle;
+    padding-right: 5px;
 }
 
 </style>
