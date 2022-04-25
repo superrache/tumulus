@@ -212,10 +212,10 @@ button {
   border-radius: 5px;
 }
 
-button:hover {
+button:hover:enabled {
   background-color: #FE7434;
   color: black;
-  outline:  solid 1px white;
+  outline: solid 1px white;
 }
 
 button:active {

@@ -3,7 +3,7 @@
     <div id="log">
         <h3>Journal des modifications</h3>
         <button id="close" @click="close" title="Fermer">
-            <img src="svg/clear.svg" width=18 />      
+            <img src="/ui/clear.svg" width=18 />      
         </button>
     </div>
     <div class="console" v-html="log"></div>

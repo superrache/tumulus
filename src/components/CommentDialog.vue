@@ -5,7 +5,7 @@
             placeholder="Description de vos contributions" required 
             minLength=1 maxLength="255" size="14" 
             v-model="comment"
-            @keyup.enter="save()"/>
+            @keyup.enter="save()" autofocus/>
       <div id="buttons">
         <button id="save" v-on:click="save()" :disabled="comment.length == 0">Envoyer</button>
         <button id="close" v-on:click="close()">Annuler</button>

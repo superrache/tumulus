@@ -169,7 +169,6 @@ export default {
     },
     async loadWikiData(wikipediaKey, wikidataKey, titlePrefix) {
       if(this.props[wikipediaKey] !== undefined) {
-        console.log('has ' + wikipediaKey + '=' + this.props[wikipediaKey])
         const data = await wikipediaApi(this.props[wikipediaKey])
         if(data !== null) {
           data.displaytitle = titlePrefix + data.displaytitle
