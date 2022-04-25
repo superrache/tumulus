@@ -171,6 +171,7 @@ export default {
 
       this.updateParams()
       this.onMapMove()
+      this.reload()
     },
     generateBounds() {
       const sw = this.map.getBounds()._sw
