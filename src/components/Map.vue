@@ -11,6 +11,8 @@ import { Map, NavigationControl, GeolocateControl, Marker, Popup } from 'maplibr
 import along from '@turf/along'
 import length from '@turf/length'
 import pointOnFeature from '@turf/point-on-feature'
+import bbox from '@turf/bbox'
+import buffer from '@turf/buffer'
 
 import * as env from '../utils/env.js'
 import * as utils from '../utils/utils.js'
@@ -367,9 +369,11 @@ export default {
 
       // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
       let marker = theme.markers[this.selectedFeatureId]
+      let geom = null
       if(marker !== undefined) {
         this.selectedMarker = marker
         this.selectedMarker.getElement().style.outline = '4px solid #ff7733'
+        geom = {type: 'Point', coordinates: marker.lngLat}
       } else {
         marker = null
       }
@@ -382,9 +386,23 @@ export default {
             id: this.selectedFeatureId },
           { selected: true }
         )
+        geom = feature.geometry
+      }
+
+      if(geom !== null) {
+        let buffered = buffer(geom, 500, {units: 'meters'})
+        let bounds = bbox(buffered)
+        this.map.fitBounds(bounds, {
+          essential: true,
+          maxZoom: 16,
+          easing: this.easing
+        })
       }
 
       this.updateParams()
+    },
+    easing(t) {
+      return t * (2 - t);
     },
     unselectFeature() {
       if(this.dontUnselect) {
@@ -412,7 +430,7 @@ export default {
     flyTo(coords) {
       this.map.flyTo({
         center: coords,
-        essential: true // this animation is considered essential with respect to prefers-reduced-motion
+        essential: true
       })
     },
     updateParams() { // appelée aussi par BasemapSelect
