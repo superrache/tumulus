@@ -34,6 +34,7 @@ export default {
       previousBounds: '',
       currentCodename: '',
       selectedFeatureId: null,
+      dontUnselect: false,
       pendingSelectedFeatureId: null,
       selectedMarker: null,
       selectedSourceId: null,
@@ -88,6 +89,7 @@ export default {
       this.initThemes()
       this.updateThemesVisibility()
       this.map.on('moveend', this.onMapMove)
+      this.map.on('click', this.unselectFeature)
     },
     initThemes() {
       for(let t in this.themes) {
@@ -134,7 +136,7 @@ export default {
 
           this.map.on('mousemove', id, (e) => { if(e.features.length > 0) { this.map.getCanvas().style.cursor = "pointer" } })
           this.map.on('mouseleave', id, () => { this.map.getCanvas().style.cursor = "" })
-          this.map.on('click', id, (e) => { if(e.features.length > 0) { this.onFeatureLayerSelect(e.features[0], theme) } })
+          this.map.on('click', id, (e) => { this.onFeatureLayerSelect(e, theme) })
         }
 
         let style = document.createElement('style');
@@ -345,8 +347,12 @@ export default {
     onMarkerSelect(marker) {
       this.selectFeature(marker.feature, marker.theme)
     },
-    onFeatureLayerSelect(feature, theme) {
-      this.selectFeature(feature, theme)
+    onFeatureLayerSelect(e, theme) {
+      if(e.features.length > 0) {
+        this.selectFeature(e.features[0], theme)
+        e.originalEvent.stopPropagation() // le stopPropagation ne fonctionne pas, c'est pour ça qu'on a en plus un dontUnselect
+        this.dontUnselect = true
+      }
     },
     selectFeature(feature, theme) {
       this.unselectFeature()
@@ -381,6 +387,10 @@ export default {
       this.updateParams()
     },
     unselectFeature() {
+      if(this.dontUnselect) {
+        this.dontUnselect = false
+        return
+      }
       if(this.selectedFeatureId !== null) {
         console.log('unselect ' + this.selectedFeatureId)
         if(this.selectedMarker !== null) {
@@ -393,8 +403,10 @@ export default {
             { selected: false }
           )
         }
+        this.components.featureResult.unloadFeature()
+        this.components.featureEditor.unloadFeature()
         this.selectedFeatureId = null
-      this.updateParams()
+        this.updateParams()
       }
     },
     flyTo(coords) {
