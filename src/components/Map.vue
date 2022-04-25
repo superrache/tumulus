@@ -254,6 +254,7 @@ export default {
               theme.dataCacheIds.add(feature.id)
               let g = utils.getGeometryInteger(feature)
               feature.properties.g = g // retenir le type de géométrie d'origine pour la sélection
+              feature.properties.t = theme.id // retenir aussi le theme pour la mise à jour d'une feature après édition
               theme.geojsons[g].features.push(feature)
               added[g]++
 
@@ -320,15 +321,7 @@ export default {
                 e.stopPropagation() // pour ne pas cliquer en plus sur la potentielle layer sous le marker
               })
 
-              if(feature.properties.name !== undefined) {
-                const popup = this.popup
-                el.addEventListener('mouseenter', () => {
-                  popup.setLngLat(lngLat).setHTML(`${feature.properties.name}`)
-                  marker.togglePopup()
-                })
-                el.addEventListener('mouseleave', () => marker.togglePopup())
-                marker.setPopup(this.popup)
-              }
+              this.setPopup(marker, feature)
 
               theme.markers[feature.id] = marker
 
@@ -345,6 +338,18 @@ export default {
           }
         }
 
+      }
+    },
+    setPopup(marker, feature) {
+      if(feature.properties.name !== undefined) {
+        const popup = this.popup
+        const el = marker.getElement()
+        el.addEventListener('mouseenter', () => {
+          popup.setLngLat(marker.lngLat).setHTML(`${feature.properties.name}`)
+          marker.togglePopup()
+        })
+        el.addEventListener('mouseleave', () => marker.togglePopup())
+        marker.setPopup(this.popup)
       }
     },
     onMarkerSelect(marker) {
@@ -426,6 +431,31 @@ export default {
         this.components.featureEditor.unloadFeature()
         this.selectedFeatureId = null
         this.updateParams()
+      }
+    },
+    updateFeature(feature) {
+      let themeId = feature.properties.t
+      let theme = this.themes[themeId]
+
+      // mise à jour de la feature dans la source de la layer
+      let g = feature.properties.g
+      let found = false
+      for(let f in theme.geojsons[g].features) {
+        let feat = theme.geojsons[g].features[f]
+        if(feat.id === feature.id) {
+          theme.geojsons[g].features[f] = feature
+          console.log(theme.geojsons[g].features[f])
+          found = true
+          break
+        }
+      }
+      if(found) this.map.getSource(g + '/' + themeId).setData(theme.geojsons[g])
+
+      // mise à jour du marker
+      let marker = theme.markers[feature.properties.id]
+      if(marker) {
+        marker.feature = feature
+        this.setPopup(marker, feature)
       }
     },
     flyTo(coords) {

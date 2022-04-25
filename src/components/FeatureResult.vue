@@ -152,9 +152,12 @@ export default {
       return other.properties.id === this.id
     },
     loadFeature(feature, theme) {
+      this.theme = theme
+      this.updateFeature(feature)
+    },
+    updateFeature(feature) {
       this.id = feature.id
       this.props = feature.properties
-      this.theme = theme
 
       this.wikis = []
       this.loadWikiData('wikipedia', 'wikidata', '')
