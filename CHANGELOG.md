@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.11](https://github.com/superrache/tumulus/compare/v0.1.10...v0.1.11) (2022-04-27)
+
+
+### Features
+
+* enable to unselect a feature by clicking outside on the map + fix selection issues ([4e99018](https://github.com/superrache/tumulus/commit/4e99018427361b6ea7f4cee7d762c4b6d89c1002))
+* feature update after edit ([7bee5ec](https://github.com/superrache/tumulus/commit/7bee5ec2e0d86d98f4ab8af2745fb7fa39d2737e))
+* load data on startup ([a5d7446](https://github.com/superrache/tumulus/commit/a5d74460d4046e06b930b4c6df3f9436bd53c82c))
+* zoom on selected feature ([ccfa253](https://github.com/superrache/tumulus/commit/ccfa2535855cb6a1f6905feb732ed892d8bd2a34))
+
+
+### Bug Fixes
+
+* issue text overflow ([3e130f9](https://github.com/superrache/tumulus/commit/3e130f9b8458245550ebbd9701001fb6050a0cd0))
+* remove t key when sending to osm ([13ac319](https://github.com/superrache/tumulus/commit/13ac319668c00da01844bc84eca0d21ab0580d27))
+
 ### [0.1.10](https://github.com/superrache/tumulus/compare/v0.1.9...v0.1.10) (2022-04-21)
 
 
