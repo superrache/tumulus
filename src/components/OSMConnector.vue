@@ -110,7 +110,7 @@ export default {
                 const feature = this.editedFeatures[f]
                 const newTags = {} // copie de feature.properties sans les propriétés internes 'id' et 'g'
                 for(let key in feature.properties) {
-                    if(key !== 'id' && key !== 'g' && key !== 'lng' && key !== 'lat') {
+                    if(key !== 'id' && key !== 't' && key !== 'g' && key !== 'lng' && key !== 'lat') {
                         newTags[key] = feature.properties[key]
                     }
                 }
