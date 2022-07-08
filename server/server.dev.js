@@ -11,6 +11,6 @@ const port = process.env.PORT || 3000
 app.listen(port)
 
 const api = require('./api.js')
-api(app, false)
+api(app, process.env.DATABASE_URL, false)
 
 console.log('Server listening on: '+ port)

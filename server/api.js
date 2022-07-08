@@ -1,8 +1,34 @@
 /**
  * The common server code
- * @param {app, prod} app 
+ * @param {app, databaseUrl, prod} app 
  */
-module.exports = function(app, prod) {
+module.exports = function(app, databaseUrl, prod) {
+    console.log('Database URL: ' + databaseUrl)
+    if(databaseUrl === undefined) {
+        console.log('Error: database URL must be specified')
+        process.exit(1)
+    }
+
+    console.log('Initializing database')
+    const { Client } = require('pg')
+
+    let ssl = prod ? {rejectUnauthorized: false} : false
+
+    const db = new Client({
+        connectionString: databaseUrl,
+        ssl: ssl
+    })
+
+    try {
+        db.connect()
+        console.log('Connected')
+        db.query('create table if not exists osm_user ( name text not null unique, connections int default 0, changes int default 0, changesets int default 0, created_at TIMESTAMPTZ DEFAULT Now());')
+        console.log('Table osm_user created or existing')
+    } catch(e) {
+        console.log('An error occured')
+        console.log(e)
+    }
+
     const request = require('request')
     const osmtogeojson = require('osmtogeojson')
 
@@ -88,6 +114,48 @@ module.exports = function(app, prod) {
             })
         } catch(err) {
             res.json({error: 3})
+        }
+    })
+
+    /*
+        /connect?name=johnny
+    */
+    app.get('/connect', (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
+
+        if(req.query.name == undefined) {
+            res.json({error: 10})
+        } else {
+            let name = req.query.name
+            console.log('get /connect name=' + name)
+            db.query('insert into osm_user(name) values($1) on conflict (name) do nothing;', [name])
+            db.query('update osm_user set connections = connections + 1 where name like $1;', [name])
+            
+            res.json({status: 200})
+        }
+    })
+
+    /*
+        /stat-changes?name=johnny&changes=12
+    */
+    app.get('/stat-changes', (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
+
+        if(req.query.name == undefined || req.query.changes == undefined) {
+            res.json({error: 11})
+        } else {
+            let name = req.query.name
+            let changes = req.query.changes
+            console.log('get /stat-changes name=' + name + ' changes=' + changes)
+            db.query('update osm_user set changes = changes + $2, changesets = changesets + 1 where name like $1;', [name, changes])
+            
+            res.json({status: 200})
         }
     })
 

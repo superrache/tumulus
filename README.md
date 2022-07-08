@@ -17,6 +17,12 @@ Tumulus purposes are:
 npm install
 ```
 
+Create Postgresql database named `tumulus`
+
+```
+sudo psql -Atx postgres://postgres:postgres@localhost:5432/tumulus
+```
+
 ### Compiles and hot-reloads for development
 ```
 npm run express

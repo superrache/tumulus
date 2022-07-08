@@ -21,6 +21,7 @@
 import OsmAuth from 'osm-auth'
 import OsmRequest from 'osm-request'
 import * as config from '../const/config.js'
+import * as env from '../utils/env.js'
 
 export default {
   name: 'OSMConnector',
@@ -77,6 +78,7 @@ export default {
         const user = res.getElementsByTagName('user')[0]
         if(user) {
             this.userName = user.getAttribute('display_name')
+            fetch(`${env.getServerUrl()}/connect?name=${this.userName}`)
         }
     },
     onLogin() {
@@ -144,6 +146,8 @@ export default {
 
             this.components.editorLog.add('Fermeture du groupe de modification')
             await this.osmRequest.closeChangeset(changesetId)
+
+            fetch(`${env.getServerUrl()}/stat-changes?name=${this.userName}&changes=${this.modifications}`)
 
             this.editedFeatures = {}
 

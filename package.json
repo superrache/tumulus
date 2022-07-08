@@ -7,7 +7,7 @@
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "express": "node server/server.dev.js",
+    "express": "DATABASE_URL=postgres://postgres:postgres@localhost:5432/tumulus node server/server.dev.js",
     "prepare": "husky install",
     "release": "standard-version",
     "start": "NODE_ENV=production node server/server.prod.js"
@@ -26,6 +26,7 @@
     "osm-auth": "^1.1.1",
     "osm-request": "^1.2.10",
     "osmtogeojson": "^3.0.0-beta.4",
+    "pg": "^8.7.3",
     "request": "^2.88.2",
     "vue": "^3.2.33"
   },
