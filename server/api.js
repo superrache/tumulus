@@ -159,4 +159,33 @@ module.exports = function(app, databaseUrl, prod) {
         }
     })
 
+    app.get('/show-stats', (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
+
+        console.log('get /show-stats')
+        
+        res.writeHead(200, {
+            'Content-Type': 'text/html; charset=utf-8'
+        })
+        var html = "<!doctype html><html><head><title>Tumulus stats</title></head><body><h1>OSM users</h1><table border=\"1\"><tr><th>name</th><th>created at</th><th>connections</th><th>changesets</th><th>changes</th></tr>"
+
+        db.query('select name, created_at, connections, changesets, changes from osm_user order by changes desc;', (err, sel) => {
+            if(err) {
+                console.error(err.message)
+            }
+            for(var r in sel.rows) {
+                const row = sel.rows[r]
+                html += "<tr><td>" + row.name + "</td><td>" + row.created_at + "</td><td>" + row.connections + "</td><td>" + row.changesets + "</td><td>" + row.changes + "</td></tr>"
+            }
+            html += "</table>"
+
+
+            html += "</body></html>"
+            res.write(html, "utf-8")
+            res.end()
+        })
+    })
 }
