@@ -174,8 +174,9 @@ export default {
       this.reload()
     },
     generateBounds() {
-      const sw = this.map.getBounds()._sw
-      const ne = this.map.getBounds()._ne
+      let bounds = this.map.getBounds()
+      let sw = bounds._sw
+      let ne = bounds._ne
       return utils.round6Digits(sw.lat) + ',' + utils.round6Digits(sw.lng) + ',' + utils.round6Digits(ne.lat) + ',' + utils.round6Digits(ne.lng)
     },
     async onMapMove() {
@@ -395,14 +396,17 @@ export default {
         geom = feature.geometry
       }
 
+      // si la geométrie de l'objet sélectionnée (+ buffer de 15m) ne rentre pas dans l'extent de la carte, on zoom/centre sur l'objet
       if(geom !== null) {
-        let buffered = buffer(geom, 500, {units: 'meters'})
+        let buffered = buffer(geom, 15, {units: 'meters'})
         let bounds = bbox(buffered)
-        this.map.fitBounds(bounds, {
-          essential: true,
-          maxZoom: 16,
-          easing: this.easing
-        })
+        if(!utils.bboxInBbox(bounds, utils.boundsToBbox(this.map.getBounds()))) {
+          this.map.fitBounds(bounds, {
+            essential: true,
+            maxZoom: 16,
+            easing: this.easing
+          })
+        }
       }
 
       this.updateParams()

@@ -7,6 +7,15 @@ export function pointInBounds(lngLat, bounds) {
         && lngLat[1] >= bounds._sw.lat && lngLat[1] <= bounds._ne.lat
 }
 
+// converts bounds (maplibre extent) to bbox (turf.js extent)
+export function boundsToBbox(bounds) {
+    return [bounds._sw.lng, bounds._sw.lat, bounds._ne.lng, bounds._ne.lat]
+}
+
+export function bboxInBbox(inside, outside) {
+    return inside[0] > outside[0] && inside[1] > outside[1] && inside[2] < outside[2] && inside[3] < outside[3]
+}
+
 export function getGeometryInteger(feature) {
     switch(feature.geometry.type) {
         case 'Point': return 0;
