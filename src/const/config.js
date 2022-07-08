@@ -5,7 +5,7 @@ export const DEBUG = process.env.NODE_ENV !== 'production'
 export const reloadOnMove = false
 
 export const startingZoom = 14
-export const startingPosition = [2.31903, 48.85968]
+export const startingPosition = [5.04147, 47.32158]
 export const startingBasemap = 'default'
 
 export const nominatimInstance = 'https://nominatim.openstreetmap.org'
