@@ -13,7 +13,7 @@
                     <div class="message">{{issue.message}}</div>
                 </div>
                 <div class="buttons">
-                    <button class="little" title="Editer" @click="editFeature(issue)">
+                    <button class="little" title="Editer" @click="editFeature(issue)" :disabled="!connected">
                         <img src="/ui/edit.svg" width=18 />
                     </button>
                     <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired === undefined ? '' : (issue.repaired == 1 ? 'repaired' : 'irreparable')">
