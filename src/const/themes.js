@@ -62,7 +62,7 @@ export const queries = {
         color: "#046DC8",
         query: 'historic',
         key: 'historic',
-        values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'ship', 'vehicle', 'wreck'],
+        values: ['aircraft', 'locomotive', 'milestone', 'railway_car', 'railway_station', 'ship', 'vehicle', 'wreck'],
         icon: 'transport',
         visible: false
       },
