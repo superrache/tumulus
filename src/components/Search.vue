@@ -47,16 +47,17 @@ export default {
       //this.$emit("update:modelValue", e.target.value);
     },
     onResultClic(e, result) {
-        this.components.map.flyTo([result.lon, result.lat])
-        this.results = []
+        this.go(result)
     },
     enter() { // entrer => premier résultat
-    console.log('enter')
         if(this.results.length > 0) {
-            let result = this.results[0]
-            this.components.map.flyTo([result.lon, result.lat])
-            this.results = []
+            this.go(this.results[0])
         }
+    },
+    go(result) {
+        this.components.map.flyTo([result.lon, result.lat])
+        this.results = []
+        this.components.issueAnalyzer.clear() // il y a des chances qu'on s'éloigne donc les anciens issues n'ont plus de sens
     },
     clear() {
         this.inputStr = ''
