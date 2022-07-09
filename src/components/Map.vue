@@ -448,7 +448,6 @@ export default {
         let feat = theme.geojsons[g].features[f]
         if(feat.id === feature.id) {
           theme.geojsons[g].features[f] = feature
-          console.log(theme.geojsons[g].features[f])
           found = true
           break
         }
