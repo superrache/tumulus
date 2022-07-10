@@ -26,7 +26,8 @@
         <div id="loading-message">{{loading}}</div>
       </div>
 
-      <button id="reload" v-show="!dispZoomMore" @click="reload">
+      <button id="reload" v-show="!dispZoomMore && canReload" @click="reload">
+        <img src="/ui/search.svg" width=18 />
         Rechercher des données dans cette zone
       </button>
 
@@ -74,7 +75,8 @@ export default {
     return {
       components: null,
       loading: '',
-      sidebar: null
+      sidebar: null,
+      canReload: true
     }
   },
   async created () {
@@ -373,8 +375,9 @@ button:disabled {
 #reload {
   position: relative;
   top: 15px;
-  left: 50%;
-  transform: translate(-50%, 0%);
+  left: 15px;
+  width: 150px;
+  text-align: left;
 }
 
 #loading {
@@ -423,7 +426,7 @@ button:disabled {
 
 #osmConnector {
   position: absolute;
-  top: 15px;
+  top: 20px;
   right: 50px;
   z-index: 30;
 }

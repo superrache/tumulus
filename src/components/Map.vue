@@ -181,6 +181,8 @@ export default {
     },
     async onMapMove() {
       this.updateParams()
+      
+      this.components.app.canReload = true
 
       this.currentZoom = this.map.getZoom()
 
@@ -193,6 +195,7 @@ export default {
       }
     },
     async reload() {
+      this.components.app.canReload = false
       this.components.app.loading = 'Chargement de la carte ...'
 
       let {lng, lat} = this.map.getCenter()
