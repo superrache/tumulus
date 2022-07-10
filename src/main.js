@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
+import './registerServiceWorker'
 
 const test = 0
 
