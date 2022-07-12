@@ -457,7 +457,7 @@ export default {
       }
       try {
         if(found) this.map.getSource(g + '/' + themeId).setData(theme.geojsons[g])
-      } catch(e) {
+      } catch(e) { // échoue lorsque la thématique est masquée
         console.log('source non trouvée, peut-être masquée')
       }
 
