@@ -28,7 +28,8 @@ export function detect(feature, theme) {
                             }
                         }
                         return null
-                    }
+                    },
+                    repairedIfEdited: `${wikipediaTagName}`
                 })
             }
         }

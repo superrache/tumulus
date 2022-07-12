@@ -8,7 +8,8 @@ export function detect(feature, theme) {
                 feature: feature,
                 theme: theme,
                 importance: 1,
-                message: 'historic=monument sans la série d\'attributs heritage:*'
+                message: 'historic=monument sans la série d\'attributs heritage:*',
+                repairedIfEdited: 'heritage'
             })
         }
     }

@@ -6,17 +6,17 @@
                 v-for="issue in issues"
                 :key="issue"
                 :style="{ 'background-color': issue.theme.color, 'opacity': issue.theme.visible ? '1' : '0.3' }"
-                @click="selectFeature(issue)">
+                @click="editFeature(issue)">
                 <div class="importance" :class="importances[issue.importance]"></div>
                 <div class="text">
                     <div class="name">{{issue.feature.properties.name}}</div>
                     <div class="message">{{issue.message}}</div>
                 </div>
                 <div class="buttons">
-                    <button class="little" title="Editer" @click="editFeature(issue)" :disabled="!connected">
+                    <button class="little" title="Editer" @click="editFeature(issue)" :disabled="!connected" :class="issue.manuallyRepaired === undefined ? '' : (issue.manuallyRepaired == 1 ? 'repaired' : '')">
                         <img src="/ui/edit.svg" width=18 />
                     </button>
-                    <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.repaired === undefined ? '' : (issue.repaired == 1 ? 'repaired' : 'irreparable')">
+                    <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.autoRepaired === undefined ? '' : (issue.autoRepaired == 1 ? 'repaired' : 'irreparable')">
                         <img src="/ui/repair.svg" width=18 />
                     </button>
                     <button class="little" title="Masquer" @click="deleteIssue(issue)">
@@ -48,7 +48,8 @@ export default {
     return {
         components: null,
         issues: [],
-        importances: ["missing-data", "warning", "error"]
+        importances: ["missing-data", "warning", "error"],
+        editingIssue: null
     }
   },
   computed: {
@@ -78,25 +79,23 @@ export default {
             this.issues.push(...monumentWithoutHeritage.detect(feature, theme))
         }
     },
-    selectFeature(issue) {
-        this.components.map.selectFeature(issue.feature, issue.theme)
-    },
     editFeature(issue) {
-        this.components.featureEditor.loadFeature(issue.feature)
+        this.components.map.selectFeature(issue.feature, issue.theme)
+        this.editingIssue = issue
     },
     async autoRepairFeature(issue) {
         this.components.editorLog.add('Tentative de réparation du problème : ' + issue.message + ' sur l\'élément ' + issue.feature.id)
         const reparation = await issue.autoRepair()
         if(reparation !== null) {
             this.components.editorLog.addInline(reparation.message + ' <span style="color: lightgreen;">[Réussi]</span>')
-            issue.repaired = 1
+            issue.autoRepaired = 1
             let feature = reparation.feature
             this.components.osmConnector.addEditedFeature(feature)
             if(this.components.featureResult.isLoaded(feature)) this.components.featureResult.loadFeature(feature, issue.theme)
             if(this.components.featureEditor.isLoaded(feature)) this.components.featureEditor.loadFeature(feature)
         } else {
             this.components.editorLog.addInline(' <span style="color: #ffaaaa;">[Echec]</span>')
-            issue.repaired = 2
+            issue.autoRepaired = 2
         }
     },
     async autoRepairAll() {
@@ -106,6 +105,21 @@ export default {
             let issue = this.issues[i]
             if(typeof issue.autoRepair == 'function') {
                 await this.autoRepairFeature(issue)
+            }
+        }
+    },
+    setEditedKeys(featureId, editedKeys) {
+        console.log("setEditedKeys")
+        console.log(editedKeys)
+        if(this.editingIssue !== null && featureId === this.editingIssue.feature.id) {
+            if(editedKeys.indexOf(this.editingIssue.repairedIfEdited) > -1) {
+                this.editingIssue.manuallyRepaired = true
+                for(let i in this.issues) {
+                    let issue = this.issues[i]
+                    if(issue.feature.id === featureId && issue.message === this.editingIssue.message) {
+                        issue.manuallyRepaired = true
+                    }
+                }
             }
         }
     }

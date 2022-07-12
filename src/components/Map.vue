@@ -455,7 +455,11 @@ export default {
           break
         }
       }
-      if(found) this.map.getSource(g + '/' + themeId).setData(theme.geojsons[g])
+      try {
+        if(found) this.map.getSource(g + '/' + themeId).setData(theme.geojsons[g])
+      } catch(e) {
+        console.log('source non trouvée, peut-être masquée')
+      }
 
       // mise à jour du marker
       let marker = theme.markers[feature.properties.id]

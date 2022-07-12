@@ -141,11 +141,16 @@ export default {
       console.log('save feature id = ' + this.originalFeature.id)
       
       const newProperties = {}
+      let editedKeys = []
       for(let e in this.editedProperties) {
         let editedProperty = this.editedProperties[e]
         if(editedProperty.key !== '') {
             console.log(editedProperty.key + '=' + editedProperty.value)
             newProperties[editedProperty.key] = editedProperty.value
+            
+            // cette clé a-t-elle été éditée ? elle n'existait pas dans l'original ou elle est différente entre props originale et éditée
+            if(this.originalProperties[editedProperty.key] === undefined || newProperties[editedProperty.key] !== this.originalProperties[editedProperty.key])
+              editedKeys.push(editedProperty.key)
         }
       }
 
@@ -162,6 +167,8 @@ export default {
         this.components.osmConnector.addEditedFeature(this.originalFeature)
         this.components.featureResult.updateFeature(this.originalFeature)
         this.loadFeature(this.originalFeature) // reset
+
+        this.components.issueAnalyzer.setEditedKeys(this.originalFeature.id, editedKeys)
       }
     },
     cancel() {

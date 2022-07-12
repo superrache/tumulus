@@ -12,7 +12,8 @@ export function detect(feature, theme) {
                 feature.properties['start_date'] = feature.properties.age
                 delete feature.properties.age
                 return {feature: feature, message: 'Tag age remplacé par start_date'}
-            }
+            },
+            repairedIfEdited: 'age'
         })
     }
 

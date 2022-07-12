@@ -7,7 +7,8 @@ export function detect(feature, theme) {
             feature: feature,
             theme: theme,
             importance: 0,
-            message: 'Attribut site_type manquant pour le site archéologique'
+            message: 'Attribut site_type manquant pour le site archéologique',
+            repairedIfEdited: 'site_type'
         })
     }
 
