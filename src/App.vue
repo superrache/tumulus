@@ -144,9 +144,9 @@ export default {
   methods: {
     reload() {
       if(this.components) {
-        if(this.components.featureResult) this.components.featureResult.unloadFeature()
-        if(this.components.featureEditor) this.components.featureEditor.unloadFeature()
-        if(this.components.map) this.components.map.reload()
+        this.components.featureResult.unloadFeature()
+        this.components.featureEditor.unloadFeature()
+        this.components.map.reload()
       }
     },
     updateAppUrl() {

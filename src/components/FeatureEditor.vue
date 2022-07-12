@@ -29,7 +29,7 @@
     </table>
 
     <div id="buttons" v-if="connected">
-      <button @click="save" :disabled="!editing">Enregistrer</button>
+      <button @click="save(true)" :disabled="!editing">Enregistrer</button>
       <button @click="cancel">Annuler</button>
     </div>
   </div>
@@ -51,7 +51,7 @@ export default {
       originalFeature: null,
       originalProperties: null,
       editedProperties: [],
-      editing: true
+      editing: false
     }
   },
   computed: {
@@ -79,6 +79,11 @@ export default {
       }
     },
     unloadFeature() {
+      if(this.editing) {
+        if(confirm('L\'objet sélectionné est en cours d\'édition. Les modifications vont être perdues. Voulez-vous continuer ?')) {
+          this.save(false)
+        }
+      }
       this.originalFeature = null
       this.originalProperties = null
       this.editedProperties = []
@@ -132,7 +137,7 @@ export default {
         this.$refs[`input-value-${e}`][0].innerValue = property.value
       }
     },
-    save() {
+    save(updateUI) {
       console.log('save feature id = ' + this.originalFeature.id)
       
       const newProperties = {}
@@ -150,10 +155,14 @@ export default {
       newProperties.t = this.originalFeature.properties.t
     
       this.originalFeature.properties = newProperties
-      this.components.osmConnector.addEditedFeature(this.originalFeature)
-      this.components.featureResult.updateFeature(this.originalFeature)
+
       this.components.map.updateFeature(this.originalFeature)
-      this.loadFeature(this.originalFeature) // reset
+
+      if(updateUI) {
+        this.components.osmConnector.addEditedFeature(this.originalFeature)
+        this.components.featureResult.updateFeature(this.originalFeature)
+        this.loadFeature(this.originalFeature) // reset
+      }
     },
     cancel() {
       this.loadFeature(this.originalFeature)
