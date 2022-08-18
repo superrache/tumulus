@@ -1,10 +1,10 @@
 <template>
   <div class="cat">
-    <h3>Attributs OpenStreetMap</h3>
-    <div v-if="!connected">Connectez-vous à OpenStreetMap pour pouvoir éditer cet objet</div>
+    <h3>{{$t('osmAttributes')}}</h3>
+    <div v-if="!connected">{{$t('connectToEdit')}}</div>
 
     <table v-if="!connected && originalFeature !== null && originalFeature.properties !== undefined" >
-      <tr><th class="right">Clé</th><th>=</th><th class="left">Valeur</th></tr>
+      <tr><th class="right">{{$t('key')}}</th><th>=</th><th class="left">{{$t('value')}}</th></tr>
       <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g') && !key.includes('t') && !key.includes('lng') && !key.includes('lat'))" :key="key">
         <td class="right">{{key}}</td>
         <td>=</td>
@@ -13,7 +13,7 @@
     </table>
     
     <table v-if="connected" >
-      <tr><th>Clé</th><th>=</th><th>Valeur</th></tr>
+      <tr><th>{{$t('key')}}</th><th>=</th><th>{{$t('value')}}</th></tr>
       <tr v-for="(property, index) in editedProperties" :key="index">
         <td>
           <AutocompleteInput :ref="`input-key-${index}`" v-model:value="property.key" :suggestionsFunction="onInputKey" @inputChanged="onInputChange" />
@@ -29,8 +29,8 @@
     </table>
 
     <div id="buttons" v-if="connected">
-      <button @click="save(true)" :disabled="!editing">Enregistrer</button>
-      <button @click="cancel">Annuler</button>
+      <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
+      <button @click="cancel">{{$t('cancel')}}</button>
     </div>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
     },
     unloadFeature() {
       if(this.editing) {
-        if(confirm('L\'objet sélectionné est en cours d\'édition. Les modifications vont être perdues. Voulez-vous continuer ?')) {
+        if(confirm(this.$t('selectedObjectIsEditingAreYouSure'))) {
           this.save(false)
         }
       }

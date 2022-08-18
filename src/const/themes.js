@@ -1,7 +1,7 @@
 export const queries = {
     historic: {
       filters: ['["historic"]', '["heritage"][!"historic"]'],
-      label: "Eléments d'intérêt historique",
+      label: "queryHistoric",
       bounds: '',
       cache: {},
       needed: false,
@@ -9,7 +9,7 @@ export const queries = {
     },
     artwork: {
       filters: ['["tourism"="artwork"]'],
-      label: "Oeuvres d'art",
+      label: "queryArtwork",
       bounds: '',
       cache: {},
       needed: false,
@@ -17,7 +17,7 @@ export const queries = {
     },
     railway: {
       filters: ['["railway"="abandoned"]'],
-      label: 'Ferroviaire',
+      label: 'queryRailway',
       bounds: '',
       cache: {},
       needed: false,
@@ -28,7 +28,7 @@ export const queries = {
   export const themes = {
       archeo: {
         id: "archeo",
-        label: "Site archéologique",
+        label: "themeArcheo",
         color: "#6FB1A0",
         query: 'historic',
         key: 'historic',
@@ -38,7 +38,7 @@ export const queries = {
       },
       military: {
         id: 'military',
-        label: "Equipement militaire",
+        label: "themeMilitary",
         color: "#15A2A2",
         query: 'historic',
         key: 'historic',
@@ -48,7 +48,7 @@ export const queries = {
       },
       monument: {
         id: "monument",
-        label: "Monument historique",
+        label: "themeMonument",
         color: '#1184A7',
         query: 'historic',
         key: 'historic',
@@ -58,7 +58,7 @@ export const queries = {
       },
       transport: {
         id: 'transport',
-        label: "Transport",
+        label: "themeTransport",
         color: "#046DC8",
         query: 'historic',
         key: 'historic',
@@ -68,7 +68,7 @@ export const queries = {
       },
       railway: {
         id: 'railway',
-        label: 'Ferroviaire',
+        label: 'themeRailway',
         color: '#0450B4',
         query: 'railway',
         key: 'railway',
@@ -78,7 +78,7 @@ export const queries = {
       },
       memorial: {
         id: "memorial",
-        label: "Mémorial",
+        label: "themeMemorial",
         color: "#FEA802",
         query: 'historic',
         key: 'historic',
@@ -88,7 +88,7 @@ export const queries = {
       },
       shrine: {
         id: "shrine",
-        label: "Element religieux",
+        label: "themeShrine",
         color: "#B4418E",
         query: 'historic',
         key: 'historic',
@@ -98,7 +98,7 @@ export const queries = {
       },
       other: {
         id: "other",
-        label: "Autres",
+        label: "themeOther",
         color: "#D94A8C",
         query: 'historic',
         key: 'historic',
@@ -108,7 +108,7 @@ export const queries = {
       },
       artwork: {
         id: "artwork",
-        label: "Oeuvre d'art",
+        label: "themeArtwork",
         color: "#EA515F",
         query: 'artwork',
         key: 'tourism',

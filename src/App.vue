@@ -7,6 +7,11 @@
           <img v-bind:src="require('./img/megalith.svg')" width="40" /> tumulus
         </a>
 
+        <select v-model="locale">
+          <option>fr</option>
+          <option>en</option>
+        </select>
+
         <Search ref="search" />
         <BasemapSelect ref="basemapSelect" />
         <ThemeSelect id="themeSelect" ref="themeSelect" />
@@ -28,10 +33,10 @@
 
       <button id="reload" v-show="!dispZoomMore && canReload" @click="reload">
         <img src="/ui/search.svg" width=18 />
-        Rechercher des données dans cette zone
+        {{ $t('lookForDataInThisArea') }}
       </button>
 
-      <div id="zoomMore" v-show="dispZoomMore">Zoomez plus pour voir les données</div>
+      <div id="zoomMore" v-show="dispZoomMore">{{ $t('zoomMoreToSeeData') }}</div>
 
       <OSMConnector id="osmConnector" ref="osmConnector" />
 
@@ -73,6 +78,7 @@ export default {
   },
   data () {
     return {
+      locale: 'fr',
       components: null,
       loading: '',
       sidebar: null,
@@ -82,6 +88,11 @@ export default {
   async created () {
     if(window.location.origin.indexOf('herokuapp.com') > 0) {
       await fetch('https://dept-quiz.herokuapp.com/stat?feature=tumulus')
+    }
+  },
+  watch: {
+    locale (val) {
+      this.$i18n.locale = val
     }
   },
   mounted() {

@@ -1,8 +1,8 @@
 <template>
   <div class="cat" v-if="log !== null" >
     <div id="log">
-        <h3>Journal des modifications</h3>
-        <button id="close" @click="close" title="Fermer">
+        <h3>{{$t('changeLog')}}</h3>
+        <button id="close" @click="close" :title="$t('close')">
             <img src="/ui/clear.svg" width=18 />      
         </button>
     </div>

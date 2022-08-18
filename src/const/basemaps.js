@@ -1,13 +1,13 @@
 export const basemaps = {
     default: {
-        label: "Plan",
+        label: "map",
         selected: true,
         color: "CornflowerBlue",
         icon: 'default.png',
         url: 'https://api.jawg.io/styles/77df562c-113e-451b-bc77-1634aedeee25.json?access-token=UG9wQV1RcEgsXwkTX9M9qfBUV0ZckAfUhlqa3W4hK16gVbTFDUSMXrn60H1hEE6d'
     },
     watercolor: {
-        label: "Peinture à l'eau",
+        label: "watercolor",
         selected: false,
         color: "orange",
         icon: 'watercolor.png',
@@ -34,7 +34,7 @@ export const basemaps = {
         except: ['building']
     },
     bdortho: {
-        label: "IGN BDOrtho",
+        label: "ortho",
         selected: false,
         color: "green",
         icon: 'bdortho.png',

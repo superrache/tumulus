@@ -196,7 +196,7 @@ export default {
     },
     async reload() {
       this.components.app.canReload = false
-      this.components.app.loading = 'Chargement de la carte ...'
+      this.components.app.loading = this.$t('loadingMap')
 
       let {lng, lat} = this.map.getCenter()
       this.countryCode = await nominatim.getCountryCode({lat: utils.round6Digits(lat), lng: utils.round6Digits(lng)})
@@ -215,7 +215,7 @@ export default {
         let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
         while(launch) {
           console.log(codename + ' : launching query ' + q)
-          this.components.app.loading = 'Recherche des données OpenStreetMap : ' + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
+          this.components.app.loading = this.$t('lookingForOSMData') + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
           const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filters=" + query.filters.join(","))
           if(codename !== this.currentCodename) return
           

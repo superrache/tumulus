@@ -1,6 +1,6 @@
 <template>
     <div class="cat">
-        <h3 class="collapsible" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}} Fond de carte</h3>
+        <h3 class="collapsible" @click="collapsed = !collapsed">{{(collapsed ? '+' : '-') + ' ' + $t('basemap')}}</h3>
         <div class="basemaps">
           <div class="basemap"
             v-for="(basemap, b) in basemaps"
@@ -8,7 +8,7 @@
             v-on:click="onBasemapSelect($event, b)"
             :style="{ 'display': collapsed ? 'none' : 'block', 'background-color': basemap.color, 'opacity': basemap.selected ? '1' : '0.5' }">
             <img v-if="basemap.icon !== undefined" :src="'/basemap-icon/' + basemap.icon" width=128 />
-            <div class="basemap-label" :style="{ 'color': basemap.color }">{{basemap.label}}</div>
+            <div class="basemap-label" :style="{ 'color': basemap.color }">{{$t(basemap.label)}}</div>
           </div>
         </div>
     </div>
@@ -129,7 +129,7 @@ export default {
       if(backupAndRestore) {
         for(let s in themeSources) this.components.map.map.addSource(s, themeSources[s])
         for(let l in themeLayers) {
-          console.log('readd layer ' + themeLayers[l].id)
+          console.log('read layer ' + themeLayers[l].id)
           this.components.map.map.addLayer(themeLayers[l])
         }
       }

@@ -7,17 +7,17 @@
         <div class="type">{{type}}</div>
       </div>
 
-      <div class="normal" v-if="props.hasOwnProperty('alt_name')">Aussi appelé : {{props.alt_name}}</div>
-      <div class="normal" v-if="props.tourism === 'attraction'">Attraction touristique</div>
+      <div class="normal" v-if="props.hasOwnProperty('alt_name')">{{$t('altName') + ' ' + props.alt_name}}</div>
+      <div class="normal" v-if="props.tourism === 'attraction'">{{$('touristAttraction')}}</div>
 
       <img v-if="props.hasOwnProperty('image')" :src="props.image"/>
 
       <div class="normal" v-if="props.hasOwnProperty('start_date')" v-html="dateDescription"></div>
 
-      <div class="normal" v-if="props.hasOwnProperty('artist_name')">Artiste : {{props.artist_name}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('architect')">Architecte : {{props.architect}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('artwork_subject')">Sujet de l'oeuvre : {{props.artwork_subject}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('material')">Matériau : {{material}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('artist_name')">{{$('artist') + ' ' + props.artist_name}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('architect')">{{$('architect') + ' ' + props.architect}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('artwork_subject')">{{$('artworkSubject') + ' ' + props.artwork_subject}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('material')">{{$('material') + ' ' + material}}</div>
 
       <div class="normal" v-if="props.hasOwnProperty('historic')" v-html="historicDescription"></div>
 
@@ -30,32 +30,32 @@
         
         <div class="normal" v-if="w.hasOwnProperty('extract_html') && w.hasOwnProperty('content_urls')">
           <span v-html="w.extract_html"></span>
-          <a target="_blank" :href="w.content_urls.desktop.page">Lire la suite ...</a>
+          <a target="_blank" :href="w.content_urls.desktop.page">{{$t('readMore')}}</a>
         </div>
         <div class="normal" v-if="w.hasOwnProperty('wikibase_item')">
-          <a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">Voir sur wikidata</a>
+          <a target="_blank" :href="'https://www.wikidata.org/wiki/' + w.wikibase_item">{{$t('seeOnWikidata')}}</a>
         </div>
       </div>
 
-      <div class="normal" v-if="props.hasOwnProperty('heritage')">Niveau de protection du patrimoine : {{props['heritage']}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('heritage:operator')">Opérateur de protection du patrimoine : {{heritageOperator}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('heritage')">{{$t('heritageLevel') + ' ' + props['heritage']}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('heritage:operator')">{{$t('heritageOperator') + ' ' + heritageOperator}}</div>
       
-      <div class="normal" v-if="props.hasOwnProperty('mhs:inscription_date')">Date d'inscription : {{dispDate(props['mhs:inscription_date'])}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('mhs:inscription_date')">{{$t('inscriptionDate') + ' ' + dispDate(props['mhs:inscription_date'])}}</div>
 
-      <div class="normal" v-if="props.hasOwnProperty('ref:whc')">Référence UNSECO {{props['ref:whc']}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + props['ref:mhs']">Base Mérimée {{props['ref:mhs']}}</a></div>
+      <div class="normal" v-if="props.hasOwnProperty('ref:whc')">{{$t('unescoReference') + ' ' + props['ref:whc']}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('ref:mhs')"><a target="_blank" :href="'https://www.pop.culture.gouv.fr/notice/merimee/' + props['ref:mhs']">{{$t('merimeeDatabase') + ' ' + props['ref:mhs']}}</a></div>
       <div class="normal" v-if="props.hasOwnProperty('website')"><a target="_blank" :href="props['website']">{{props['website']}}</a></div>
       <div class="normal" v-if="props.hasOwnProperty('heritage:website')"><a target="_blank" :href="props['heritage:website']">{{props['heritage:website']}}</a></div>
 
-      <div class="normal" v-if="props.hasOwnProperty('fixme')">Note : {{props.fixme}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('description')">Description : {{props.description}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('inscription')">Inscription : {{props.inscription}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('source')">Source : {{props.source}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('fixme')">{{$t('note') + ' ' + props.fixme}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('description')">{{$t('description') + ' ' + props.description}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('inscription')">{{$t('inscription') + ' ' + props.inscription}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('source')">{{$t('source') + ' ' + props.source}}</div>
       
       <div class="small">
-        <a target="_blank" :href="'https://www.openstreetmap.org/' + id.split('/')[0] + '/' + id.split('/')[1]">Voir sur OpenStreetMap</a>
+        <a target="_blank" :href="'https://www.openstreetmap.org/' + id.split('/')[0] + '/' + id.split('/')[1]">{{$t('seeOnOpenStreetMap')}}</a>
         &nbsp;
-        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + props.lat + '/' + props.lng">Editer avec iD</a>
+        <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + props.lat + '/' + props.lng">{{$t('editWithID')}}</a>
       </div>
     </div>
 
@@ -110,7 +110,7 @@ export default {
       }
       
       if(this.props.tourism === 'artwork') {
-        type = 'Oeuvre d\'art'
+        type = this.$t('artwork')
         if(this.props.artwork_type) {
           type = types.artworkTypes[this.props.artwork_type]
           if(!type) type = this.props.artwork_type
@@ -124,16 +124,16 @@ export default {
       return type
     },
     dateDescription() {
-      let dd = 'Date : '
-      if(this.props.end_date !== undefined) dd += 'de ' + this.props.start_date + ' à ' + this.props.end_date
+      let dd = this.$t('date')
+      if(this.props.end_date !== undefined) dd += this.$t('from') + ' ' + this.props.start_date + ' ' + this.$t('to') + ' ' + this.props.end_date
       else dd += this.props.start_date
       return dd
     },
     historicDescription() {
       let hd = ''
-      if(this.props.historic === 'archaeological_site' && this.props.site_type !== undefined) hd += 'Type de site : ' + types.archaeologicalSiteType[this.props.site_type] + '<br/>'
-      if(this.props.site_type === 'megalith' && this.props.megalith_type !== undefined) hd += 'Type de mégalithe : ' + types.megalithType[this.props.megalith_type] + '<br/>'
-      if(this.props.moved !== undefined) hd += 'Déplacé : ' + (this.props.moved === 'yes' ? 'Oui' : 'Non') + '<br/>'
+      if(this.props.historic === 'archaeological_site' && this.props.site_type !== undefined) hd += this.$t('siteType') + types.archaeologicalSiteType[this.props.site_type] + '<br/>'
+      if(this.props.site_type === 'megalith' && this.props.megalith_type !== undefined) hd += this.$t('megalithType') + types.megalithType[this.props.megalith_type] + '<br/>'
+      if(this.props.moved !== undefined) hd += this.$t('moved') + (this.props.moved === 'yes' ? this.$t('yes') : this.$t('no')) + '<br/>'
       return hd
     },
     material() {
@@ -161,9 +161,9 @@ export default {
 
       this.wikis = []
       this.loadWikiData('wikipedia', 'wikidata', '')
-      this.loadWikiData('subject:wikipedia', 'subject:wikidata', 'Sujet : ')
-      this.loadWikiData('artist:wikipedia', 'artist:wikidata', 'Artiste : ')
-      this.loadWikiData('architect:wikipedia', 'architect:wikidata', 'Architecte : ')
+      this.loadWikiData('subject:wikipedia', 'subject:wikidata', this.$t('artworkSubject'))
+      this.loadWikiData('artist:wikipedia', 'artist:wikidata', this.$t('artist'))
+      this.loadWikiData('architect:wikipedia', 'architect:wikidata', this.$t('architect'))
     },
     unloadFeature() {
       this.id = null

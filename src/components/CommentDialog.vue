@@ -1,14 +1,14 @@
 <template>
   <div id="comment-dialog" v-show="showDialog">
-      <h3 class="title">Commentaire des modifications</h3>
+      <h3 class="title">{{$t('commentOnChanges')}}</h3>
       <textarea id="comment" type="text" 
-            placeholder="Description de vos contributions" required 
+            :placeholder="$t('descriptionOfYourContributions')" required 
             minLength=1 maxLength="255" size="14" 
             v-model="comment"
             @keyup.enter="save()" autofocus/>
       <div id="buttons">
-        <button id="save" v-on:click="save()" :disabled="comment.length == 0">Envoyer</button>
-        <button id="close" v-on:click="close()">Annuler</button>
+        <button id="save" v-on:click="save()" :disabled="comment.length == 0">{{$t('send')}}</button>
+        <button id="close" v-on:click="close()">{{$t('cancel')}}</button>
       </div>
     </div>
 </template>

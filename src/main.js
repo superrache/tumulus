@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import i18n from './i18n'
 import App from './App.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
@@ -8,11 +9,12 @@ const test = 0
 
 switch(test) {
     case 0: {
-        createApp(App).mount('#app')
+        const app = createApp(App).use(i18n)
+        app.mount('#app')
         break;
     }
     case 1: {
-        let fe = createApp(FeatureEditor).mount('#app')
+        let fe = createApp(FeatureEditor).use(i18n).mount('#app')
         fe.osmConnector = {
             connected: true,
             addEditedFeature: (o) => {return o}
@@ -36,7 +38,7 @@ switch(test) {
         break;
     }
     case 2: {
-        let ia = createApp(IssueAnalyzer).mount('#app')
+        let ia = createApp(IssueAnalyzer).use(i18n).mount('#app')
         ia.issues = [
             {
                 feature: {
