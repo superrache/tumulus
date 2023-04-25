@@ -8,6 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "express": "DATABASE_URL=postgres://postgres:postgres@localhost:5432/tumulus node server/server.dev.js",
+    "express-without-db": "node server/server.dev.js",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\"",
     "prepare": "husky install",
     "release": "standard-version",
