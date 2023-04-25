@@ -23,7 +23,7 @@ export function detect(feature, theme) {
                         const data = await wikidataApi(wikidataValue)
                         if(data !== null && data.entities !== undefined && data.entities[wikidataValue] !== undefined && data.entities[wikidataValue].sitelinks !== undefined) {
                             if(data.entities[wikidataValue].sitelinks[feature.lang + 'wiki'] !== undefined) { 
-                                feature.properties[wikipediaTagName] = feature.lang + ':' + data.entities[wikidataValue].sitelinks[feature.lang + 'wiki'].title.replace(/ /g, '_')
+                                feature.properties[wikipediaTagName] = feature.lang + ':' + data.entities[wikidataValue].sitelinks[feature.lang + 'wiki'].title
                                 return {feature: feature, message: `Ajout du tag ${wikipediaTagName}=${feature.properties[wikipediaTagName]} relatif à ${wikidataTagName}=${wikidataValue}`}
                             }
                         }
