@@ -10,8 +10,6 @@ Tumulus purposes are:
 * Help editing data by detecting missing attributes or errors. Auto-repair some kind of error
 * Provide an editor assistant to complete feature attributes
 
-# See app here: [tumulus.herokuapp.com](https://tumulus.herokuapp.com)
-
 ## Project setup
 ```
 npm install
