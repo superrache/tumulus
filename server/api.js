@@ -32,7 +32,7 @@ module.exports = function(app, databaseUrl, prod) {
         }
     }    
 
-    const request = require('request')
+    const axios = require('axios')
     const osmtogeojson = require('osmtogeojson')
 
     const simpleCache = []
@@ -80,19 +80,11 @@ module.exports = function(app, databaseUrl, prod) {
                 console.log('[result in cache]')
                 res.json(simpleCache[query])
             } else {
-                request(fullUrl, (error, response, data) => {
-                    try {
-                        if(error) console.log(error)
-                        console.log(response.statusCode)
-                        const geojson = osmtogeojson(JSON.parse(data))
-                        simpleCache[query] = geojson
-                        res.json(geojson)
-                    } catch(err) {
-                        //console.error(err)
-                        //console.error(data)
-                        res.json({error: 1})
-                    }
-                })
+                axios.get(fullUrl).then((response) => {
+                    const geojson = osmtogeojson(response.data)
+                    simpleCache[query] = geojson
+                    res.json(geojson)
+                }).catch((err) => res.json({error: 1}))
             }
         } catch(err) {
             //console.error(err)
@@ -107,14 +99,14 @@ module.exports = function(app, databaseUrl, prod) {
         }
         try {
             console.log(`get /wikidata q=${req.query.q}`)
-            request(`https://www.wikidata.org/w/api.php?action=wbgetentities&props=sitelinks&ids=${req.query.q}&format=json`, (error, response, data) => {
+            axios.get(`https://www.wikidata.org/w/api.php?action=wbgetentities&props=sitelinks&ids=${req.query.q}&format=json`).then((response) => {
                 try {
                     res.header("Content-Type", "application/json")
-                    res.send(data)
+                    res.send(response.data)
                 } catch(err) {
                     res.json({error: 4})
                 }
-            })
+            }).catch((err) => res.json({error: 4}))
         } catch(err) {
             res.json({error: 3})
         }
