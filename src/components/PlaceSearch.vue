@@ -30,7 +30,7 @@
 import * as nominatim from '../utils/Nominatim.js'
 
 export default {
-  name: 'Search',
+  name: 'PlaceSearch',
   data() {
     return {
         components: null,

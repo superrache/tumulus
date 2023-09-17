@@ -21,7 +21,7 @@ import * as themes from '../const/themes.js'
 import * as nominatim from '../utils/Nominatim.js'
 
 export default {
-  name: 'Map',
+  name: 'TumulusMap',
   data () {
     return {
       components: null,

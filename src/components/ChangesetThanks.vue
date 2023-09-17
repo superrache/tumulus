@@ -15,7 +15,7 @@
 <script>
 
 export default {
-  name: 'Thanks',
+  name: 'ChangesetThanks',
   data () {
     return {
       changeset: null

@@ -12,11 +12,11 @@
           <option>en</option>
         </select>
 
-        <Search ref="search" />
+        <PlaceSearch ref="search" />
         <BasemapSelect ref="basemapSelect" />
         <ThemeSelect id="themeSelect" ref="themeSelect" />
         <FeatureResult ref="featureResult" />
-        <Thanks ref="thanks" />
+        <ChangesetThanks ref="thanks" />
         <EditorLog ref="editorLog" />
         <FeatureEditor ref="featureEditor" />
         <IssueAnalyzer ref="issueAnalyzer" />
@@ -24,7 +24,7 @@
     </div>
 
     <div id="main-content">
-      <Map id="map" ref="map" />
+      <TumulusMap id="map" ref="map" />
 
       <div id="loading" v-show="loading.length > 0">
         <div id="loading-masker"></div>
@@ -49,27 +49,27 @@
 
 <script>
 import * as URLParameters from './utils/URLParameters.js'
-import Search from './components/Search.vue'
+import PlaceSearch from './components/PlaceSearch.vue'
 import BasemapSelect from './components/BasemapSelect.vue'
 import ThemeSelect from './components/ThemeSelect.vue'
-import Thanks from './components/Thanks.vue'
+import ChangesetThanks from './components/ChangesetThanks.vue'
 import EditorLog from './components/EditorLog.vue'
 import FeatureResult from './components/FeatureResult.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
-import Map from './components/Map.vue'
+import TumulusMap from './components/TumulusMap.vue'
 import OSMConnector from './components/OSMConnector.vue'
 import CommentDialog from './components/CommentDialog.vue'
 
 export default {
   name: 'App',
   components: {
-    Map,
+    TumulusMap,
     OSMConnector,
-    Search,
+    PlaceSearch,
     BasemapSelect,
     ThemeSelect,
-    Thanks,
+    ChangesetThanks,
     EditorLog,
     FeatureResult,
     FeatureEditor,
@@ -86,9 +86,7 @@ export default {
     }
   },
   async created () {
-    if(window.location.origin.indexOf('herokuapp.com') > 0) {
-      await fetch('https://dept-quiz.herokuapp.com/stat?feature=tumulus')
-    }
+
   },
   watch: {
     locale (val) {
