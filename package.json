@@ -7,7 +7,7 @@
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "express": "DATABASE_URL=postgres://postgres:postgres@localhost:5432/tumulus node server/server.dev.js",
+    "express": "node server/server.dev.js",
     "express-without-db": "node server/server.dev.js",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\"",
     "prepare": "husky install",
@@ -21,31 +21,30 @@
     "@turf/helpers": "^6.5.0",
     "@turf/length": "^6.5.0",
     "@turf/point-on-feature": "^6.5.0",
+    "axios": "^1.5.0",
     "core-js": "^3.6.5",
     "express": "^4.17.3",
     "husky": "^7.0.4",
     "maplibre-gl": "^1.15.2",
     "osm-auth": "^1.1.1",
     "osm-request": "^1.2.10",
-    "osmtogeojson": "^3.0.0-beta.4",
+    "osmtogeojson": "^3.0.0-beta.5",
     "pg": "^8.7.3",
     "register-service-worker": "^1.7.1",
-    "request": "^2.88.2",
     "vue": "^3.2.33",
     "vue-i18n": "^9.2.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^15.0.0",
+    "@babel/eslint-parser": "^7.22.15",
+    "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^15.0.0",
     "@intlify/vue-i18n-loader": "^3.0.0",
-    "@vue/cli-plugin-babel": "~4.5.15",
-    "@vue/cli-plugin-eslint": "~4.5.15",
-    "@vue/cli-plugin-pwa": "^4.5.19",
-    "@vue/cli-service": "~4.5.15",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-plugin-pwa": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
     "@vue/compiler-sfc": "^3.0.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0",
+    "eslint-plugin-vue": "^9.17.0",
     "git-conventional-commits": "^1.2.0",
     "husky": "^7.0.4",
     "standard-version": "^9.3.2",
@@ -61,7 +60,7 @@
       "eslint:recommended"
     ],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "@babel/eslint-parser"
     },
     "rules": {}
   },
@@ -74,8 +73,8 @@
     "url": "https://github.com/superrache/tumulus/issues"
   },
   "engines": {
-    "node": "14.x",
-    "npm": "8.1.x"
+    "node": "16.x",
+    "npm": "8.19.x"
   },
   "homepage": "https://github.com/superrache/tumulus",
   "husky": {
