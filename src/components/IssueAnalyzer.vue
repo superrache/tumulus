@@ -41,6 +41,7 @@ import * as badUseOfAge from '../issues/BadUseOfAge.js'
 import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMissingSiteType.js'
 import * as mhs from '../issues/Mhs.js'
 import * as monumentWithoutHeritage from '../issues/MonumentWithoutHeritage.js'
+import * as invader from '../issues/Invader.js'
 
 export default {
   name: 'IssueAnalyzer',
@@ -77,6 +78,7 @@ export default {
             this.issues.push(...archeologicalSiteMissingSiteType.detect(feature, theme))
             this.issues.push(...mhs.detect(feature, theme))
             this.issues.push(...monumentWithoutHeritage.detect(feature, theme))
+            this.issues.push(...invader.detect(feature, theme))
         }
     },
     editFeature(issue) {
