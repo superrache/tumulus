@@ -8,16 +8,16 @@
       </div>
 
       <div class="normal" v-if="props.hasOwnProperty('alt_name')">{{$t('altName') + ' ' + props.alt_name}}</div>
-      <div class="normal" v-if="props.tourism === 'attraction'">{{$('touristAttraction')}}</div>
+      <div class="normal" v-if="props.tourism === 'attraction'">{{$t('touristAttraction')}}</div>
 
       <img v-if="props.hasOwnProperty('image')" :src="props.image"/>
 
       <div class="normal" v-if="props.hasOwnProperty('start_date')" v-html="dateDescription"></div>
 
-      <div class="normal" v-if="props.hasOwnProperty('artist_name')">{{$('artist') + ' ' + props.artist_name}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('architect')">{{$('architect') + ' ' + props.architect}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('artwork_subject')">{{$('artworkSubject') + ' ' + props.artwork_subject}}</div>
-      <div class="normal" v-if="props.hasOwnProperty('material')">{{$('material') + ' ' + material}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('artist_name')">{{$t('artist') + ' ' + props.artist_name}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('architect')">{{$t('architect') + ' ' + props.architect}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('artwork_subject')">{{$t('artworkSubject') + ' ' + props.artwork_subject}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('material')">{{$t('material') + ' ' + material}}</div>
 
       <div class="normal" v-if="props.hasOwnProperty('historic')" v-html="historicDescription"></div>
 

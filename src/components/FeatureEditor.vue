@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     isLoaded(other) {
-      return this.originalFeature.properties.id === other.properties.id
+      return this.originalFeature?.properties.id === other.properties.id
     },
     loadFeature(feature) {
       if(feature !== null && feature.properties !== null) {
