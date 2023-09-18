@@ -4,7 +4,7 @@
       <div id="sidebar-resizer"></div>
       <div id="panel">
         <a id="title" href="">
-          <img v-bind:src="require('./img/megalith.svg')" width="40" /> tumulus
+          <img v-bind:src="require('./img/megalith.svg')" width="40"/> tumulus
         </a>
 
         <select v-model="locale">
@@ -12,19 +12,22 @@
           <option>en</option>
         </select>
 
-        <PlaceSearch ref="search" />
-        <BasemapSelect ref="basemapSelect" />
-        <ThemeSelect id="themeSelect" ref="themeSelect" />
-        <FeatureResult ref="featureResult" />
-        <ChangesetThanks ref="thanks" />
-        <EditorLog ref="editorLog" />
-        <FeatureEditor ref="featureEditor" />
-        <IssueAnalyzer ref="issueAnalyzer" />
+        <PlaceSearch ref="search"/>
+        <BasemapSelect ref="basemapSelect"/>
+        <ThemeSelect id="themeSelect" ref="themeSelect"/>
+        <FeatureResult ref="featureResult"/>
+        <ChangesetThanks ref="thanks"/>
+        <EditorLog ref="editorLog"/>
+        <FeatureEditor ref="featureEditor"/>
       </div>
     </div>
-
+    
     <div id="main-content">
-      <TumulusMap id="map" ref="map" />
+      <TumulusMap id="map" ref="map"/>
+
+      <div id="bottombar">
+        <IssueAnalyzer ref="issueAnalyzer"/>
+      </div>
 
       <div id="loading" v-show="loading.length > 0">
         <div id="loading-masker"></div>
@@ -32,13 +35,13 @@
       </div>
 
       <button id="reload" v-show="!dispZoomMore && canReload" @click="reload">
-        <img src="/ui/search.svg" width=18 />
+        <img src="/ui/search.svg" width=18/>
         {{ $t('lookForDataInThisArea') }}
       </button>
 
       <div id="zoomMore" v-show="dispZoomMore">{{ $t('zoomMoreToSeeData') }}</div>
 
-      <OSMConnector id="osmConnector" ref="osmConnector" />
+      <OSMConnector id="osmConnector" ref="osmConnector"/>
 
     </div>
 
@@ -313,6 +316,21 @@ button:disabled {
 
 #sidebar-resizer:hover, #sidebar-resizer:active {
   background-color: #777;
+}
+
+#bottombar {
+  position: absolute;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  min-height: 200px;
+  max-height: 250px;
+  bottom: 0px;
+  z-index: 9;
+  background-color: #333;
+  padding: 5px;
+  padding-right: 7px;
+  user-select: text;
 }
 
 #panel {
