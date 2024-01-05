@@ -22,6 +22,14 @@ export const queries = {
       cache: {},
       needed: false,
       loading: false
+    },
+    plant: {
+      filters: ['["natural"~"shrub|tree"]["species"]'],
+      label: "queryPlant",
+      bounds: '',
+      cache: {},
+      needed: false,
+      loading: false
     }
   }
   
@@ -114,6 +122,16 @@ export const queries = {
         key: 'tourism',
         values: ['artwork'],
         icon: 'artwork',
+        visible: true
+      },
+      plant: {
+        id: "plant",
+        label: "themePlant",
+        color: "#33cc33",
+        query: 'plant',
+        key: 'natural',
+        values: ['plant', 'tree'],
+        icon: 'plant',
         visible: true
       }
     }
