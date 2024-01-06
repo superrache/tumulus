@@ -24,7 +24,8 @@ export const queries = {
       loading: false
     },
     plant: {
-      filters: ['["natural"~"shrub|tree"]["species"]'],
+      filters: ['["natural"~"shrub|tree"]["species"]', '["natural"~"shrub|tree"]["species:fr"]', '["natural"~"shrub|tree"]["species:en"]'],
+      // TODO: add other filter for each supported language
       label: "queryPlant",
       bounds: '',
       cache: {},
