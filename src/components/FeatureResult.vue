@@ -176,6 +176,7 @@ export default {
       this.loadWikiData('subject:wikipedia', 'subject:wikidata', this.$t('artworkSubject'))
       this.loadWikiData('artist:wikipedia', 'artist:wikidata', this.$t('artist'))
       this.loadWikiData('architect:wikipedia', 'architect:wikidata', this.$t('architect'))
+      this.loadWikiData('species:wikipedia', 'species:wikidata', this.$t('species'))
     },
     unloadFeature() {
       this.id = null
