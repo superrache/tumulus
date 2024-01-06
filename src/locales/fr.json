@@ -57,9 +57,15 @@
   "date": "Date : ",
   "from": "de",
   "to": "à",
+  "surveyDate": "Vu le ",
   "siteType": "Type de site : ",
   "megalithType": "Type de mégalithe : ",
   "moved": "Déplacé : ",
+  "genus": "Genre :",
+  "species": "Espèce :",
+  "taxon": "Taxon :",
+  "leaf_cycle": "Phénologie des feuilles :",
+  "leaf_type": "Type de feuilles :",
   "yes": "Oui",
   "no": "Non"
 }

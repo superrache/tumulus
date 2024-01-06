@@ -13,6 +13,7 @@
       <img v-if="props.hasOwnProperty('image')" :src="props.image"/>
 
       <div class="normal" v-if="props.hasOwnProperty('start_date')" v-html="dateDescription"></div>
+      <div class="normal" v-if="props.hasOwnProperty('survey:date')">{{$t('surveyDate') + ' ' + dispDate(props['survey:date'])}}</div>
 
       <div class="normal" v-if="props.hasOwnProperty('artist_name')">{{$t('artist') + ' ' + props.artist_name}}</div>
       <div class="normal" v-if="props.hasOwnProperty('architect')">{{$t('architect') + ' ' + props.architect}}</div>
@@ -20,6 +21,12 @@
       <div class="normal" v-if="props.hasOwnProperty('material')">{{$t('material') + ' ' + material}}</div>
 
       <div class="normal" v-if="props.hasOwnProperty('historic')" v-html="historicDescription"></div>
+
+      <div class="normal" v-if="props.hasOwnProperty('genus')">{{$t('genus') + ' ' + props.genus}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('species')">{{$t('species') + ' ' + props.species}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('taxon')">{{$t('taxon') + ' ' + props.taxon}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('leaf_cycle')">{{$t('leaf_cycle') + ' ' + props.leaf_cycle}}</div>
+      <div class="normal" v-if="props.hasOwnProperty('leaf_type')">{{$t('leaf_type') + ' ' + props.leaf_type}}</div>
 
       <div v-for="w in wikis" :key="w.pageId">
         <div class="subtitle" v-html="w.displaytitle"></div>
@@ -103,6 +110,7 @@ export default {
       if(!type && this.props.man_made) type = types.manMadeTypes[this.props.man_made]
       if(!type && this.props.amenity) type = types.amenityTypes[this.props.amenity]
       if(!type && this.props.military) type = types.militaryTypes[this.props.military]
+      if(!type && this.props.natural) type = types.naturalTypes[this.props.natural]
 
       if(this.props.historic === 'memorial' && this.props.memorial) {
         type = types.memorialTypes[this.props.memorial]
@@ -125,7 +133,7 @@ export default {
     },
     dateDescription() {
       let dd = this.$t('date')
-      if(this.props.end_date !== undefined) dd += this.$t('from') + ' ' + this.props.start_date + ' ' + this.$t('to') + ' ' + this.props.end_date
+      if(this.props.end_date !== undefined) dd += this.$t('from') + ' ' + this.dispDate(this.props.start_date) + ' ' + this.$t('to') + ' ' + this.dispDate(this.props.end_date)
       else dd += this.props.start_date
       return dd
     },
@@ -221,6 +229,8 @@ h3 {
 
 img {
   padding-left: 5px;
+  padding-right: 5px;
+  width: 100%;
 }
 
 .subtitle {

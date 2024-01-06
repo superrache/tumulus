@@ -57,9 +57,15 @@
   "date": "Date: ",
   "from": "from",
   "to": "to",
+  "surveyDate": "Seen on ",
   "siteType": "Site type: ",
   "megalithType": "Megalith type: ",
   "moved": "Moved: ",
+  "genus": "Genus:",
+  "species": "Species:",
+  "taxon": "Taxon:",
+  "leaf_cycle": "Leaf cycle :",
+  "leaf_type": "Leaf type :",
   "yes": "Yes",
   "no": "No"  
 }

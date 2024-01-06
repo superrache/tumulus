@@ -259,7 +259,8 @@ export const historicTypes = {
     'statue': 'Statue',
     'bust': 'Buste',
     'stele': 'Stèle',
-    'stone': 'Pierre'
+    'stone': 'Pierre',
+    'vehicle': 'Véhicule'
   }
   
   export const artworkTypes = {
@@ -362,4 +363,9 @@ export const heritageOperators = {
   'OnroerendErfgoed': 'Onroerend Erfgoed',
   'mhs': 'Monuments historiques et sites',
   'ssmn': 'Service des sites et monuments nationaux'
+}
+
+export const naturalTypes = {
+  'tree': 'Arbre',
+  'shrub': 'Arbuste'
 }
