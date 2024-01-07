@@ -128,7 +128,7 @@ export const queries = {
       plant: {
         id: "plant",
         label: "themePlant",
-        color: "#33cc33",
+        color: "#8eb533",
         query: 'plant',
         key: 'natural',
         values: ['plant', 'tree'],

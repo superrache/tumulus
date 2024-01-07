@@ -26,3 +26,5 @@ export const osmApiProd = {
 }
 
 export const osmApi = osmApiProd
+
+export const plantNetApi = 'https://my-api.plantnet.org/v2/identify/'

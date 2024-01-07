@@ -168,6 +168,7 @@ export default {
 
       this.components.featureResult.unloadFeature()
       this.components.featureEditor.unloadFeature()
+      this.components.plantNetAssistant.unloadFeature()
 
       this.updateParams()
       this.onMapMove()
@@ -376,6 +377,7 @@ export default {
       console.log('select ' + this.selectedFeatureId)
       this.components.featureResult.loadFeature(feature, theme)
       this.components.featureEditor.loadFeature(feature)
+      this.components.plantNetAssistant.loadFeature(feature)
 
       // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
       let marker = theme.markers[this.selectedFeatureId]
@@ -436,6 +438,7 @@ export default {
         }
         this.components.featureResult.unloadFeature()
         this.components.featureEditor.unloadFeature()
+        this.components.plantNetAssistant.unloadFeature()
         this.selectedFeatureId = null
         this.updateParams()
       }

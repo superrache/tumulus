@@ -202,11 +202,11 @@ export default {
 }
 
 .collapsible:hover {
-  filter: brightness(105%);
+  background-color: #676;
 }
 
 .collapsible:active {
-  filter: brightness(110%);
+  background-color: #777;
 }
 
 h3 {
