@@ -6,13 +6,30 @@
         <div v-if="!connected">{{$t('connectToEdit')}}</div>
 
         <div v-if="connected">
-            <input type="file" id="picture" name="picture" accept="image/*" capture="environment" />
-    
-            <div id="buttons">
-                <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
-                <button @click="cancel">{{$t('cancel')}}</button>
+          <div>
+            <label id="camera_label" for="camera_input">
+              <img src="/ui/plantnet/camera.svg" width=50/>
+            </label>
+            <input id="camera_input" type="file" name="picture" accept="image/*" capture="environment" />
+          </div>
+
+          <div class="organs">
+            <div class="organ"
+              v-for="(organ, b) in organs"
+              :key="b"
+              v-on:click="onOrganSelect($event, b)"
+              :style="{ 'display': collapsed ? 'none' : 'block', 'opacity': organ.selected ? '1' : '0.5' }">
+              <img v-if="organ.icon !== undefined" :src="'/ui/plantnet/' + organ.icon" width=50 />
             </div>
-    </div>
+          </div>
+
+          <button v-on:click="onIdentify">{{$t('plantNetIdentify')}}</button>
+
+          <div id="buttons">
+              <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
+              <button @click="cancel">{{$t('cancel')}}</button>
+          </div>
+        </div>
       </div>
   
     </div>
@@ -20,8 +37,9 @@
   
   <script>
   
-  import * as config from '../const/config.js' 
-  
+  import * as config from '../const/config.js'
+  import * as env from '../utils/env.js'
+
   export default {
     name: 'PlantNetAssistant',
     components: {
@@ -34,7 +52,13 @@
         originalProperties: null,
         editedProperties: [],
         editing: false,
-        collapsed: false
+        collapsed: false,
+        organs: {
+          leaf: { selected: true, icon: 'leaf.svg' },
+          flower: { selected: false, icon: 'flower.svg' },
+          fruit: { selected: false, icon: 'fruit.svg' },
+          bark: { selected: false, icon: 'bark.svg' }
+        }
       }
     },
     computed: {
@@ -70,6 +94,35 @@
         this.originalProperties = null
         this.editedProperties = []
         this.editing = false
+      },
+      onOrganSelect(e, id) {
+          for(let b in this.organs) {
+            let organ = this.organs[b]
+            organ.selected = (b === id)
+            if(b === id) {
+              console.log('select organ ' + id)
+            }
+          }
+      },
+      async onIdentify() {
+        console.log('plantnet identication')
+        
+        let organ = ''
+        for(let b in this.organs) {
+          organ = this.organs[b]
+          if (organ.selected) break
+        }
+
+        const formData = new FormData()
+        formData.append('file', document.querySelector('#camera_input').files[0])
+        formData.append('organ', organ)
+        formData.append('locale', this.$parent.$data.locale)
+
+        const response = await fetch(`${env.getServerUrl()}/plantnet-identify`, {
+          method: 'post',
+          body: formData //JSON.stringify({'toto': 'tata'})
+        })
+        await response.json()
       },
       save(updateUI) {
         console.log('save feature id = ' + this.originalFeature.id)
@@ -118,7 +171,7 @@
   <style scoped>
   
   .cat {
-    background-color: #8eb533;
+    background-color: #70b555;
     border-radius: 10px;
     padding: 5px;
     margin: 5px 0px 10px 0px;
@@ -133,11 +186,11 @@
   }
   
   .collapsible:hover {
-    background-color: #9eb543;
+    background-color: #80b565;
   }
   
   .collapsible:active {
-    background-color: #aeb553;
+    background-color: #90b575;
   }
   
   h3 {
@@ -175,6 +228,62 @@
   #buttons button {
     margin-right: 5px;
   }
-  
+
+  #camera_input {
+    display: none;
+  }
+
+  #camera_label {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-top: 45px;
+    cursor: pointer;
+    background-color: #555;
+    border: none;
+    border-radius: 5px;
+  }
+
+  #camera_label:hover {
+    background-color: #FE7434;
+    color: black;
+    outline: solid 1px white;
+  }
+
+  #camera_label:active {
+    background-color: #FF9454;
+  }
+  .organs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 50px;
+  margin: 0px auto;
+  position: relative;
+}
+
+.organ {
+  margin: 2px;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 5px;
+  padding-bottom: 1px;
+  position: relative;
+  text-align: center;
+  width: 50px;
+  height: 50px;
+}
+
+.organ:hover {
+  outline: solid 1px white;
+}
+
+.organ img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+
   </style>
   
