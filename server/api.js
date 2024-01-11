@@ -58,7 +58,7 @@ module.exports = function(app, databaseUrl, prod) {
         }
 
         try {
-            const instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
+            const instances = ['https://gall.openstreetmap.de/api', 'https://lambert.openstreetmap.de/api', 'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
             const instance = instances[Math.floor(Math.random() * instances.length)]
             const url = instance + '/api/interpreter?data='
             
