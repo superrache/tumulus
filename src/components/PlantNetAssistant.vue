@@ -118,11 +118,12 @@
         
         const form = new FormData()
         form.append('organs', this.organ) // only one, TODO: could be several
-        //form.append('lang', this.$parent.$data.locale)
         form.append('images', imageFile)
-
+        
         const url = new URL(config.plantNetApiUrl)
-        url.searchParams.append('include-related-images', 'true')
+        url.searchParams.append('include-related-images', 'false')
+        url.searchParams.append('lang', this.$parent.$data.locale)
+        url.searchParams.append('no-reject', 'false')
         url.searchParams.append('api-key', config.plantNetApiKey)
 
         fetch(url.toString(), {
