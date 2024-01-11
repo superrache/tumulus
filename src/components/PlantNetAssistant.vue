@@ -25,6 +25,11 @@
 
           <button v-on:click="onIdentify">{{$t('plantNetIdentify')}}</button>
 
+          <div>
+            <pre id="results" style="white-space: break-spaces;">
+            </pre>
+        </div>
+
           <div id="buttons">
               <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
               <button @click="cancel">{{$t('cancel')}}</button>
@@ -38,7 +43,6 @@
   <script>
   
   import * as config from '../const/config.js'
-  import * as env from '../utils/env.js'
 
   export default {
     name: 'PlantNetAssistant',
@@ -58,7 +62,8 @@
           flower: { selected: false, icon: 'flower.svg' },
           fruit: { selected: false, icon: 'fruit.svg' },
           bark: { selected: false, icon: 'bark.svg' }
-        }
+        },
+        organ: 'leaf'
       }
     },
     computed: {
@@ -101,28 +106,39 @@
             organ.selected = (b === id)
             if(b === id) {
               console.log('select organ ' + id)
+              this.organ = b
             }
           }
       },
       async onIdentify() {
         console.log('plantnet identication')
+
+        const imageFile = document.querySelector('#camera_input').files[0]
+        // TODO: disable identify button until files.length > 0
         
-        let organ = ''
-        for(let b in this.organs) {
-          organ = this.organs[b]
-          if (organ.selected) break
-        }
+        const form = new FormData()
+        form.append('organs', this.organ) // only one, TODO: could be several
+        //form.append('lang', this.$parent.$data.locale)
+        form.append('images', imageFile)
 
-        const formData = new FormData()
-        formData.append('file', document.querySelector('#camera_input').files[0])
-        formData.append('organ', organ)
-        formData.append('locale', this.$parent.$data.locale)
+        const url = new URL(config.plantNetApiUrl)
+        url.searchParams.append('include-related-images', 'true')
+        url.searchParams.append('api-key', config.plantNetApiKey)
 
-        const response = await fetch(`${env.getServerUrl()}/plantnet-identify`, {
+        fetch(url.toString(), {
           method: 'post',
-          body: formData //JSON.stringify({'toto': 'tata'})
+          mode: 'no-cors',
+          body: form
+        }).then((response) => {
+          if (response.ok) {
+            response.json().then((r) => {
+              document.getElementById('results').innerHTML = JSON.stringify(r)
+            }).catch(console.error)
+          }
+        }).catch((error) => {
+          console.error(error)
         })
-        await response.json()
+        
       },
       save(updateUI) {
         console.log('save feature id = ' + this.originalFeature.id)
@@ -159,9 +175,6 @@
       },
       cancel() {
         this.loadFeature(this.originalFeature)
-      },
-      identify() {
-        config.plantNetApi
       }
     }
   }

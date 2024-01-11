@@ -27,4 +27,5 @@ export const osmApiProd = {
 
 export const osmApi = osmApiProd
 
-export const plantNetApi = 'https://my-api.plantnet.org/v2/identify/'
+export const plantNetApiUrl = 'https://my-api.plantnet.org/v2/identify/all'
+export const plantNetApiKey = '2b10uKobhNtnceQ7cvc3tseye'
