@@ -34,6 +34,8 @@ module.exports = function(app, databaseUrl, prod) {
 
     const axios = require('axios')
     const osmtogeojson = require('osmtogeojson')
+    const FormData = require('form-data')
+    const fs = require('fs') // TODO: remove me
 
     const simpleCache = []
 
@@ -109,6 +111,46 @@ module.exports = function(app, databaseUrl, prod) {
             }).catch((err) => res.json({error: 4}))
         } catch(err) {
             res.json({error: 3})
+        }
+    })
+
+    app.post('/plantnet-identify', (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
+        try {
+            console.log(`get /plantnet-identify`)
+            /*req.on("data", function(chunk) {
+                console.log('toto' + chunk.toString())
+            })*/
+            //console.log(JSON.stringify(req.body))
+
+            const lang = 'fr'
+
+            // build a plantnet post identify request
+            let form = new FormData()
+            form.append('organs', 'leaf')
+            form.append('images', fs.createReadStream('./server/th.jpg'))
+
+            axios.post(
+                `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${lang}`,
+                form, {
+                    headers: form.getHeaders()
+                }
+            ).then((response) => {
+                console.log('success', response)
+                res.json({
+                    sucess: 200
+                })
+            }).catch((error) => {
+                console.error('error', error)
+                res.json({error: 21})
+            })
+
+        } catch (error) {
+            console.error('error', error)
+            res.json({error: 20})
         }
     })
 
