@@ -25,10 +25,20 @@
 
           <button v-on:click="onIdentify">{{$t('plantNetIdentify')}}</button>
 
-          <div>
-            <pre id="results" style="white-space: break-spaces;">
-            </pre>
-        </div>
+          <div class="results">
+            <div class="result"
+              v-for="(result, r) in results"
+              :key="r"
+              v-on:click="onResultSelect($event, r)">
+              <img class="result-image" v-if="result.images.length > 0 && result.images[0].url.m !== undefined" :src="result.images[0].url.m"/>
+              <div class="result-info">
+                <div class="result-label">{{ result.species.scientificNameWithoutAuthor }}</div>
+                <div class="result-label">{{ result.species.scientificNameAuthorship }}</div>
+                <div class="result-label">{{ result.score }}</div>
+                <div v-if="result.species.commonNames.length > 0" class="result-label">{{ result.species.commonNames[0] }}</div>
+              </div>
+            </div>
+          </div>
 
           <div id="buttons">
               <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
@@ -63,7 +73,8 @@
           fruit: { selected: false, icon: 'fruit.svg' },
           bark: { selected: false, icon: 'bark.svg' }
         },
-        organ: 'leaf'
+        organ: 'leaf',
+        results: []
       }
     },
     computed: {
@@ -136,13 +147,16 @@
         }).then((response) => {
           if (response.ok) {
             response.json().then((r) => {
-              document.getElementById('results').innerHTML = JSON.stringify(r)
+              this.results = r.results
             }).catch(console.error)
           }
         }).catch((error) => {
           console.error(error)
         })
         
+      },
+      onResultSelect(e, id) {
+        console.log('onResultSelect', e, id)
       },
       save(updateUI) {
         console.log('save feature id = ' + this.originalFeature.id)
@@ -301,6 +315,31 @@
   border-radius: 10px;
 }
 
+.result {
+  position: relative;
+}
+
+.result:hover {
+  outline: solid 2px white;
+}
+
+.result-image {
+  border-radius: 10px 10px 10px 10px; 
+  width: auto;
+  height: 250px;
+}
+
+.result-info {
+  position: absolute;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  bottom: 0;
+  left: 0;
+  padding-left: 15px;
+  font-size: 17px;
+  z-index: 5;
+}
 
   </style>
   
