@@ -5,7 +5,6 @@
 const express = require('express')
 
 const app = express()
-app.use(express.json())
 
 const staticDir = __dirname + "/../dist"
 console.log('Serving static files: ' + staticDir)

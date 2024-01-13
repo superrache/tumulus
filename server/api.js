@@ -35,7 +35,25 @@ module.exports = function(app, databaseUrl, prod) {
     const axios = require('axios')
     const osmtogeojson = require('osmtogeojson')
     const FormData = require('form-data')
-    const fs = require('fs') // TODO: remove me
+    
+    const streamifier = require('streamifier')
+    const multer  = require('multer')
+    const memoryStorage = multer.memoryStorage()
+    const imageFilter = function(req, file, cb) {
+        // Accept images only
+        if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) { // plantnet accepts only png and jpeg files
+            req.fileValidationError = 'Only image files are allowed'
+            return cb(new Error('Only image files are allowed!'), false)
+        }
+        cb(null, true);
+    }
+    const upload = multer({
+        storage: memoryStorage,
+        limits: {
+            fileSize: 12 * 1024 * 1024 // max file size 15mb
+        },
+        fileFilter: imageFilter
+    })
 
     const simpleCache = []
 
@@ -114,46 +132,41 @@ module.exports = function(app, databaseUrl, prod) {
         }
     })
 
-    app.post('/plantnet-identify', (req, res) => {
+    app.post('/plantnet-identify', upload.single('image'), (req, res) => {
         if(!prod) { // parce que les ports server vue et server node sont différents en dev
             res.header('Access-Control-Allow-Origin', "*")
             res.header('Access-Control-Allow-Headers', "*")
         }
         try {
-            console.log(`get /plantnet-identify`)
-            /*req.on("data", function(chunk) {
-                console.log('toto' + chunk.toString())
-            })*/
-            //console.log(JSON.stringify(req.body))
-
-            const lang = 'fr'
+            console.log(`get /plantnet-identify ${req.body.organs}`)
+            console.log(req.file)
 
             // build a plantnet post identify request
             let form = new FormData()
-            form.append('organs', 'leaf')
-            form.append('images', fs.createReadStream('./server/th.jpg'))
+            form.append('organs', req.body.organs)
+            form.append('images', streamifier.createReadStream(req.file.buffer))
 
             axios.post(
-                `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${lang}`,
+                `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${req.body.lang}`,
                 form, {
                     headers: form.getHeaders()
                 }
             ).then((response) => {
-                console.log('success', response)
+                console.log('success, best match: ', response.data.bestMatch)
                 res.json({
-                    sucess: 200
+                    sucess: 200,
+                    results: response.data.results
                 })
             }).catch((error) => {
                 console.error('error', error)
                 res.json({error: 21})
             })
-
         } catch (error) {
             console.error('error', error)
             res.json({error: 20})
         }
     })
-
+    
     /*
         /connect?name=johnny
     */

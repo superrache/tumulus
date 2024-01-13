@@ -129,20 +129,13 @@
         
         const form = new FormData()
         form.append('organs', this.organ) // only one, TODO: could be several
-        form.append('images', imageFile)
+        form.append('image', imageFile)
         form.append('lang', this.$parent.$data.locale)
 
         const url = new URL(`${env.getServerUrl()}/plantnet-identify`)
 
         fetch(url.toString(), {
           method: 'post',
-          //mode: 'no-cors',
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'multipart/form-data',
-            //'access-control-allow-origin': 'https://my-api.plantnet.org',https://my-api.plantnet.org/v2/identify/all?include-related-images=false&no-reject=false&lang=en&api-key=2b10uKobhNtnceQ7cvc3tseye
-            //'access-control-expose-headers': 'WWW-Authenticate,Server-Authorization'
-          },
           body: form
         }).then((response) => {
           if (response.ok) {
