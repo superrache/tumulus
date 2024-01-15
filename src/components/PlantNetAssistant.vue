@@ -18,7 +18,7 @@
               v-for="(organ, b) in organs"
               :key="b"
               v-on:click="onOrganSelect($event, b)"
-              :style="{ 'display': collapsed ? 'none' : 'block', 'opacity': organ.selected ? '1' : '0.5' }">
+              :style="{ 'opacity': organ.selected ? '1' : '0.5' }">
               <img v-if="organ.icon !== undefined" :src="'/ui/plantnet/' + organ.icon" width=50 />
             </div>
           </div>
@@ -29,13 +29,13 @@
             <div class="result"
               v-for="(result, r) in results"
               :key="r"
-              v-on:click="onResultSelect($event, r)">
+              v-on:click="onResultSelect($event, r)"
+              :style="{ 'background-color': result.selected ? '#FE7434' : 'transparent' }">
               <img class="result-image" v-if="result.images.length > 0 && result.images[0].url.m !== undefined" :src="result.images[0].url.m"/>
               <div class="result-info">
-                <div class="result-label">{{ result.species.scientificNameWithoutAuthor }}</div>
-                <div class="result-label">{{ result.species.scientificNameAuthorship }}</div>
-                <div class="result-label">{{ result.score }}</div>
-                <div v-if="result.species.commonNames.length > 0" class="result-label">{{ result.species.commonNames[0] }}</div>
+                <div v-if="result.species.commonNames.length > 0" class="result-label-title">{{ result.species.commonNames[0] }}</div>
+                <div>{{ result.species.scientificName }}</div>
+                <div>{{ `${(result.score * 100)}%` }}</div>
               </div>
             </div>
           </div>
@@ -62,6 +62,7 @@
     data () {
       return {
         components: null,
+        debug: false,
         originalFeature: null,
         originalProperties: null,
         editedProperties: [],
@@ -74,7 +75,8 @@
           bark: { selected: false, icon: 'bark.svg' }
         },
         organ: 'leaf',
-        results: []
+        results: [],
+        result: {}
       }
     },
     computed: {
@@ -112,14 +114,14 @@
         this.editing = false
       },
       onOrganSelect(e, id) {
-          for(let b in this.organs) {
-            let organ = this.organs[b]
-            organ.selected = (b === id)
-            if(b === id) {
-              console.log('select organ ' + id)
-              this.organ = b
-            }
+        for(let b in this.organs) {
+          let organ = this.organs[b]
+          organ.selected = (b === id)
+          if(b === id) {
+            console.log('select organ ' + id)
+            this.organ = b
           }
+        }
       },
       async onIdentify() {
         console.log('plantnet identication')
@@ -130,7 +132,7 @@
         const form = new FormData()
         form.append('organs', this.organ) // only one, TODO: could be several
         form.append('image', imageFile)
-        form.append('lang', this.$parent.$data.locale)
+        form.append('lang', this.debug ? 'fr' : this.$parent.$data.locale)
 
         const url = new URL(`${env.getServerUrl()}/plantnet-identify`)
 
@@ -149,7 +151,14 @@
         
       },
       onResultSelect(e, id) {
-        console.log('onResultSelect', e, id)
+        for(let r in this.results) {
+          let result = this.results[r]
+          result.selected = (r === id)
+          if(r === id) {
+            console.log('select result ' + id)
+            this.result = result // TODO: format
+          }
+        }
       },
       save(updateUI) {
         console.log('save feature id = ' + this.originalFeature.id)
@@ -310,28 +319,34 @@
 
 .result {
   position: relative;
+  margin: 5px;
+  cursor: pointer;
 }
 
 .result:hover {
-  outline: solid 2px white;
+  background-color: #70b555;
 }
 
 .result-image {
-  border-radius: 10px 10px 10px 10px; 
-  width: auto;
-  height: 250px;
+  border-radius: 10px 10px 10px 10px;
+  width: 100%;
+  height: auto;
 }
 
 .result-info {
   position: absolute;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(0, 0, 0, 0.3);
   color: white;
   bottom: 0;
   left: 0;
   padding-left: 15px;
   font-size: 17px;
   z-index: 5;
+}
+
+.result-label-title {
+  font-weight: bold;
 }
 
   </style>
