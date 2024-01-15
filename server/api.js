@@ -36,7 +36,6 @@ module.exports = function(app, databaseUrl, prod) {
     const osmtogeojson = require('osmtogeojson')
     const FormData = require('form-data')
     
-    const streamifier = require('streamifier')
     const multer  = require('multer')
     const memoryStorage = multer.memoryStorage()
     const imageFilter = function(req, file, cb) {
@@ -139,17 +138,16 @@ module.exports = function(app, databaseUrl, prod) {
         }
         try {
             console.log(`get /plantnet-identify ${req.body.organs}`)
-            console.log(req.file)
 
             // build a plantnet post identify request
             let form = new FormData()
             form.append('organs', req.body.organs)
-            form.append('images', streamifier.createReadStream(req.file.buffer))
+            form.append('images', req.file.buffer, req.file.originalname)
 
             axios.post(
                 `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${req.body.lang}`,
                 form, {
-                    headers: form.getHeaders()
+                    headers: form.getHeaders() // 'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`
                 }
             ).then((response) => {
                 console.log('success, best match: ', response.data.bestMatch)
@@ -158,11 +156,12 @@ module.exports = function(app, databaseUrl, prod) {
                     results: response.data.results
                 })
             }).catch((error) => {
-                console.error('error', error)
-                res.json({error: 21})
+                console.error('plantnet API error')
+                console.error(error.response.data)
+                res.json({error: 21, data: error.response.data})
             })
         } catch (error) {
-            console.error('error', error)
+            console.error('plantnet-identify error')
             res.json({error: 20})
         }
     })
