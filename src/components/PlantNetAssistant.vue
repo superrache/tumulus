@@ -27,10 +27,10 @@
 
           <div class="results">
             <div class="result"
+              :class="{ result_selected: result.selected }"
               v-for="(result, r) in results"
               :key="r"
-              v-on:click="onResultSelect($event, r)"
-              :style="{ 'background-color': result.selected ? '#FE7434' : 'transparent' }">
+              v-on:click="onResultSelect($event, r)">
               <img class="result-image" v-if="result.images.length > 0 && result.images[0].url.m !== undefined" :src="result.images[0].url.m"/>
               <div class="result-info">
                 <div v-if="result.species.commonNames.length > 0" class="result-label-title">{{ result.species.commonNames[0] }}</div>
@@ -151,12 +151,15 @@
         
       },
       onResultSelect(e, id) {
-        for(let r in this.results) {
+        console.log('onResultSelect' + id)
+        for(let r = 0; r < this.results.length; r++) {
           let result = this.results[r]
           result.selected = (r === id)
           if(r === id) {
             console.log('select result ' + id)
-            this.result = result // TODO: format
+            this.result = result
+
+            
           }
         }
       },
@@ -314,21 +317,26 @@
 
 .organ img {
   width: 100%;
-  border-radius: 10px;
 }
 
 .result {
   position: relative;
   margin: 5px;
   cursor: pointer;
+  padding: 5px;
+  border-radius: 10px;
 }
 
 .result:hover {
-  background-color: #70b555;
+  box-shadow: 0 0 0 1pt grey;
+}
+
+.result_selected {
+  background-color: #FF9454;
 }
 
 .result-image {
-  border-radius: 10px 10px 10px 10px;
+  border-radius: 10px;
   width: 100%;
   height: auto;
 }

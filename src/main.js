@@ -6,7 +6,7 @@ import IssueAnalyzer from './components/IssueAnalyzer.vue'
 import PlantNetAssistant from './components/PlantNetAssistant.vue'
 import './registerServiceWorker'
 
-const test = 3
+const test = 0
 
 switch(test) {
     case 0: {
