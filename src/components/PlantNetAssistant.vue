@@ -1,16 +1,22 @@
 <template>
-    <div class="cat" v-if="originalFeature && 'natural' in originalFeature.properties && ['tree', 'shrub'].includes(originalFeature.properties['natural'])">
+    <div class="cat" v-if="originalFeature && theme.id === 'plant'">
       <h3 class="collapsible" @click="collapsed = !collapsed">{{$t('plantNetAssistant')}}</h3>
   
       <div :style="{ 'display': collapsed ? 'none' : 'block'}">
         <div v-if="!connected">{{$t('connectToEdit')}}</div>
 
         <div v-if="connected">
-          <div>
-            <label id="camera_label" for="camera_input">
-              <img src="/ui/plantnet/camera.svg" width=50/>
-            </label>
-            <input id="camera_input" type="file" name="picture" accept="image/*" capture="environment" />
+
+          <div class="cameras">
+            <div>
+              <label id="camera_label" for="camera_input">
+                <img src="/ui/plantnet/camera.svg" width=50/>
+              </label>
+              <input id="camera_input" type="file" name="picture" accept="image/*" capture="environment" v-on:change="onFileInput" />
+            </div>
+            <div v-show="imageLoaded">
+              <img :src="imagePreview" height="70"/>
+            </div>
           </div>
 
           <div class="organs">
@@ -23,7 +29,10 @@
             </div>
           </div>
 
-          <button v-on:click="onIdentify">{{$t('plantNetIdentify')}}</button>
+          <div id="buttons">
+            <button v-on:click="onIdentify" :disabled="!imageLoaded">{{$t('plantNetIdentify')}}</button>
+            <button v-on:click="onSave" :disabled="!readyToSend">{{$t('plantNetSave')}}</button>
+          </div>
 
           <div class="results">
             <div class="result"
@@ -31,18 +40,14 @@
               v-for="(result, r) in results"
               :key="r"
               v-on:click="onResultSelect($event, r)">
-              <img class="result-image" v-if="result.images.length > 0 && result.images[0].url.m !== undefined" :src="result.images[0].url.m"/>
+              <img class="result-image" v-if="result.imageUrl !== ''" :src="result.imageUrl"/>
               <div class="result-info">
-                <div v-if="result.species.commonNames.length > 0" class="result-label-title">{{ result.species.commonNames[0] }}</div>
-                <div>{{ result.species.scientificName }}</div>
-                <div>{{ `${(result.score * 100)}%` }}</div>
+                <div class="result-label-title">{{ `${this.localizedSpeciesKey}=${result[this.localizedSpeciesKey]}` }}</div>
+                <div>{{ `genus=${result['genus']}` }}</div>
+                <div>{{ `species=${result['species']}` }}</div>
+                <div>{{ `score: ${(result.score * 100)}%` }}</div>
               </div>
             </div>
-          </div>
-
-          <div id="buttons">
-              <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
-              <button @click="cancel">{{$t('cancel')}}</button>
           </div>
         </div>
       </div>
@@ -63,11 +68,12 @@
       return {
         components: null,
         debug: false,
+        theme: {},
         originalFeature: null,
-        originalProperties: null,
-        editedProperties: [],
-        editing: false,
         collapsed: false,
+        imageLoaded: false,
+        imageFile: undefined,
+        imagePreview: undefined,
         organs: {
           leaf: { selected: true, icon: 'leaf.svg' },
           flower: { selected: false, icon: 'flower.svg' },
@@ -76,7 +82,9 @@
         },
         organ: 'leaf',
         results: [],
-        result: {}
+        localizedSpeciesKey: 'species:en',
+        editedProperties: [],
+        readyToSend: false
       }
     },
     computed: {
@@ -88,30 +96,23 @@
       isLoaded(other) {
         return this.originalFeature?.properties.id === other.properties.id
       },
-      loadFeature(feature) {
-        if(feature !== null && feature.properties !== null) {
+      loadFeature(feature, theme) {
+        if(feature !== null && feature.properties !== null && theme.id === 'plant') {
+          console.log('PlantNetAssistant load feature')
+          this.originalFeature = feature
+          this.theme = theme
           this.editedProperties = []
-  
-          this.$nextTick(() => { // on attend que vue refasse le rendu avec editedProperties vide
-            this.originalFeature = feature
-            this.originalProperties = feature.properties
-            for(let key in this.originalProperties) {
-                if(key !== 'g' && key !== 't' && key !== 'id' && key !== 'lng' && key !== 'lat') this.editedProperties.push({key: key, value: this.originalProperties[key]})
-            }
-            this.editing = false
-          })
+          this.readyToSend = false
         }
       },
       unloadFeature() {
-        if(this.editing) {
-          if(confirm(this.$t('selectedObjectIsEditingAreYouSure'))) {
-            this.save(false)
-          }
-        }
         this.originalFeature = null
-        this.originalProperties = null
-        this.editedProperties = []
-        this.editing = false
+        this.theme = ''
+      },
+      onFileInput() {
+        this.imageLoaded = true
+        this.imageFile = document.querySelector('#camera_input').files[0]
+        this.imagePreview = URL.createObjectURL(this.imageFile)
       },
       onOrganSelect(e, id) {
         for(let b in this.organs) {
@@ -126,13 +127,14 @@
       async onIdentify() {
         console.log('plantnet identication')
 
-        const imageFile = document.querySelector('#camera_input').files[0]
-        // TODO: disable identify button until files.length > 0
-        
+        // save current language to save result in the good osm key
+        let lang = this.$parent.$data.locale
+        this.localizedSpeciesKey = `species:${this.debug ? 'fr' : lang}`
+
         const form = new FormData()
         form.append('organs', this.organ) // only one, TODO: could be several
-        form.append('image', imageFile)
-        form.append('lang', this.debug ? 'fr' : this.$parent.$data.locale)
+        form.append('image', this.imageFile)
+        form.append('lang', lang)
 
         const url = new URL(`${env.getServerUrl()}/plantnet-identify`)
 
@@ -142,7 +144,25 @@
         }).then((response) => {
           if (response.ok) {
             response.json().then((r) => {
-              this.results = r.results
+              this.results = []
+              for(let i in r.results) {
+                if(i > 12) break
+                let res = r.results[i]
+                let result = {}
+                if('species' in res) {
+                  let species = res['species']
+                  if('commonNames' in species && species['commonNames'].length > 0) result[this.localizedSpeciesKey] = species['commonNames'][0]
+                  if('genus' in species && 'scientificNameWithoutAuthor' in species['genus']) result['genus'] = species['genus']['scientificNameWithoutAuthor']
+                  if('scientificNameWithoutAuthor' in species) result['species'] = species['scientificNameWithoutAuthor']
+                }
+                  /* TODO: how to get these info from plantnet?
+                  this.editedProperties['leaf_cycle'] = ''
+                  this.editedProperties['leaf_type'] = ''*/
+
+                result['imageUrl'] = res.images.length > 0 && res.images[0].url.m !== undefined ? res.images[0].url.m : ''
+                result['score'] = res['score']
+                this.results.push(result)
+              }
             }).catch(console.error)
           }
         }).catch((error) => {
@@ -151,53 +171,37 @@
         
       },
       onResultSelect(e, id) {
-        console.log('onResultSelect' + id)
         for(let r = 0; r < this.results.length; r++) {
           let result = this.results[r]
           result.selected = (r === id)
           if(r === id) {
-            console.log('select result ' + id)
-            this.result = result
+            console.log('select result')
 
+            // edit this feature osm properties from plantnet infos
+            this.editedProperties = this.originalFeature.properties
             
+            if(this.localizedSpeciesKey in result) {
+              this.editedProperties[this.localizedSpeciesKey] = result[this.localizedSpeciesKey]
+            }
+            if('genus' in result) {
+              this.editedProperties['genus'] = result['genus']
+            }
+            if('species' in result) {
+              this.editedProperties['species'] = result['species']
+            }
+
+            this.readyToSend = true
           }
         }
       },
-      save(updateUI) {
-        console.log('save feature id = ' + this.originalFeature.id)
-        
-        const newProperties = {}
-        let editedKeys = []
-        for(let e in this.editedProperties) {
-          let editedProperty = this.editedProperties[e]
-            console.log(editedProperty.key + '=' + editedProperty.value)
-            newProperties[editedProperty.key] = editedProperty.value
-            
-            // cette clé a-t-elle été éditée ? elle n'existait pas dans l'original ou elle est différente entre props originale et éditée
-            if(this.originalProperties[editedProperty.key] === undefined || newProperties[editedProperty.key] !== this.originalProperties[editedProperty.key])
-                editedKeys.push(editedProperty.key)
-        }
-  
-        // on ajoute les propriétés internes 'g' et 'id'
-        newProperties.id = this.originalFeature.properties.id
-        newProperties.g = this.originalFeature.properties.g
-        newProperties.t = this.originalFeature.properties.t
-      
-        this.originalFeature.properties = newProperties
-  
-        this.components.map.updateFeature(this.originalFeature)
-  
-        if(updateUI) {
-          this.components.osmConnector.addEditedFeature(this.originalFeature)
-          this.components.featureResult.updateFeature(this.originalFeature)
-          this.components.featureEditor.updateFeature(this.originalFeature)
-          this.loadFeature(this.originalFeature) // reset
-  
-          this.components.issueAnalyzer.setEditedKeys(this.originalFeature.id, editedKeys)
-        }
-      },
-      cancel() {
-        this.loadFeature(this.originalFeature)
+      onSave() {
+        let feature = this.originalFeature
+        feature.properties = this.editedProperties
+        // save the feature
+        this.components.osmConnector.addEditedFeature(feature)
+        if(this.components.featureResult.isLoaded(feature)) this.components.featureResult.loadFeature(feature, 'plant')
+        if(this.components.featureEditor.isLoaded(feature)) this.components.featureEditor.loadFeature(feature)
+        this.readyToSend = false
       }
     }
   }
@@ -250,21 +254,6 @@
     text-align: right;
   }
   
-  #buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    margin: 0px auto;
-    margin-top: 5px;
-    margin-bottom: 2px;
-    position: relative;
-  }
-  
-  #buttons button {
-    margin-right: 5px;
-  }
-
   #camera_input {
     display: none;
   }
@@ -289,6 +278,16 @@
   #camera_label:active {
     background-color: #FF9454;
   }
+  .cameras {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 50px;
+  margin: 0px auto;
+  position: relative;
+}
+
   .organs {
   display: flex;
   justify-content: center;
@@ -317,6 +316,22 @@
 
 .organ img {
   width: 100%;
+}
+
+
+#buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0px auto;
+  margin-top: 5px;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+#buttons button {
+  margin-right: 5px;
 }
 
 .result {

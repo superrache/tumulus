@@ -377,7 +377,7 @@ export default {
       console.log('select ' + this.selectedFeatureId)
       this.components.featureResult.loadFeature(feature, theme)
       this.components.featureEditor.loadFeature(feature)
-      this.components.plantNetAssistant.loadFeature(feature)
+      this.components.plantNetAssistant.loadFeature(feature, theme)
 
       // que la sélection provienne du marker ou de la layer, il faut déterminer les 2 pour pouvoir les mettre en valeur
       let marker = theme.markers[this.selectedFeatureId]

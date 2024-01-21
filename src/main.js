@@ -87,7 +87,7 @@ switch(test) {
         pna.debug = true
         pna.loadFeature({properties: {
             natural: 'tree'
-        }})
+        }}, 'plant')
         pna.results = [{
                 score: 0.5,
                 species: {
