@@ -144,10 +144,13 @@ module.exports = function(app, databaseUrl, prod) {
             form.append('organs', req.body.organs)
             form.append('images', req.file.buffer, req.file.originalname)
 
+            const headers = form.getHeaders()
+            headers['Host'] = 'http://tumulus.onrender.com/'
+
             axios.post(
                 `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${req.body.lang}`,
                 form, {
-                    headers: form.getHeaders() // 'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`
+                    headers: headers // 'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`
                 }
             ).then((response) => {
                 console.log('success, best match: ', response.data.bestMatch)
@@ -157,8 +160,13 @@ module.exports = function(app, databaseUrl, prod) {
                 })
             }).catch((error) => {
                 console.error('plantnet API error')
-                console.error(error.response.data)
-                res.json({error: 21, data: error.response.data})
+                if(error.response !== undefined && error.response.data !== undefined) {
+                    console.error(error.response.data)
+                    res.json({error: 21, data: error.response.data})
+                } else {
+                    console.error(error)
+                    res.json({error: 22, data: {message: 'unknown error from plantnet API call'}})
+                }
             })
         } catch (error) {
             console.error('plantnet-identify error')
