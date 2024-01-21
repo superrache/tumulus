@@ -159,6 +159,7 @@ module.exports = function(app, databaseUrl, prod) {
                 console.error('plantnet API error')
                 if(error.response !== undefined && error.response.data !== undefined) {
                     console.error(error.response.data)
+                    console.error(error)
                     res.json({error: 21, data: error.response.data})
                 } else {
                     console.error(error)
