@@ -34,6 +34,25 @@ module.exports = function(app, databaseUrl, prod) {
 
     const axios = require('axios')
     const osmtogeojson = require('osmtogeojson')
+    const FormData = require('form-data')
+    
+    const multer  = require('multer')
+    const memoryStorage = multer.memoryStorage()
+    const imageFilter = function(req, file, cb) {
+        // Accept images only
+        if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) { // plantnet accepts only png and jpeg files
+            req.fileValidationError = 'Only image files are allowed'
+            return cb(new Error('Only image files are allowed!'), false)
+        }
+        cb(null, true);
+    }
+    const upload = multer({
+        storage: memoryStorage,
+        limits: {
+            fileSize: 12 * 1024 * 1024 // max file size 15mb
+        },
+        fileFilter: imageFilter
+    })
 
     const simpleCache = []
 
@@ -58,7 +77,7 @@ module.exports = function(app, databaseUrl, prod) {
         }
 
         try {
-            const instances = [/*'https://overpass-api.de', */'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
+            const instances = ['https://gall.openstreetmap.de/api', 'https://lambert.openstreetmap.de/api', 'https://lz4.overpass-api.de', 'https://z.overpass-api.de']
             const instance = instances[Math.floor(Math.random() * instances.length)]
             const url = instance + '/api/interpreter?data='
             
@@ -112,6 +131,41 @@ module.exports = function(app, databaseUrl, prod) {
         }
     })
 
+    app.post('/plantnet-identify', upload.single('image'), (req, res) => {
+        if(!prod) { // parce que les ports server vue et server node sont différents en dev
+            res.header('Access-Control-Allow-Origin', "*")
+            res.header('Access-Control-Allow-Headers', "*")
+        }
+        try {
+            console.log(`get /plantnet-identify ${req.body.organs}`)
+
+            // build a plantnet post identify request
+            let form = new FormData()
+            form.append('organs', req.body.organs)
+            form.append('images', req.file.buffer, req.file.originalname)
+
+            axios.post(
+                `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${req.body.lang}`,
+                form, {
+                    headers: form.getHeaders() // 'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`
+                }
+            ).then((response) => {
+                console.log('success, best match: ', response.data.bestMatch)
+                res.json({
+                    sucess: 200,
+                    results: response.data.results
+                })
+            }).catch((error) => {
+                console.error('plantnet API error')
+                console.error(error.response.data)
+                res.json({error: 21, data: error.response.data})
+            })
+        } catch (error) {
+            console.error('plantnet-identify error')
+            res.json({error: 20})
+        }
+    })
+    
     /*
         /connect?name=johnny
     */

@@ -22,6 +22,15 @@ export const queries = {
       cache: {},
       needed: false,
       loading: false
+    },
+    plant: {
+      filters: ['["natural"~"shrub|tree"]["species"]', '["natural"~"shrub|tree"]["species:fr"]', '["natural"~"shrub|tree"]["species:en"]'],
+      // TODO: add other filter for each supported language
+      label: "queryPlant",
+      bounds: '',
+      cache: {},
+      needed: false,
+      loading: false
     }
   }
   
@@ -34,7 +43,7 @@ export const queries = {
         key: 'historic',
         values: ['archaeological_site'],
         icon: 'archeo',
-        visible: true
+        visible: false
       },
       military: {
         id: 'military',
@@ -54,7 +63,7 @@ export const queries = {
         key: 'historic',
         values: ['!', 'aqueduct', 'building', 'castle', 'creamery', 'farm', 'manor', 'monument', 'optical_telegraph', 'pillory', 'ruins', 'tomb', 'tower'],
         icon: 'monument',
-        visible: true
+        visible: false
       },
       transport: {
         id: 'transport',
@@ -74,7 +83,7 @@ export const queries = {
         key: 'railway',
         values: ['abandoned'],
         icon: 'railway',
-        visible: true
+        visible: false
       },
       memorial: {
         id: "memorial",
@@ -114,6 +123,16 @@ export const queries = {
         key: 'tourism',
         values: ['artwork'],
         icon: 'artwork',
+        visible: false
+      },
+      plant: {
+        id: "plant",
+        label: "themePlant",
+        color: "#70b555",
+        query: 'plant',
+        key: 'natural',
+        values: ['plant', 'tree'],
+        icon: 'plant',
         visible: true
       }
     }

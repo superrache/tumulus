@@ -3,6 +3,7 @@ import i18n from './i18n'
 import App from './App.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
+import PlantNetAssistant from './components/PlantNetAssistant.vue'
 import './registerServiceWorker'
 
 const test = 0
@@ -35,7 +36,7 @@ switch(test) {
                 traffic_lights: 'yes'
             }
           })}, 2000)
-        break;
+        break
     }
     case 2: {
         let ia = createApp(IssueAnalyzer).use(i18n).mount('#app')
@@ -73,5 +74,49 @@ switch(test) {
                 repaired: 2
             }
         ]
+        break
+    }
+    case 3: {
+        let pna = createApp(PlantNetAssistant).use(i18n).mount('#app')
+        pna.components = {
+                osmConnector: {
+                connected: true,
+                addEditedFeature: (o) => {return o}
+            }
+        }
+        pna.debug = true
+        pna.loadFeature({properties: {
+            natural: 'tree'
+        }}, 'plant')
+        pna.results = [{
+                score: 0.5,
+                species: {
+                    scientificNameWithoutAuthor: 'Quercus rotundifolia',
+                    scientificNameAuthorship: 'Lam.',
+                    scientificName: 'Quercus rotundifolia Lam.',
+                    commonNames: ['Chêne vert']
+                },
+                images: [{
+                    url: {
+                        m: 'https://bs.plantnet.org/image/m/e1071ed609e6646cfb0fc9363a6c16c726721eb3'
+                    }
+                }]
+            }, {
+                score: 0.3,
+                species: {
+                    scientificNameWithoutAuthor: 'Quercus rotundifolia',
+                    scientificNameAuthorship: 'Lam.',
+                    scientificName: 'Quercus rotundifolia Lam.',
+                    commonNames: ['Chêne vert']
+                },
+                images: [{
+                    url: {
+                        m: 'https://bs.plantnet.org/image/m/e1071ed609e6646cfb0fc9363a6c16c726721eb3'
+                    }
+                }]
+            }
+        ]
+    
+        break
     }
 }

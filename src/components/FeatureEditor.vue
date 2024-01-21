@@ -1,37 +1,41 @@
 <template>
   <div class="cat">
-    <h3>{{$t('osmAttributes')}}</h3>
-    <div v-if="!connected">{{$t('connectToEdit')}}</div>
+    <h3 class="collapsible" @click="collapsed = !collapsed">{{$t('osmAttributes')}}</h3>
 
-    <table v-if="!connected && originalFeature !== null && originalFeature.properties !== undefined" >
-      <tr><th class="right">{{$t('key')}}</th><th>=</th><th class="left">{{$t('value')}}</th></tr>
-      <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g') && !key.includes('t') && !key.includes('lng') && !key.includes('lat'))" :key="key">
-        <td class="right">{{key}}</td>
-        <td>=</td>
-        <td class="left">{{originalFeature.properties[key]}}</td>
-      </tr>
-    </table>
-    
-    <table v-if="connected" >
-      <tr><th>{{$t('key')}}</th><th>=</th><th>{{$t('value')}}</th></tr>
-      <tr v-for="(property, index) in editedProperties" :key="index">
-        <td>
-          <AutocompleteInput :ref="`input-key-${index}`" v-model:value="property.key" :suggestionsFunction="onInputKey" @inputChanged="onInputChange" />
-        </td>
-        <td>=</td>
-        <td>
-          <AutocompleteInput :ref="`input-value-${index}`" v-model:value="property.value" v-model:other="property.key" :suggestionsFunction="onInputValue" @inputChanged="onInputChange" />
-        </td>
-        <td>
-          <button @click="onDeleteTag($event, index)">x</button>
-        </td>
-      </tr>
-    </table>
+    <div :style="{ 'display': collapsed ? 'none' : 'block'}">
+      <div v-if="!connected">{{$t('connectToEdit')}}</div>
 
-    <div id="buttons" v-if="connected">
-      <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
-      <button @click="cancel">{{$t('cancel')}}</button>
+      <table v-if="!connected && originalFeature !== null && originalFeature.properties !== undefined" >
+        <tr><th class="right">{{$t('key')}}</th><th>=</th><th class="left">{{$t('value')}}</th></tr>
+        <tr v-for="key in Object.keys(originalFeature.properties).filter((key) => !key.includes('id') && !key.includes('g') && !key.includes('t') && !key.includes('lng') && !key.includes('lat'))" :key="key">
+          <td class="right">{{key}}</td>
+          <td>=</td>
+          <td class="left">{{originalFeature.properties[key]}}</td>
+        </tr>
+      </table>
+
+      <table v-if="connected" >
+        <tr><th>{{$t('key')}}</th><th>=</th><th>{{$t('value')}}</th></tr>
+        <tr v-for="(property, index) in editedProperties" :key="index">
+          <td>
+            <AutocompleteInput :ref="`input-key-${index}`" v-model:value="property.key" :suggestionsFunction="onInputKey" @inputChanged="onInputChange" />
+          </td>
+          <td>=</td>
+          <td>
+            <AutocompleteInput :ref="`input-value-${index}`" v-model:value="property.value" v-model:other="property.key" :suggestionsFunction="onInputValue" @inputChanged="onInputChange" />
+          </td>
+          <td>
+            <button @click="onDeleteTag($event, index)">x</button>
+          </td>
+        </tr>
+      </table>
+
+      <div id="buttons" v-if="connected">
+        <button @click="save(true)" :disabled="!editing">{{$t('save')}}</button>
+        <button @click="cancel">{{$t('cancel')}}</button>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -51,7 +55,8 @@ export default {
       originalFeature: null,
       originalProperties: null,
       editedProperties: [],
-      editing: false
+      editing: false,
+      collapsed: false
     }
   },
   computed: {
@@ -186,6 +191,22 @@ export default {
   border-radius: 10px;
   padding: 5px;
   margin: 5px 0px 10px 0px;
+}
+
+.collapsible {
+  margin: 5px 5px 5px 5px;
+  padding: 5px;
+  padding-top: 7px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.collapsible:hover {
+  background-color: #676;
+}
+
+.collapsible:active {
+  background-color: #777;
 }
 
 h3 {

@@ -19,6 +19,7 @@
         <ChangesetThanks ref="thanks"/>
         <EditorLog ref="editorLog"/>
         <FeatureEditor ref="featureEditor"/>
+        <PlantNetAssistant ref="plantNetAssistant"/>
       </div>
     </div>
     
@@ -59,6 +60,7 @@ import ChangesetThanks from './components/ChangesetThanks.vue'
 import EditorLog from './components/EditorLog.vue'
 import FeatureResult from './components/FeatureResult.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
+import PlantNetAssistant from './components/PlantNetAssistant.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
 import TumulusMap from './components/TumulusMap.vue'
 import OSMConnector from './components/OSMConnector.vue'
@@ -76,6 +78,7 @@ export default {
     EditorLog,
     FeatureResult,
     FeatureEditor,
+    PlantNetAssistant,
     IssueAnalyzer,
     CommentDialog
   },
@@ -111,6 +114,7 @@ export default {
       editorLog: this.$refs.editorLog,
       featureResult: this.$refs.featureResult,
       featureEditor: this.$refs.featureEditor,
+      plantNetAssistant: this.$refs.plantNetAssistant,
       issueAnalyzer: this.$refs.issueAnalyzer,
       commentDialog: this.$refs.commentDialog
     }
@@ -122,6 +126,7 @@ export default {
     this.components.themeSelect.components = this.components
     this.components.featureResult.components = this.components
     this.components.featureEditor.components = this.components
+    this.components.plantNetAssistant.components = this.components
     this.components.issueAnalyzer.components = this.components
     this.components.commentDialog.components = this.components
 
@@ -158,6 +163,7 @@ export default {
       if(this.components) {
         this.components.featureResult.unloadFeature()
         this.components.featureEditor.unloadFeature()
+        this.components.plantNetAssistant.unloadFeature()
         this.components.map.reload()
       }
     },
