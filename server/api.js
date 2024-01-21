@@ -144,13 +144,10 @@ module.exports = function(app, databaseUrl, prod) {
             form.append('organs', req.body.organs)
             form.append('images', req.file.buffer, req.file.originalname)
 
-            const headers = form.getHeaders()
-            headers['Host'] = 'http://tumulus.onrender.com/'
-
             axios.post(
                 `https://my-api.plantnet.org/v2/identify/all?api-key=2b10uKobhNtnceQ7cvc3tseye&include-related-images=true&lang=${req.body.lang}`,
                 form, {
-                    headers: headers // 'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`
+                    headers: form.getHeaders() // 'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`
                 }
             ).then((response) => {
                 console.log('success, best match: ', response.data.bestMatch)
