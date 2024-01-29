@@ -266,6 +266,10 @@ button:disabled {
   height: 35px;
 }
 
+.feature-marker-new {
+  outline: 4px solid dodgerblue;
+}
+
 .maplibregl-popup-tip {
   border: none;
 }

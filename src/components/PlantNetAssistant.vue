@@ -1,5 +1,5 @@
 <template>
-    <div class="cat" v-if="originalFeature && theme.id === 'plant'">
+    <div class="cat" v-if="plantThemeVisible || originalFeature && theme.id === 'plant'">
       <h3 class="collapsible" @click="collapsed = !collapsed">{{$t('plantNetAssistant')}}</h3>
   
       <div :style="{ 'display': collapsed ? 'none' : 'block'}">
@@ -29,8 +29,13 @@
             </div>
           </div>
 
+          <div id="buttons" v-if="originalFeature === null">
+            <button v-on:click="onAddOrValidate">{{addingPoint ? $t('validate') : $t('plantNetAdd')}}</button>
+            <button v-on:click="onCancel" :disabled="!addingPoint">{{$t('cancel')}}</button>
+          </div>
+
           <div id="buttons">
-            <button v-on:click="onIdentify" :disabled="!imageLoaded">{{$t('plantNetIdentify')}}</button>
+            <button v-on:click="onIdentify" :disabled="!imageLoaded || !originalFeature || addingPoint">{{$t('plantNetIdentify')}}</button>
             <button v-on:click="onSave" :disabled="!readyToSend">{{$t('plantNetSave')}}</button>
           </div>
 
@@ -42,9 +47,9 @@
               v-on:click="onResultSelect($event, r)">
               <img class="result-image" v-if="result.imageUrl !== ''" :src="result.imageUrl"/>
               <div class="result-info">
-                <div class="result-label-title">{{ `${this.localizedSpeciesKey}=${result[this.localizedSpeciesKey]}` }}</div>
-                <div>{{ `genus=${result['genus']}` }}</div>
-                <div>{{ `species=${result['species']}` }}</div>
+                <div class="result-label-title" v-if="this.localizedSpeciesKey in result">{{ `${this.localizedSpeciesKey}=${result[this.localizedSpeciesKey]}` }}</div>
+                <div v-if="'genus' in result">{{ `genus=${result['genus']}` }}</div>
+                <div v-if="'species' in result">{{ `species=${result['species']}` }}</div>
                 <div>{{ `score: ${(result.score * 100)}%` }}</div>
               </div>
             </div>
@@ -71,6 +76,7 @@
         theme: {},
         originalFeature: null,
         collapsed: false,
+        plantThemeVisible: false,
         imageLoaded: false,
         imageFile: undefined,
         imagePreview: undefined,
@@ -84,7 +90,8 @@
         results: [],
         localizedSpeciesKey: 'species:en',
         editedProperties: [],
-        readyToSend: false
+        readyToSend: false,
+        addingPoint: false
       }
     },
     computed: {
@@ -108,6 +115,12 @@
       unloadFeature() {
         this.originalFeature = null
         this.theme = ''
+        this.results = []
+        this.editedProperties = []
+        this.readyToSend = false
+      },
+      updatedThemes(themes) {
+        this.plantThemeVisible = 'plant' in themes && themes['plant'].visible
       },
       onFileInput() {
         this.imageLoaded = true
@@ -119,10 +132,23 @@
           let organ = this.organs[b]
           organ.selected = (b === id)
           if(b === id) {
-            console.log('select organ ' + id)
+            console.log(`select organ ${id}`)
             this.organ = b
           }
         }
+      },
+      onAddOrValidate() { // add or validate button
+        if(this.addingPoint) { // validate
+          this.addingPoint = false
+          this.originalFeature = this.components.map.validateAddingPoint('plant', {'natural': 'tree'})
+        } else { // add
+          this.addingPoint = true
+          this.components.map.addPoint('plant')
+        }
+      },
+      onCancel() {
+        this.addingPoint = false
+        this.components.map.cancelAddingPoint()
       },
       async onIdentify() {
         console.log('plantnet identication')
