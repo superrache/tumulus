@@ -1,24 +1,27 @@
 <template>
   <div class="cat" v-if="changeset !== null" >
     <div id="thanks">
-        <h3>Merci pour votre contribution à OpenStreetMap</h3>
-        <button id="close" @click="close" title="Fermer">
+        <h3>{{$t('thanksForContribution')}}</h3>
+        <button id="close" @click="close" :title="$t('close')">
             <img src="/ui/clear.svg" width=18 />  
         </button>
     </div>
     <div>
-        <a target="_blank" :href="'https://www.openstreetmap.org/changeset/' + changeset">Groupe de modifications {{changeset}}</a>
+        <a target="_blank" :href="`${instance}/changeset/${changeset}`">{{$t('changeset')}} {{changeset}}</a>
     </div>
   </div>
 </template>
 
 <script>
 
+import * as config from '../const/config.js'
+
 export default {
   name: 'ChangesetThanks',
   data () {
     return {
-      changeset: null
+      changeset: null,
+      instance: config.osmApi.instance
     }
   },
   methods: {

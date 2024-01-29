@@ -60,9 +60,9 @@
         <div class="normal" v-if="'source' in props">{{$t('source') + ' ' + props.source}}</div>
         
         <div class="small">
-          <a target="_blank" :href="'https://www.openstreetmap.org/' + id.split('/')[0] + '/' + id.split('/')[1]">{{$t('seeOnOpenStreetMap')}}</a>
+          <a target="_blank" :href="`${instance}/${id.split('/')[0]}/${id.split('/')[1]}`">{{$t('seeOnOpenStreetMap')}}</a>
           &nbsp;
-          <a target="_blank" :href="'https://www.openstreetmap.org/edit?' + id.split('/')[0] + '=' + id.split('/')[1] + '&hashtags=tumulus#map=20/' + props.lat + '/' + props.lng">{{$t('editWithID')}}</a>
+          <a target="_blank" :href="`${instance}/edit?${id.split('/')[0]}=${id.split('/')[1]}&hashtags=tumulus#map=20/${props.lat}/${props.lng}`">{{$t('editWithID')}}</a>
         </div>
       </div>
     </div>
@@ -89,7 +89,8 @@ export default {
       props: null,
       wikis: [],
       theme: {},
-      collapsed: false
+      collapsed: false,
+      instance: config.osmApi.instance
     }
   },
   computed: {

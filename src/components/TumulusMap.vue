@@ -44,7 +44,9 @@ export default {
       themes: themes.themes,
       themesSelection: '',
       popup: null,
-      countryCode: null
+      countryCode: null,
+      idCreator: 0,
+      addingMarker: null
     }
   },
   mounted() {
@@ -96,7 +98,7 @@ export default {
     initThemes() {
       for(let t in this.themes) {
         const theme = this.themes[t]
-        console.log('init theme ' + theme.id)
+        console.log(`init theme ${theme.id}`)
 
         theme.dataCacheIds = new Set()
         theme.geojsons = [ {type: "FeatureCollection", features: []}, {type: "FeatureCollection", features: []}, {type: "FeatureCollection", features: []} ]
@@ -141,10 +143,9 @@ export default {
           this.map.on('click', id, (e) => { this.onFeatureLayerSelect(e, theme) })
         }
 
-        let style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = '.marker-' + theme.id + ' { background-color: ' + theme.color + '; }';
-        document.getElementsByTagName('head')[0].appendChild(style);
+        let style = document.createElement('style')
+        style.innerHTML = `.marker-${theme.id} { background-color: ${theme.color}; }`
+        document.getElementsByTagName('head')[0].appendChild(style)
       }
     },
     updateThemesVisibility() {
@@ -154,7 +155,7 @@ export default {
       for(let t in this.themes) {
         const theme = this.themes[t]
         for(let g = 2; g >= 1; g--) {
-          this.map.setLayoutProperty(g + '/' + theme.id, 'visibility', theme.visible ? 'visible' : 'none')
+          this.map.setLayoutProperty(`${g}/${theme.id}`, 'visibility', theme.visible ? 'visible' : 'none')
         }
 
         for(let m in theme.markers) {
@@ -204,27 +205,27 @@ export default {
 
       this.components.issueAnalyzer.clear()
 
-      const codename = btoa(Math.random().toString()).substr(10, 5)
+      const codename = btoa(Math.random().toString()).substring(10, 5)
       this.currentCodename = codename
-      console.log('reload ' + codename)
+      console.log(`reload ${codename}`)
 
       let bounds = this.generateBounds()
       
-      // TODO lancer en parallèle
+      // TODO: lancer en parallèle
       for(let q in this.queries) {
         let query = this.queries[q]
         let launch = query.bounds !== bounds && query.needed // ne refait la requête que si la carte a bougé
         while(launch) {
-          console.log(codename + ' : launching query ' + q)
-          this.components.app.loading = this.$t('lookingForOSMData') + query.label + (config.DEBUG ? ' (' + codename + ')' : '')
-          const response = await fetch(env.getServerUrl() + "/data?bounds=" + bounds + "&filters=" + query.filters.join(","))
+          console.log(`${codename}: launching query ${q}`)
+          this.components.app.loading = `${this.$t('lookingForOSMData')}${query.label}${config.DEBUG ? ' (' + codename + ')' : ''}`
+          const response = await fetch(`${env.getServerUrl()}/data?bounds=${bounds}&filters=${query.filters.join(",")}`)
           if(codename !== this.currentCodename) return
           
           const data = await response.json()
           if(codename !== this.currentCodename) return
 
           if(data.error !== undefined) {
-            console.log(codename + ' : query error ' + data.error)
+            console.log(`${codename} : query error ${data.error}`)
           } else {
             query.cache = data
             query.bounds = bounds
@@ -234,7 +235,7 @@ export default {
             for(let t in this.themes) {
               const theme = this.themes[t]
               if(theme.query === q) {
-                this.loadGeojson(theme, data, codename)
+                this.loadGeojson(theme, data)
                 this.components.issueAnalyzer.analyzeFeature(theme.geojsons[0].features, theme)
               }
             }
@@ -244,9 +245,29 @@ export default {
 
       this.components.app.loading = ''
     },
-    loadGeojson(theme, geojson, codename) {
+    addMarker(theme, lngLat, isNewElement) {
+      const el = document.createElement('div')
+      el.className = `feature-marker marker-${theme.id} ${isNewElement ? 'feature-marker-new' : ''}`
+      el.style.visibility = (theme.visible ? 'visible' : 'hidden')
+
+      if(theme.icon !== undefined) {
+        const icon = document.createElement('img')
+        icon.src = `/theme/${theme.icon}.svg`
+        el.appendChild(icon)
+      }
+      
+      const options = {
+        element: el,
+        clickTolerance: 2,
+        draggable: isNewElement
+      }
+
+      const marker = new Marker(options).setLngLat(lngLat).addTo(this.map)
+      return {marker: marker, el: el}
+    },
+    loadGeojson(theme, geojson) {
       if(geojson.features !== undefined) {
-        //console.log(codename + ' : loading ' + geojson.features.length + ' features to theme ' + theme.id)
+        console.log(`loading ${geojson.features.length} features to theme ${theme.id}`)
         
         let added = [0, 0, 0]
         // ajout des nouvelles données aux données déjà chargées (contrôle sur l'id osm)
@@ -290,8 +311,8 @@ export default {
         }
 
         for(let g = 1; g < 3; g++) {
-          this.map.getSource(g + '/' + theme.id).setData(theme.geojsons[g])
-          if(added[g] > 0) console.log(codename + ' : ' + added[g] + ' features of type ' + g + ' added to theme ' + theme.id)
+          this.map.getSource(`${g}/${theme.id}`).setData(theme.geojsons[g])
+          //if(added[g] > 0) console.log(`${codename}: ${added[g]} features of type ${g} added to theme ${theme.id}`)
         }
 
         const bounds = this.map.getBounds()
@@ -301,27 +322,13 @@ export default {
 
           if(utils.pointInBounds(lngLat, bounds)) {
             if(theme.markers[feature.id] === undefined) {
-              const el = document.createElement('div')
-              el.className = 'feature-marker marker-' + theme.id
-              el.style.visibility = (theme.visible ? 'visible' : 'hidden')
-
-              if(theme.icon !== undefined) {
-                const icon = document.createElement('img')
-                icon.src = '/theme/' + theme.icon + '.svg'
-                el.appendChild(icon)
-              }
-              
-              const options = {
-                element: el,
-                clickTolerance: 2
-              }
-
-              const marker = new Marker(options).setLngLat(lngLat).addTo(this.map)
+              const mel = this.addMarker(theme, lngLat, false)
+              const marker = mel.marker
               marker.feature = feature
               marker.theme = theme
               marker.lngLat = lngLat
 
-              el.addEventListener('click', (e) => {
+              mel.el.addEventListener('click', (e) => {
                 this.onMarkerSelect(marker)
                 e.stopPropagation() // pour ne pas cliquer en plus sur la potentielle layer sous le marker
               })
@@ -374,7 +381,7 @@ export default {
 
       feature.id = feature.properties.id
       this.selectedFeatureId = feature.id
-      console.log('select ' + this.selectedFeatureId)
+      console.log(`select ${this.selectedFeatureId}`)
       this.components.featureResult.loadFeature(feature, theme)
       this.components.featureEditor.loadFeature(feature)
       this.components.plantNetAssistant.loadFeature(feature, theme)
@@ -391,7 +398,7 @@ export default {
       }
       
       if(feature.properties.g > 0) {
-        let sourceId = feature.properties.g + '/' + theme.id
+        let sourceId = `${feature.properties.g}/${theme.id}`
         this.selectedSourceId = sourceId
         this.map.setFeatureState(
           { source: this.selectedSourceId, 
@@ -459,7 +466,7 @@ export default {
         }
       }
       try {
-        if(found) this.map.getSource(g + '/' + themeId).setData(theme.geojsons[g])
+        if(found) this.map.getSource(`${g}/${themeId}`).setData(theme.geojsons[g])
       } catch(e) { // échoue lorsque la thématique est masquée
         console.log('source non trouvée, peut-être masquée')
       }
@@ -479,8 +486,57 @@ export default {
     },
     updateParams() { // appelée aussi par BasemapSelect
       this.components.app.updateAppUrl()
-    }
+    },
+    createId(type) {
+      this.idCreator++
+      return `${type}/new${this.idCreator}`
+    },
+    addPoint(themeId) {
+      const theme = this.themes[themeId]
+      // create a draggable theme-styled addingMarker
+      this.addingMarker = this.addMarker(theme, this.map.getCenter(), true).marker
+    },
+    cancelAddingPoint() {
+      if(this.addingMarker) this.addingMarker.remove()
+    },
+    validateAddingPoint(themeId, initialProperties) { 
+      if(this.addingMarker) {
+        const theme = this.themes[themeId]
+        const ll = this.addingMarker.getLngLat()
+        const id = this.createId('node')
+        const properties = initialProperties
+        properties['id'] = id
+        properties['g'] = 0 // point
+        properties['t'] = themeId
+        properties['lng'] = ll.lng
+        properties['lat'] = ll.lat
 
+        // remove the marker for adding the feature
+        this.addingMarker.remove()
+
+        const feature = {
+          type: 'Feature',
+          geometry: {
+            coordinates: [ll.lng, ll.lat],
+            type: 'Point'
+          },
+          id: id,
+          lang: this.$parent.$data.locale,
+          properties: properties
+        }
+
+        // create a single feature geojson
+        const oneFeatureGeojson = {
+          type: 'FeatureCollection',
+          features: [feature]
+        }
+        // load the feature, pending selection
+        this.pendingSelectedFeatureId = feature.id
+        this.loadGeojson(theme, oneFeatureGeojson)
+        return feature
+      }
+      return null
+    }
   }
 }
 

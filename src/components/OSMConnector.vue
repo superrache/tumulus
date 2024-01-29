@@ -1,16 +1,16 @@
 <template>
     <div class="panel">
         <button @click="onLogin" v-show="!authenticated">
-            <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> Se connecter
+            <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{$t('login')}} 
         </button>
         <button id="user" v-show="authenticated">
             <img class="user-img" src="https://www.openstreetmap.org/assets/osm_logo-d4979005d8a03d67bbf051b4e7e6ef1b26c6a34a5cd1b65908e2947c360ca391.svg"/> {{userName}} ({{modifications}})
         </button>
 
         <nav id="menu">
-            <a target="_blank" :href="'https://www.openstreetmap.org/user/' + userName"><div class="item">Mon compte</div></a>
-            <div class="item" @click="save" v-if="modifications > 0">Enregistrer {{modifications}} modifications</div>
-            <div class="item" @click="onLogout">Se déconnecter</div>
+            <a target="_blank" :href="`${instance}/user/${userName}`"><div class="item">{{$t('myAccount')}}</div></a>
+            <div class="item" @click="save" v-if="modifications > 0">{{$t('save')}} {{modifications}} {{$t('modifications')}}</div>
+            <div class="item" @click="onLogout">{{$t('logout')}}</div>
         </nav>
     </div>
    
@@ -32,7 +32,8 @@ export default {
         authenticated: false,
         osmRequest: null,
         userName: '',
-        editedFeatures: {}
+        editedFeatures: {},
+        instance: config.osmApi.instance
     }
   },
   computed: {
@@ -104,9 +105,9 @@ export default {
         if(this.modifications > 0) {
             this.components.editorLog.clear()
 
-            this.components.editorLog.add('Envoi de ' + Object.keys(this.editedFeatures).length + ' éléments vers OpenStreetMap')
+            this.components.editorLog.add(`Envoi de ${Object.keys(this.editedFeatures).length} éléments vers OpenStreetMap`)
             const changesetId = await this.osmRequest.createChangeset(config.appName, comment)
-            this.components.editorLog.add('Groupe de modification créé : changeset=' + changesetId)
+            this.components.editorLog.add(`Groupe de modification créé : changeset=${changesetId}`)
 
             for(let f in this.editedFeatures) {
                 const feature = this.editedFeatures[f]
@@ -116,32 +117,44 @@ export default {
                         newTags[key] = feature.properties[key]
                     }
                 }
-                this.components.editorLog.add('Préparation de la mise à jour de l\'élément ' + feature.id)
-                let fullId = config.osmApi.nodeIdToEdit !== undefined ? config.osmApi.nodeIdToEdit : feature.id
-                let element = await this.osmRequest.fetchElement(fullId) // id au format node/123456789
 
-                // tags à supprimer
-                let tagsToRemove = []
-                for(let index in element.tag) {
-                    if(element.tag[index] !== undefined) {
-                        let key = element.tag[index]['$'].k
-                        if(newTags[key] === undefined) { // suppression d'un tag
-                            tagsToRemove.push(key)
+                let element = undefined
+
+                if(feature.id.indexOf('new') > 0) { // create a new element
+                    if(feature.properties['g'] === 0) { // point -> node
+                        const [lng, lat] = feature.geometry.coordinates
+                        element = await this.osmRequest.createNodeElement(lat, lng, newTags)
+                    } // else not yet implemented
+                } else { // modify en existing element
+                    this.components.editorLog.add(`Préparation de la mise à jour de l'élément ${feature.id}`)
+                    const fullId = config.osmApi.nodeIdToEdit !== undefined ? config.osmApi.nodeIdToEdit : feature.id
+                    element = await this.osmRequest.fetchElement(fullId) // id au format node/123456789
+    
+                    // tags à supprimer
+                    let tagsToRemove = []
+                    for(let index in element.tag) {
+                        if(element.tag[index] !== undefined) {
+                            let key = element.tag[index]['$'].k
+                            if(newTags[key] === undefined) { // suppression d'un tag
+                                tagsToRemove.push(key)
+                            }
                         }
                     }
-                }
-                while(tagsToRemove.length > 0) {
-                    let tag = tagsToRemove.pop()
-                    this.components.editorLog.add('Suppression du tag ' + tag)
-                    element = this.osmRequest.removeTag(element, tag)
+                    while(tagsToRemove.length > 0) {
+                        let tag = tagsToRemove.pop()
+                        this.components.editorLog.add(`Suppression du tag ${tag}`)
+                        element = this.osmRequest.removeTag(element, tag)
+                    }
+    
+                    this.components.editorLog.add('Ajout ou mise à jour des autres tags') // pour les créations et mises à jour
+                    element = this.osmRequest.setTags(element, newTags)
                 }
 
-                this.components.editorLog.add('Ajout ou mise à jour des autres tags') // pour les créations et mises à jour
-                element = this.osmRequest.setTags(element, newTags)
-                
-                this.components.editorLog.add('Envoi de l\'élément')
-                const newElementVersion = await this.osmRequest.sendElement(element, changesetId)
-                element = this.osmRequest.setVersion(element, newElementVersion)
+                if(element) {
+                    this.components.editorLog.add(`Envoi de l'élément`)
+                    const newElementVersion = await this.osmRequest.sendElement(element, changesetId)
+                    element = this.osmRequest.setVersion(element, newElementVersion)
+                }
             }
 
             this.components.editorLog.add('Fermeture du groupe de modification')

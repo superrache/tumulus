@@ -31,6 +31,7 @@ export default {
   methods: {
       load() {
         this.themes = this.components.map.themes
+        this.components.plantNetAssistant.updatedThemes(this.themes)
       },
       toogleThemeVisibility(e, id) {
           for(let t in this.themes) {
@@ -40,6 +41,7 @@ export default {
             }
           }
           this.components.map.updateThemesVisibility()
+          this.components.plantNetAssistant.updatedThemes(this.themes)
       },
       collapse() {
         this.collapsed = true
