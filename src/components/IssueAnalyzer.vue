@@ -32,16 +32,16 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import * as wikipediaWithoutWikidata from '../issues/WikipediaWithoutWikidata.js'
-import * as wikidataWithoutWikipedia from '../issues/WikidataWithoutWikipedia.js'
-import * as wikipediaMissingLanguage from '../issues/WikipediaMissingLanguage.js'
-import * as badUseOfAge from '../issues/BadUseOfAge.js'
-import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMissingSiteType.js'
-import * as mhs from '../issues/Mhs.js'
-import * as monumentWithoutHeritage from '../issues/MonumentWithoutHeritage.js'
-import * as invader from '../issues/Invader.js'
+import * as wikipediaWithoutWikidata from '../issues/WikipediaWithoutWikidata'
+import * as wikidataWithoutWikipedia from '../issues/WikidataWithoutWikipedia'
+import * as wikipediaMissingLanguage from '../issues/WikipediaMissingLanguage'
+import * as badUseOfAge from '../issues/BadUseOfAge'
+import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMissingSiteType'
+import * as mhs from '../issues/Mhs'
+import * as monumentWithoutHeritage from '../issues/MonumentWithoutHeritage'
+import * as invader from '../issues/Invader'
 
 export default {
   name: 'IssueAnalyzer',

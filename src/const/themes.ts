@@ -1,4 +1,4 @@
-import type { Query, Theme } from "@/types/TumulusTypes"
+import type { Query, Theme } from "@/types/common"
 
 export const queries: Record<string, Query> = {
     historic: {

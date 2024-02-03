@@ -1,18 +1,16 @@
 import type { Layer, Marker, Source } from "maplibre-gl"
-import type maplibregl from "maplibre-gl"
 
-export type TumulusMap = {
-    map: maplibregl.Map | null
-    zoom: number
-    center: [number, number]
-    bearing: number
-    pitch: number
-    themes: Record<string, Theme>
-    themesSelection: string
-    pendingSelectedFeatureId: string | null
-    pendingBasemapId: string | null
-    selectedFeatureId: string | null
-    components: TumulusComponents
+export interface Basemap {
+    label: string
+    selected: boolean
+    color: string
+    icon: string
+    url: string
+    sources?: Source[]
+    layers?: Layer[]
+    replaceUntilLayerId?: boolean
+    except?: string[]
+    forcePaint?: any
 }
 
 export interface Theme {
@@ -65,33 +63,4 @@ export interface LineGeometry {
 export interface PolygonGeometry {
     type: 'Polygon'
     coordinates: number[][]
-}
-
-export interface TumulusComponents {
-    map: TumulusMapComponent
-    basemapSelect: BasemapSelectComponent
-    featureResult: FeatureResultComponent
-    featureEditor: FeatureEditorComponent
-    plantNetAssistant: PlantNetAssistantComponent
-}
-
-export interface TumulusMapComponent {
-
-}
-
-export interface BasemapSelectComponent {
-    currentBasemapId: string
-    selectBasemapById: Function
-}
-
-export interface FeatureResultComponent {
-    unloadFeature: Function
-}
-
-export interface FeatureEditorComponent {
-    unloadFeature: Function
-}
-
-export interface PlantNetAssistantComponent {
-    unloadFeature: Function
 }

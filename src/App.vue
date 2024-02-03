@@ -4,7 +4,7 @@
       <div id="sidebar-resizer"></div>
       <div id="panel">
         <a id="title" href="">
-          <img v-bind:src="require('./img/megalith.svg')" width="40"/> tumulus
+          <img src="./img/megalith.svg" width="40"/> tumulus
         </a>
 
         <select v-model="locale">
@@ -51,8 +51,9 @@
   </div>
 </template>
 
-<script>
-import * as URLParameters from './utils/URLParameters.js'
+<script lang="ts">
+
+import * as URLParameters from './utils/URLParameters'
 import PlaceSearch from './components/PlaceSearch.vue'
 import BasemapSelect from './components/BasemapSelect.vue'
 import ThemeSelect from './components/ThemeSelect.vue'
@@ -65,6 +66,7 @@ import IssueAnalyzer from './components/IssueAnalyzer.vue'
 import TumulusMap from './components/TumulusMap.vue'
 import OSMConnector from './components/OSMConnector.vue'
 import CommentDialog from './components/CommentDialog.vue'
+import type { TumulusComponents } from './types/TumulusTypes'
 
 export default {
   name: 'App',
@@ -84,11 +86,11 @@ export default {
   },
   data () {
     return {
-      locale: 'fr',
-      components: null,
-      loading: '',
+      locale: 'fr' as string,
+      components: null as TumulusComponents | null,
+      loading: '' as string,
       sidebar: null,
-      canReload: true
+      canReload: true as boolean
     }
   },
   async created () {
@@ -479,3 +481,4 @@ button:disabled {
 }
 
 </style>
+./types/tumulus

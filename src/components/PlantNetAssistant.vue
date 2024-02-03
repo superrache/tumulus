@@ -60,9 +60,9 @@
     </div>
   </template>
   
-  <script>
+  <script lang="ts">
   
-  import * as env from '../utils/env.js'
+  import * as env from '../utils/env'
 
   export default {
     name: 'PlantNetAssistant',

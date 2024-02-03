@@ -5,7 +5,7 @@
 
 </template>
 
-<script>
+<script lang="ts">
 
 import { Map, NavigationControl, GeolocateControl, Marker, Popup } from 'maplibre-gl'
 import along from '@turf/along'
@@ -14,39 +14,40 @@ import pointOnFeature from '@turf/point-on-feature'
 import bbox from '@turf/bbox'
 import buffer from '@turf/buffer'
 
-import * as env from '../utils/env.js'
-import * as utils from '../utils/utils.js'
-import * as config from '../const/config.js'
-import * as themes from '../const/themes.js'
-import * as nominatim from '../utils/Nominatim.js'
+import * as env from '../utils/env'
+import * as utils from '../utils/utils'
+import * as config from '../const/config'
+import * as themes from '../const/themes'
+import * as nominatim from '../utils/Nominatim'
+import type { Geojson, Theme, TumulusComponents } from '@/types/TumulusTypes'
 
 export default {
   name: 'TumulusMap',
   data () {
     return {
-      components: null,
-      map: null,
-      center: config.startingPosition,
-      zoom: config.startingZoom,
-      bearing: 0,
-      pitch: 0,
-      pendingBasemapId: config.startingBasemap,
-      currentZoom: 0,
-      maxZoomToGetData: 13,
-      previousBounds: '',
-      currentCodename: '',
-      selectedFeatureId: null,
-      dontUnselect: false,
-      pendingSelectedFeatureId: null,
-      selectedMarker: null,
-      selectedSourceId: null,
+      components: null as TumulusComponents | null,
+      map: null as Map | null,
+      center: config.startingPosition as [number, number],
+      zoom: config.startingZoom as number,
+      bearing: 0 as number,
+      pitch: 0 as number,
+      pendingBasemapId: config.startingBasemap as string | null,
+      currentZoom: 0 as number,
+      maxZoomToGetData: 13 as number,
+      previousBounds: '' as string,
+      currentCodename: '' as string,
+      selectedFeatureId: null as string | null,
+      dontUnselect: false as boolean,
+      pendingSelectedFeatureId: null as string | null,
+      selectedMarker: null as Marker | null,
+      selectedSourceId: null as string | null,
       queries: themes.queries,
       themes: themes.themes,
-      themesSelection: '',
-      popup: null,
-      countryCode: null,
-      idCreator: 0,
-      addingMarker: null
+      themesSelection: '' as string,
+      popup: null as Popup | null,
+      countryCode: null as string | null,
+      idCreator: 0 as number,
+      addingMarker: null as Marker | null
     }
   },
   mounted() {
@@ -84,7 +85,7 @@ export default {
       }).setText('Loading')
 
       if(this.pendingBasemapId) {
-        this.components.basemapSelect.selectBasemapById(this.pendingBasemapId)
+        this.components!.basemapSelect.selectBasemapById(this.pendingBasemapId)
         this.pendingBasemapId = null
       }
     },
@@ -92,8 +93,8 @@ export default {
       console.log('map loaded')
       this.initThemes()
       this.updateThemesVisibility()
-      this.map.on('moveend', this.onMapMove)
-      this.map.on('click', this.unselectFeature)
+      this.map!.on('moveend', this.onMapMove)
+      this.map!.on('click', this.unselectFeature)
     },
     initThemes() {
       for(let t in this.themes) {
@@ -111,7 +112,7 @@ export default {
         // la layer ajoutée en dernier est affichée au-dessus des autres
         for(let g = 2; g >= 1; g--) {
           const id = g + '/' + theme.id
-          theme.sources.push(this.map.addSource(id, {
+          theme.sources.push(this.map!.addSource(id, {
               type: "geojson",
               data: theme.geojsons[g],
               promoteId: 'id'
@@ -127,7 +128,7 @@ export default {
               'fill-opacity': 0.5
             })
 
-          theme.layers.push(this.map.addLayer({
+          theme.layers.push(this.map!.addLayer({
             id: id,
             source: id,
             interactive: true,
@@ -138,9 +139,9 @@ export default {
             }
           }))
 
-          this.map.on('mousemove', id, (e) => { if(e.features.length > 0) { this.map.getCanvas().style.cursor = "pointer" } })
-          this.map.on('mouseleave', id, () => { this.map.getCanvas().style.cursor = "" })
-          this.map.on('click', id, (e) => { this.onFeatureLayerSelect(e, theme) })
+          this.map!.on('mousemove', id, (e) => { if(e.features!.length > 0) { this.map!.getCanvas().style.cursor = "pointer" } })
+          this.map!.on('mouseleave', id, () => { this.map!.getCanvas().style.cursor = "" })
+          this.map!.on('click', id, (e) => { this.onFeatureLayerSelect(e, theme) })
         }
 
         let style = document.createElement('style')
@@ -155,7 +156,7 @@ export default {
       for(let t in this.themes) {
         const theme = this.themes[t]
         for(let g = 2; g >= 1; g--) {
-          this.map.setLayoutProperty(`${g}/${theme.id}`, 'visibility', theme.visible ? 'visible' : 'none')
+          this.map!.setLayoutProperty(`${g}/${theme.id}`, 'visibility', theme.visible ? 'visible' : 'none')
         }
 
         for(let m in theme.markers) {
@@ -167,9 +168,9 @@ export default {
         this.themesSelection += (theme.visible ? ((this.themesSelection.length > 0 ? ',' : '') + theme.id) : '')
       }
 
-      this.components.featureResult.unloadFeature()
-      this.components.featureEditor.unloadFeature()
-      this.components.plantNetAssistant.unloadFeature()
+      this.components!.featureResult.unloadFeature()
+      this.components!.featureEditor.unloadFeature()
+      this.components!.plantNetAssistant.unloadFeature()
 
       this.updateParams()
       this.onMapMove()
@@ -265,7 +266,7 @@ export default {
       const marker = new Marker(options).setLngLat(lngLat).addTo(this.map)
       return {marker: marker, el: el}
     },
-    loadGeojson(theme, geojson) {
+    loadGeojson(theme: Theme, geojson: Geojson) {
       if(geojson.features !== undefined) {
         console.log(`loading ${geojson.features.length} features to theme ${theme.id}`)
         
@@ -551,3 +552,4 @@ export default {
 }
 
 </style>
+@/types/tumulus

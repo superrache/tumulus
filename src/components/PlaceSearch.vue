@@ -25,9 +25,9 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import * as nominatim from '../utils/Nominatim.js'
+import * as nominatim from '../utils/Nominatim'
 
 export default {
   name: 'PlaceSearch',

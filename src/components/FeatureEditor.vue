@@ -39,9 +39,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import * as config from '../const/config.js' 
+import * as config from '../const/config' 
 import AutocompleteInput from './AutocompleteInput.vue'
 
 export default {

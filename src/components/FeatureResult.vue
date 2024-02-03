@@ -69,12 +69,12 @@
 
 </template>
 
-<script>
+<script lang="ts">
 
-//import * as env from './utils/env.js'
+//import * as env from './utils/env'
 import ExpandableImage from './ExpandableImage.vue'
-import * as config from '../const/config.js'
-import {wikipediaApi} from '../utils/WikiApi.js'
+import * as config from '../const/config'
+import {wikipediaApi} from '../utils/WikiApi'
 
 export default {
   name: 'FeatureResult',

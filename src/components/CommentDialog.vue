@@ -13,26 +13,26 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 
 export default {
   name: 'CommentDialog',
   data() {
     return {
-      showDialog: false,
-      comment: "",
-      callback: null
+      showDialog: false as boolean,
+      comment: "" as string,
+      callback: null as Function | null
     }
   },
   methods: {
-    show(comment, callback) {
+    show(comment: string, callback: Function) {
         this.comment = comment
         this.showDialog = true
         this.callback = callback
     },
     save() {
         this.showDialog = false
-        this.callback(this.comment)
+        this.callback!(this.comment)
     },
     close() {
       this.showDialog = false

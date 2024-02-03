@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 
 export default {
   name: 'AutocompleteInput',
@@ -37,9 +37,9 @@ export default {
   },
   data () {
     return {
-      innerValue: '',
-      suggestions: [],
-      cursor: -1
+      innerValue: '' as string,
+      suggestions: [] as string[],
+      cursor: -1 as number
     }
   },
   mounted () {

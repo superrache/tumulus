@@ -1,4 +1,4 @@
-import type { TumulusMap } from '@/types/TumulusTypes'
+import type { TumulusMap } from '@/types/common'
 import * as config from '../const/config'
 import * as utils from './utils'
 

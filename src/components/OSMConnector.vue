@@ -16,12 +16,12 @@
    
 </template>
 
-<script>
+<script lang="ts">
 
-import OsmAuth from 'osm-auth'
-import OsmRequest from 'osm-request'
-import * as config from '../const/config.js'
-import * as env from '../utils/env.js'
+import {OsmAuth} from 'osm-auth'
+import {OsmRequest} from 'osm-request'
+import * as config from '../const/config'
+import * as env from '../utils/env'
 
 export default {
   name: 'OSMConnector',

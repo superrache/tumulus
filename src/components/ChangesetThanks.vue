@@ -12,9 +12,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import * as config from '../const/config.js'
+import * as config from '../const/config'
 
 export default {
   name: 'ChangesetThanks',

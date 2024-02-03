@@ -14,66 +14,68 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 
-import * as basemaps from '../const/basemaps.js'
+import type { Basemap } from '@/types/common'
+import type { TumulusComponents } from '@/types/components'
+import * as basemaps from '../const/basemaps'
+import type { Layer, Source, Style } from 'maplibre-gl'
 
 export default {
   name: 'BasemapSelect',
   data () {
     return {
-        components: null,
-        basemaps: basemaps.basemaps,
-        style: null,
-        collapsed: true,
-        currentBasemapId: null
+        components: null as TumulusComponents | null,
+        basemaps: basemaps.basemaps as Record<string, Basemap>,
+        style: null as Style | string | null,
+        collapsed: true as boolean,
+        currentBasemapId: null as string | null
     }
   },
   methods: {
     init() {
       this.style = this.basemaps.default.url
     },
-    onBasemapSelect(e, id) {
-        for(let b in this.basemaps) {
+    onBasemapSelect(e: any, id: string) {
+        for(const b in this.basemaps) {
           let basemap = this.basemaps[b]
           basemap.selected = (b === id)
           if(b === id) {
-            console.log('select basemap ' + id)
+            console.log(`select basemap ${id}`)
             this.saveBasemapIdInURL(id)
             this.selectBasemap(basemap, true)
           }
         }
     },
-    selectBasemapById(id) {
+    selectBasemapById(id: string) {
       this.saveBasemapIdInURL(id)
-      for(let b in this.basemaps) this.basemaps[b].selected = (b === id)
+      for(const b in this.basemaps) this.basemaps[b].selected = (b === id)
       this.selectBasemap(this.basemaps[id], false)
     },
-    saveBasemapIdInURL(id) {
+    saveBasemapIdInURL(id: string) {
       this.currentBasemapId = (id === 'default' ? null : id)
-      this.components.map.updateParams()
+      this.components!.map.updateParams()
     },
-    async selectBasemap(basemap, backupAndRestore) {
+    async selectBasemap(basemap: Basemap, backupAndRestore: boolean) {
       // sauvegarde des sources et layers des thématiques     
-      let themeSources = {}
-      let themeLayers = []
+      let themeSources: Record<string, Source> = {}
+      let themeLayers: Layer[] = []
       if(backupAndRestore) {
-        let actualStyle = this.components.map.map.getStyle()
+        let actualStyle = this.components!.map.map!.getStyle()
         for(let s in actualStyle.sources) {
           if(s.indexOf('1/') == 0 || s.indexOf('2/') == 0) {
             themeSources[s] = actualStyle.sources[s]
           }
         }
-        for(let l in actualStyle.layers) {
+        for(const l in actualStyle.layers!) {
           let layer = actualStyle.layers[l]
-          console.log(layer)
           if(layer.id.indexOf('1/') == 0 || layer.id.indexOf('2/') == 0) {
             themeLayers.push(layer)
           }
         }
       }
 
-      if(basemap.url !== undefined) {
+      if(basemap.url) {
         this.style = basemap.url
       } else {
         // on repart du style jawg de base
@@ -81,10 +83,10 @@ export default {
         let style = await response.json()
 
         // on ajoute les sources custom
-        for(let s in basemap.sources) style.sources[s] = basemap.sources[s]
+        for(let s in basemap.sources!) style.sources[s] = basemap.sources[s]
 
         // on ajoute les layers custom
-        let newLayers = [...basemap.layers]
+        let newLayers = [...basemap.layers!]
 
         // on ajoute les layers jawg à partir de replaceUntilLayerId
         // en supprimant les layers except
@@ -95,8 +97,8 @@ export default {
             found = true
           }
           if(found) {
-            if(!basemap.except.includes(layer.id)) {
-              if(basemap.forcePaint !== undefined && layer.paint !== undefined) {
+            if(!basemap.except!.includes(layer.id)) {
+              if(basemap.forcePaint && layer.paint) {
                 for(let p in basemap.forcePaint) {
                   if(layer.paint[p] !== undefined) {
                     layer.paint[p] = basemap.forcePaint[p]
@@ -114,23 +116,22 @@ export default {
       // suppression des sources et layers thématiques
       if(backupAndRestore) {
         console.log('suppressions...')
-        console.log(themeLayers)
         for(let l in themeLayers) {
           console.log('remove layer ' + themeLayers[l].id)
-          this.components.map.map.removeLayer(themeLayers[l].id)
+          this.components!.map.map!.removeLayer(themeLayers[l].id)
         }
-        for(let s in themeSources) this.components.map.map.removeSource(s)
+        for(let s in themeSources) this.components!.map.map!.removeSource(s)
       }
       
       console.log('apply new style')
-      this.components.map.map.setStyle(this.style)
+      this.components!.map.map!.setStyle(this.style!)
 
       // restauration des sources et layers thématiques
       if(backupAndRestore) {
-        for(let s in themeSources) this.components.map.map.addSource(s, themeSources[s])
+        for(let s in themeSources) this.components!.map.map!.addSource(s, themeSources[s])
         for(let l in themeLayers) {
           console.log('read layer ' + themeLayers[l].id)
-          this.components.map.map.addLayer(themeLayers[l])
+          this.components!.map.map!.addLayer(themeLayers[l])
         }
       }
     },
@@ -211,3 +212,4 @@ h3 {
   text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff;
 }
 </style>
+@/types/tumulus

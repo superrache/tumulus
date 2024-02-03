@@ -1,4 +1,6 @@
-export const basemaps = {
+import type { Basemap } from "@/types/common";
+
+export const basemaps: Record<string, Basemap> = {
     default: {
         label: "map",
         selected: true,

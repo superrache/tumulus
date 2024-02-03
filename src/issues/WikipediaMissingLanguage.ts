@@ -1,6 +1,6 @@
 import {wikipediaApi} from '../utils/WikiApi'
 
-import type { Feature, Theme } from "@/types/TumulusTypes"
+import type { Feature, Theme } from "@/types/common"
 
 export function detect(feature: Feature, theme: Theme) {
     const props = feature.properties
