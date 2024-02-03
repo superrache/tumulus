@@ -24,7 +24,7 @@ sudo psql -Atx postgres://postgres:postgres@localhost:5432/tumulus
 ### Compiles and hot-reloads for development
 ```
 npm run express
-npm run serve
+npm run dev
 ```
 
 ### Compiles and minifies for production

@@ -1,4 +1,6 @@
-export function detect(feature, theme) {
+import type { Feature, Theme } from "@/types/TumulusTypes"
+
+export function detect(feature: Feature, theme: Theme) {
     const props = feature.properties
     const issues = []
 

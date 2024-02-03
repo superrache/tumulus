@@ -1,10 +1,12 @@
-import {wikipediaApi} from '../utils/WikiApi.js'
+import {wikipediaApi} from '../utils/WikiApi'
 
-export function detect(feature, theme) {
+import type { Feature, Theme } from "@/types/TumulusTypes"
+
+export function detect(feature: Feature, theme: Theme) {
     const props = feature.properties
     const issues = []
 
-    for(let wikipediaTagName in props) {
+    for(const wikipediaTagName in props) {
         if(wikipediaTagName.indexOf('wikipedia') > -1) {
             if(props[wikipediaTagName].indexOf(':') < 0) {
                 issues.push({

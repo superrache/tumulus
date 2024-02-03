@@ -1,4 +1,4 @@
-import * as env from './env.js'
+import * as env from './env'
 
 export async function wikipediaApi(wikipediaPage) {
     const s = wikipediaPage.split(':')

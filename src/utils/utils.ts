@@ -1,15 +1,17 @@
-export function round6Digits(a) {
+import type { LngLatBounds } from 'maplibre-gl'
+
+export function round6Digits(a: number) {
     return (Math.round(a * 100000) / 100000)
 }
 
-export function pointInBounds(lngLat, bounds) {
+export function pointInBounds(lngLat: [number, number], bounds: LngLatBounds): boolean {
     return lngLat[0] >= bounds._sw.lng && lngLat[0] <= bounds._ne.lng
         && lngLat[1] >= bounds._sw.lat && lngLat[1] <= bounds._ne.lat
 }
 
 // converts bounds (maplibre extent) to bbox (turf.js extent)
-export function boundsToBbox(bounds) {
-    return [bounds._sw.lng, bounds._sw.lat, bounds._ne.lng, bounds._ne.lat]
+export function boundsToBbox(bounds: LngLatBounds): [number, number, number, number] {
+    return [bounds.sw.lng, bounds.sw.lat, bounds.ne.lng, bounds.ne.lat]
 }
 
 export function bboxInBbox(inside, outside) {

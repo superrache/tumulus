@@ -1,3 +1,6 @@
+import { Request, Response, Application } from 'express'
+
+
 /**
  * The common server code
  * @param {app, databaseUrl, prod} app 

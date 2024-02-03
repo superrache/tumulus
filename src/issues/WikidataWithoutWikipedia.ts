@@ -1,13 +1,15 @@
-import {wikidataApi} from '../utils/WikiApi.js'
+import {wikidataApi} from '../utils/WikiApi'
 
-export function detect(feature, theme) {
+import type { Feature, Theme } from "@/types/TumulusTypes"
+
+export function detect(feature: Feature, theme: Theme) {
     const props = feature.properties
     const issues = []
 
-    for(let wikidataTagName in props) {
+    for(const wikidataTagName in props) {
         if(wikidataTagName.indexOf('wikidata') > -1) {
             let wikipediaTagName = 'wikipedia'
-            let s = wikidataTagName.split(':')
+            const s = wikidataTagName.split(':')
             if(s.length == 2) {
                 wikipediaTagName = `${s[0]}:wikipedia`
             }

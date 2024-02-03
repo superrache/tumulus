@@ -1,4 +1,6 @@
-export const queries = {
+import type { Query, Theme } from "@/types/TumulusTypes"
+
+export const queries: Record<string, Query> = {
     historic: {
       filters: ['["historic"]', '["heritage"][!"historic"]'],
       label: "queryHistoric",
@@ -34,7 +36,7 @@ export const queries = {
     }
   }
   
-  export const themes = {
+  export const themes: Record<string, Theme> = {
       archeo: {
         id: "archeo",
         label: "themeArcheo",

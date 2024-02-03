@@ -1,8 +1,7 @@
 /**
  * The dev server (express only)
  */
-
-const express = require('express')
+import express from 'express' 
 
 const app = express()
 
