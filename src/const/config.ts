@@ -22,7 +22,8 @@ export const osmApiDebug = {
 export const osmApiProd = {
   instance: 'https://www.openstreetmap.org',
   oauthConsumerKey: 'bTmTD4dsTPCymICqf9uMbr6XxaqiNJaprTruAzdy',
-  oauthSecret: 'qgXfV5WWqGNOZwZfUB2Ngf2e3d6VlFQ0x4CwktvK'
+  oauthSecret: 'qgXfV5WWqGNOZwZfUB2Ngf2e3d6VlFQ0x4CwktvK',
+  nodeIdToEdit: undefined
 }
 
 export const osmApi = osmApiProd

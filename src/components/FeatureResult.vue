@@ -71,106 +71,112 @@
 
 <script lang="ts">
 
+import { defineComponent } from 'vue'
 //import * as env from './utils/env'
 import ExpandableImage from './ExpandableImage.vue'
 import * as config from '../const/config'
 import {wikipediaApi} from '../utils/WikiApi'
+import type { Feature, Theme } from '@/types/common'
 
-export default {
+export default defineComponent({
   name: 'FeatureResult',
   components: {
     ExpandableImage
   },
-  data () {
+  data() {
     return {
-      components: null,
       debug: config.DEBUG,
-      id: '',
-      props: null,
-      wikis: [],
-      theme: {},
+      id: '' as string,
+      props: null as Record<string, string> | null,
+      wikis: [] as any[],
+      theme: {} as Theme,
       collapsed: false,
       instance: config.osmApi.instance
     }
   },
   computed: {
-    name() {
-      if(this.props.name !== undefined) {
-        return this.props.name
-      } else {
-        if(this.props.wikipedia !== undefined) {
+    name(): string {
+      if(this.props) {
+        if(this.props.name) {
+          return this.props.name
+        } else if(this.props.wikipedia) {
           const s = this.props.wikipedia.split(':')
           if(s.length > 1) return s[1]
           else return this.props.wikipedia
-        } else {
-          //return this.type
-          return ''
         }
       }
+      return ''
     },
-    type() {
+    type(): string {
       let type = this.trValue('historic')
-      if(!type && this.props.man_made) type = this.trValue('man_made')
-      if(!type && this.props.amenity) type = this.trValue('amenity')
-      if(!type && this.props.military) type = this.trValue('military')
-      if(!type && this.props.natural) type = this.trValue('natural')
-
-      if(this.props.historic === 'memorial' && this.props.memorial) {
-        if(this.props.memorial) type = this.trValue('memorial')
-        else type = this.props.memorial
+      if(this.props) {
+        if(!type && this.props.man_made) type = this.trValue('man_made')
+        if(!type && this.props.amenity) type = this.trValue('amenity')
+        if(!type && this.props.military) type = this.trValue('military')
+        if(!type && this.props.natural) type = this.trValue('natural')
+  
+        if(this.props.historic === 'memorial' && this.props.memorial) {
+          if(this.props.memorial) type = this.trValue('memorial')
+          else type = this.props.memorial
+        }
+        
+        if(this.props.tourism === 'artwork') {
+          if(this.props.artwork_type) type = this.trValue('artwork_type')
+          else type = this.$t('artwork')
+        }
+  
+        if(this.props.railway === 'abandoned') {
+          type = this.$t('abandoned_railway')
+        }
       }
-      
-      if(this.props.tourism === 'artwork') {
-        if(this.props.artwork_type) type = this.trValue('artwork_type')
-        else type = this.$t('artwork')
-      }
-
-      if(this.props.railway === 'abandoned') {
-        type = this.$t('abandoned_railway')
-      }
-      
       return type
     },
-    dateDescription() {
+    dateDescription(): string {
       let dd = this.$t('date')
-      if(this.props.end_date !== undefined) dd += this.$t('from') + ' ' + this.dispDate(this.props.start_date) + ' ' + this.$t('to') + ' ' + this.dispDate(this.props.end_date)
-      else dd += this.props.start_date
+      if(this.props) {
+        if(this.props.end_date !== undefined) dd += this.$t('from') + ' ' + this.dispDate(this.props.start_date) + ' ' + this.$t('to') + ' ' + this.dispDate(this.props.end_date)
+        else dd += this.props.start_date
+      }
       return dd
     },
-    historicDescription() {
+    historicDescription(): string {
       let hd = ''
-      if(this.props.historic === 'archaeological_site' && this.props.site_type !== undefined) hd += this.$t('siteType') + this.trValue('site_type') + '<br/>'
-      if(this.props.site_type === 'megalith' && this.props.megalith_type !== undefined) hd += this.$t('megalithType') + this.trValue('megalith_type') + '<br/>'
-      if(this.props.moved !== undefined) hd += this.$t('moved') + (this.props.moved === 'yes' ? this.$t('yes') : this.$t('no')) + '<br/>'
+      if(this.props) {
+        if(this.props.historic === 'archaeological_site' && this.props.site_type !== undefined) hd += `${this.$t('siteType')}${this.trValue('site_type')}<br/>`
+        if(this.props.site_type === 'megalith' && this.props.megalith_type !== undefined) hd += `${this.$t('megalithType')}${this.trValue('megalith_type')}<br/>`
+        if(this.props.moved !== undefined) hd += this.$t('moved') + (this.props.moved === 'yes' ? this.$t('yes') : this.$t('no')) + '<br/>'
+      }
       return hd
     },
     material() {
       let m = this.trValue('material')
-      if(m === '') m = this.props.material
+      if(m === '') m = this.props!.material
       return m
     }
   },
   methods: {
-    trValue(key) {
-      // first, try a locale value from osm, for eg. 'species:fr'
-      const localeKey = `${key}:${this.$parent.$data.locale}`
-      if(localeKey in this.props) return this.props[localeKey]
-      // then look for a translation of the value
-      if(key in this.props) {
-        if(this.$te(this.props[key])) return this.$t(this.props[key]) // $te() = a translation exists
-        else return this.props[key]
+    trValue(key: string): string {
+      if(this.props) {
+        // first, try a locale value from osm, for eg. 'species:fr'
+        const localeKey = `${key}:${(this.$parent as any).$data.locale}`
+        if(localeKey in this.props) return this.props[localeKey]
+        // then look for a translation of the value
+        if(key in this.props) {
+          if(this.$te(this.props[key])) return this.$t(this.props[key]) // $te() = a translation exists
+          else return this.props[key]
+        }
       }
       return ''
       //return this.props[key] !== undefined ? `${this.props[key]} => ${this.$t(this.props[key])}` : ''
     },
-    isLoaded(other) {
+    isLoaded(other: Feature) {
       return other.properties.id === this.id
     },
-    loadFeature(feature, theme) {
+    loadFeature(feature: Feature, theme: Theme) {
       this.theme = theme
       this.updateFeature(feature)
     },
-    updateFeature(feature) {
+    updateFeature(feature: Feature) {
       this.id = feature.id
       this.props = feature.properties
 
@@ -182,31 +188,33 @@ export default {
       this.loadWikiData('species:wikipedia', 'species:wikidata', this.$t('species'))
     },
     unloadFeature() {
-      this.id = null
+      this.id = ''
       this.props = null
       this.wikis = []
     },
-    async loadWikiData(wikipediaKey, wikidataKey, titlePrefix) {
-      if(this.props[wikipediaKey] !== undefined) {
-        const data = await wikipediaApi(this.props[wikipediaKey])
-        if(data !== null) {
-          data.displaytitle = titlePrefix + data.displaytitle
-          this.wikis.push(data)
-        }
-      } else {
-        if(this.props[wikidataKey] !== undefined) {
-          this.wikis.push({
-            displaytitle: titlePrefix,
-            wikibase_item: this.props[wikidataKey]
-          })
+    async loadWikiData(wikipediaKey: string, wikidataKey: string, titlePrefix: string) {
+      if(this.props) {
+        if(this.props[wikipediaKey] !== undefined) {
+          const data = await wikipediaApi(this.props[wikipediaKey])
+          if(data !== null) {
+            data.displaytitle = titlePrefix + data.displaytitle
+            this.wikis.push(data)
+          }
+        } else {
+          if(this.props[wikidataKey] !== undefined) {
+            this.wikis.push({
+              displaytitle: titlePrefix,
+              wikibase_item: this.props[wikidataKey]
+            })
+          }
         }
       }
     },
-    dispDate(date) {
-      return date
+    dispDate(date: string) {
+      return date // TODO: interprete date format
     }
   }
-}
+})
 
 </script>
 

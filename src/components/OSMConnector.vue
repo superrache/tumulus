@@ -18,29 +18,32 @@
 
 <script lang="ts">
 
+import { defineComponent } from 'vue'
 import {OsmAuth} from 'osm-auth'
 import {OsmRequest} from 'osm-request'
 import * as config from '../const/config'
 import * as env from '../utils/env'
+import type { TumulusComponents } from '@/types/components'
+import type { Feature } from '@/types/common'
 
-export default {
+export default defineComponent({
   name: 'OSMConnector',
   data() {
     return {
-        components: null,
-        auth: null,
-        authenticated: false,
-        osmRequest: null,
-        userName: '',
-        editedFeatures: {},
+        components: null as TumulusComponents | null,
+        auth: null as any | null,
+        authenticated: false as boolean,
+        osmRequest: null as any | null,
+        userName: '' as string,
+        editedFeatures: {} as Record<string, Feature>,
         instance: config.osmApi.instance
     }
   },
   computed: {
-      connected() {
+      connected(): boolean {
           return this.userName !== ''
       },
-      modifications() {
+      modifications(): number {
           return Object.keys(this.editedFeatures).length
       }
   },
@@ -70,7 +73,7 @@ export default {
             }, this.done)
         }
     },
-    done(err, res) {
+    done(err: any, res: any) {
         if(err) {
             this.userName = 'erreur'
             return
@@ -95,24 +98,24 @@ export default {
         this.userName = ''
         this.update()
     },
-    addEditedFeature(feature) {
+    addEditedFeature(feature: Feature) {
         this.editedFeatures[feature.id] = feature
     },
     save() {
-        this.components.commentDialog.show('', this.sendEdits)
+        this.components!.commentDialog.show('', this.sendEdits)
     },
-    async sendEdits(comment) {
+    async sendEdits(comment: string) {
         if(this.modifications > 0) {
-            this.components.editorLog.clear()
+            this.components!.editorLog.clear()
 
-            this.components.editorLog.add(`Envoi de ${Object.keys(this.editedFeatures).length} éléments vers OpenStreetMap`)
+            this.components!.editorLog.add(`Envoi de ${Object.keys(this.editedFeatures).length} éléments vers OpenStreetMap`)
             const changesetId = await this.osmRequest.createChangeset(config.appName, comment)
-            this.components.editorLog.add(`Groupe de modification créé : changeset=${changesetId}`)
+            this.components!.editorLog.add(`Groupe de modification créé : changeset=${changesetId}`)
 
             for(let f in this.editedFeatures) {
                 const feature = this.editedFeatures[f]
-                const newTags = {} // copie de feature.properties sans les propriétés internes 'id' et 'g'
-                for(let key in feature.properties) {
+                const newTags = {} as Record<string, string | number> // copie de feature.properties sans les propriétés internes 'id' et 'g'
+                for(const key in feature.properties) {
                     if(key !== 'id' && key !== 't' && key !== 'g' && key !== 'lng' && key !== 'lat') {
                         newTags[key] = feature.properties[key]
                     }
@@ -126,7 +129,7 @@ export default {
                         element = await this.osmRequest.createNodeElement(lat, lng, newTags)
                     } // else not yet implemented
                 } else { // modify en existing element
-                    this.components.editorLog.add(`Préparation de la mise à jour de l'élément ${feature.id}`)
+                    this.components!.editorLog.add(`Préparation de la mise à jour de l'élément ${feature.id}`)
                     const fullId = config.osmApi.nodeIdToEdit !== undefined ? config.osmApi.nodeIdToEdit : feature.id
                     element = await this.osmRequest.fetchElement(fullId) // id au format node/123456789
     
@@ -142,33 +145,33 @@ export default {
                     }
                     while(tagsToRemove.length > 0) {
                         let tag = tagsToRemove.pop()
-                        this.components.editorLog.add(`Suppression du tag ${tag}`)
+                        this.components!.editorLog.add(`Suppression du tag ${tag}`)
                         element = this.osmRequest.removeTag(element, tag)
                     }
     
-                    this.components.editorLog.add('Ajout ou mise à jour des autres tags') // pour les créations et mises à jour
+                    this.components!.editorLog.add('Ajout ou mise à jour des autres tags') // pour les créations et mises à jour
                     element = this.osmRequest.setTags(element, newTags)
                 }
 
                 if(element) {
-                    this.components.editorLog.add(`Envoi de l'élément`)
+                    this.components!.editorLog.add(`Envoi de l'élément`)
                     const newElementVersion = await this.osmRequest.sendElement(element, changesetId)
                     element = this.osmRequest.setVersion(element, newElementVersion)
                 }
             }
 
-            this.components.editorLog.add('Fermeture du groupe de modification')
+            this.components!.editorLog.add('Fermeture du groupe de modification')
             await this.osmRequest.closeChangeset(changesetId)
 
             fetch(`${env.getServerUrl()}/stat-changes?name=${this.userName}&changes=${this.modifications}`)
 
             this.editedFeatures = {}
 
-            this.components.thanks.changeset = changesetId
+            this.components!.thanks.changeset = changesetId
         }
     }
   }
-}
+})
 
 </script>
 

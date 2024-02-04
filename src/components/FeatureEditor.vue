@@ -41,34 +41,37 @@
 
 <script lang="ts">
 
+import { defineComponent } from 'vue'
 import * as config from '../const/config' 
 import AutocompleteInput from './AutocompleteInput.vue'
+import type { TumulusComponents } from '@/types/components'
+import type { Feature } from '@/types/common'
 
-export default {
+export default defineComponent({
   name: 'FeatureEditor',
   components: {
     AutocompleteInput
   },
   data () {
     return {
-      components: null,
-      originalFeature: null,
-      originalProperties: null,
-      editedProperties: [],
-      editing: false,
-      collapsed: false
+      components: null as TumulusComponents | null,
+      originalFeature: null as Feature | null,
+      originalProperties: null as Record<string, string | number> | null,
+      editedProperties: [] as {key: string, value: string}[],
+      editing: false as boolean,
+      collapsed: false as boolean
     }
   },
   computed: {
-    connected() {
-      return this.components && this.components.osmConnector && this.components.osmConnector.connected
+    connected(): boolean {
+      return this.components!.osmConnector.connected
     }
   },
   methods: {
-    isLoaded(other) {
+    isLoaded(other: Feature): boolean {
       return this.originalFeature?.properties.id === other.properties.id
     },
-    loadFeature(feature) {
+    loadFeature(feature: Feature) {
       if(feature !== null && feature.properties !== null) {
         this.editedProperties = []
 
@@ -76,7 +79,7 @@ export default {
           this.originalFeature = feature
           this.originalProperties = feature.properties
           for(let key in this.originalProperties) {
-              if(key !== 'g' && key !== 't' && key !== 'id' && key !== 'lng' && key !== 'lat') this.editedProperties.push({key: key, value: this.originalProperties[key]})
+              if(key !== 'g' && key !== 't' && key !== 'id' && key !== 'lng' && key !== 'lat') this.editedProperties.push({key: key, value: `${this.originalProperties[key]}`})
           }
           this.editedProperties.push({key: '', value: ''})
           this.editing = false
@@ -94,7 +97,7 @@ export default {
       this.editedProperties = []
       this.editing = false
     },
-    async onInputKey(searchTerm) {
+    async onInputKey(searchTerm: string): Promise<string[]> {
       const url = `${config.tagInfoInstance}/api/4/keys/all?page=1&rp=10&sortname=count_all&sortorder=desc&query=${encodeURIComponent(searchTerm)}`
       const response = await fetch(url)
       const json = await response.json()
@@ -104,7 +107,7 @@ export default {
       }
       return suggestions
     },
-    async onInputValue(searchTerm, key) {
+    async onInputValue(searchTerm: string, key: string): Promise<string[]> {
       const url = `${config.tagInfoInstance}/api/4/key/values?page=1&rp=10&sortname=count_all&sortorder=desc&key=${key}&query=${encodeURIComponent(searchTerm)}`
       const response = await fetch(url)
       const json = await response.json()
@@ -122,7 +125,7 @@ export default {
       let last = this.editedProperties[this.editedProperties.length - 1]
       if(last.key !== '' || last.value !== '') this.editedProperties.push({key: '', value: ''})
     },
-    onDeleteTag(e, index) {
+    onDeleteTag(e: any, index: number) {
       if(index == this.editedProperties.length - 1) return // pas le dernier
       if(this.editedProperties.length > 1) this.editedProperties.splice(index, 1)
       this.editing = true
@@ -142,45 +145,47 @@ export default {
         this.$refs[`input-value-${e}`][0].innerValue = property.value
       }
     },
-    save(updateUI) {
-      console.log('save feature id = ' + this.originalFeature.id)
-      
-      const newProperties = {}
-      let editedKeys = []
-      for(let e in this.editedProperties) {
-        let editedProperty = this.editedProperties[e]
-        if(editedProperty.key !== '') {
-            console.log(editedProperty.key + '=' + editedProperty.value)
-            newProperties[editedProperty.key] = editedProperty.value
-            
-            // cette clé a-t-elle été éditée ? elle n'existait pas dans l'original ou elle est différente entre props originale et éditée
-            if(this.originalProperties[editedProperty.key] === undefined || newProperties[editedProperty.key] !== this.originalProperties[editedProperty.key])
-              editedKeys.push(editedProperty.key)
+    save(updateUI: boolean) {
+      if(this.originalFeature && this.originalProperties) {
+        console.log(`save feature id=${this.originalFeature.id}`)
+        
+        const newProperties: Record<string, string | number> = {}
+        let editedKeys = []
+        for(let e in this.editedProperties) {
+          let editedProperty = this.editedProperties[e]
+          if(editedProperty.key !== '') {
+              console.log(editedProperty.key + '=' + editedProperty.value)
+              newProperties[editedProperty.key] = editedProperty.value
+              
+              // cette clé a-t-elle été éditée ? elle n'existait pas dans l'original ou elle est différente entre props originale et éditée
+              if(this.originalProperties![editedProperty.key] === undefined || newProperties[editedProperty.key] !== this.originalProperties[editedProperty.key])
+                editedKeys.push(editedProperty.key)
+          }
         }
-      }
-
-      // on ajoute les propriétés internes 'g' et 'id'
-      newProperties.id = this.originalFeature.properties.id
-      newProperties.g = this.originalFeature.properties.g
-      newProperties.t = this.originalFeature.properties.t
-    
-      this.originalFeature.properties = newProperties
-
-      this.components.map.updateFeature(this.originalFeature)
-
-      if(updateUI) {
-        this.components.osmConnector.addEditedFeature(this.originalFeature)
-        this.components.featureResult.updateFeature(this.originalFeature)
-        this.loadFeature(this.originalFeature) // reset
-
-        this.components.issueAnalyzer.setEditedKeys(this.originalFeature.id, editedKeys)
+  
+        // on ajoute les propriétés internes 'g' et 'id'
+        newProperties.id = this.originalFeature.properties.id
+        newProperties.g = this.originalFeature.properties.g
+        newProperties.t = this.originalFeature.properties.t
+      
+        this.originalFeature.properties = newProperties
+  
+        this.components!.map.updateFeature(this.originalFeature)
+  
+        if(updateUI) {
+          this.components!.osmConnector.addEditedFeature(this.originalFeature)
+          this.components!.featureResult.updateFeature(this.originalFeature)
+          this.loadFeature(this.originalFeature) // reset
+  
+          this.components!.issueAnalyzer.setEditedKeys(this.originalFeature.id, editedKeys)
+        }
       }
     },
     cancel() {
-      this.loadFeature(this.originalFeature)
+      this.loadFeature(this.originalFeature!)
     }
   }
-}
+})
 
 </script>
 

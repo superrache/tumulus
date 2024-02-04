@@ -1,4 +1,4 @@
-import type { Layer, Marker, Source } from "maplibre-gl"
+import type { AnyLayer, AnySourceData, Layer, Marker, Source } from "maplibre-gl"
 
 export interface Basemap {
     label: string
@@ -6,8 +6,8 @@ export interface Basemap {
     color: string
     icon: string
     url: string
-    sources?: Source[]
-    layers?: Layer[]
+    sources?: AnySourceData[]
+    layers?: AnyLayer[]
     replaceUntilLayerId?: boolean
     except?: string[]
     forcePaint?: any
@@ -46,7 +46,8 @@ export interface Geojson {
 export interface Feature {
     geometry: PointGeometry | LineGeometry | PolygonGeometry
     type: 'Feature'
-    properties: Record<string, string>
+    properties: Record<string, string | number> // g is number
+    id: string
     lang: string
 }
 

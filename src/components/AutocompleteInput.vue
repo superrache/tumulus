@@ -43,7 +43,7 @@ export default {
     }
   },
   mounted () {
-    this.innerValue = this.value
+    this.innerValue = this.value!
   },
 /*  watch: {
     innerValue: function (value) { 

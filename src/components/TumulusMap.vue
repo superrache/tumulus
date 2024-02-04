@@ -7,6 +7,7 @@
 
 <script lang="ts">
 
+import { defineComponent, ref } from 'vue'
 import { Map, NavigationControl, GeolocateControl, Marker, Popup } from 'maplibre-gl'
 import along from '@turf/along'
 import length from '@turf/length'
@@ -19,9 +20,10 @@ import * as utils from '../utils/utils'
 import * as config from '../const/config'
 import * as themes from '../const/themes'
 import * as nominatim from '../utils/Nominatim'
-import type { Geojson, Theme, TumulusComponents } from '@/types/TumulusTypes'
+import type { Geojson, Theme } from '@/types/common'
+import type { TumulusComponents } from '@/types/components'
 
-export default {
+export default defineComponent({
   name: 'TumulusMap',
   data () {
     return {
@@ -539,7 +541,7 @@ export default {
       return null
     }
   }
-}
+})
 
 </script>
 

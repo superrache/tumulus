@@ -53,6 +53,7 @@
 
 <script lang="ts">
 
+import { defineComponent } from 'vue'
 import * as URLParameters from './utils/URLParameters'
 import PlaceSearch from './components/PlaceSearch.vue'
 import BasemapSelect from './components/BasemapSelect.vue'
@@ -66,9 +67,9 @@ import IssueAnalyzer from './components/IssueAnalyzer.vue'
 import TumulusMap from './components/TumulusMap.vue'
 import OSMConnector from './components/OSMConnector.vue'
 import CommentDialog from './components/CommentDialog.vue'
-import type { TumulusComponents } from './types/TumulusTypes'
+import type { TumulusComponents } from './types/components'
 
-export default {
+export default defineComponent({
   name: 'App',
   components: {
     TumulusMap,
@@ -126,7 +127,6 @@ export default {
     this.components.basemapSelect.components = this.components
     this.components.search.components = this.components
     this.components.themeSelect.components = this.components
-    this.components.featureResult.components = this.components
     this.components.featureEditor.components = this.components
     this.components.plantNetAssistant.components = this.components
     this.components.issueAnalyzer.components = this.components
@@ -185,7 +185,7 @@ export default {
       this.components.map.map.resize()
     }
   }
-}
+})
 </script>
 
 <style>

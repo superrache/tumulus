@@ -7,6 +7,11 @@ export interface TumulusComponents {
     featureResult: FeatureResultComponent
     featureEditor: FeatureEditorComponent
     plantNetAssistant: PlantNetAssistantComponent
+    osmConnector: OSMConnectorComponent
+    commentDialog: CommentDialogComponent
+    editorLog: EditorLogComponent
+    thanks: ThanksComponent
+    issueAnalyzer: IssueAnalyzerComponent
 }
 
 export interface TumulusMapComponent {
@@ -22,6 +27,8 @@ export interface TumulusMapComponent {
     selectedFeatureId: string | null
     components: TumulusComponents
     updateParams: Function
+    reload: Function
+    updateFeature: Function
 }
 
 export interface BasemapSelectComponent {
@@ -30,6 +37,7 @@ export interface BasemapSelectComponent {
 }
 
 export interface FeatureResultComponent {
+    updateFeature: Function
     unloadFeature: Function
 }
 
@@ -39,4 +47,26 @@ export interface FeatureEditorComponent {
 
 export interface PlantNetAssistantComponent {
     unloadFeature: Function
+}
+
+export interface OSMConnectorComponent {
+    connected: boolean
+    addEditedFeature: Function
+}
+
+export interface CommentDialogComponent {
+    show: Function
+}
+
+export interface EditorLogComponent {
+    clear: Function
+    add: Function
+}
+
+export interface ThanksComponent {
+    changeset: string
+}
+
+export interface IssueAnalyzerComponent {
+    setEditedKeys: Function
 }

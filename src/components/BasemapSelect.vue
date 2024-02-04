@@ -16,12 +16,13 @@
 
 <script lang="ts">
 
+import { defineComponent } from 'vue'
 import type { Basemap } from '@/types/common'
 import type { TumulusComponents } from '@/types/components'
 import * as basemaps from '../const/basemaps'
-import type { Layer, Source, Style } from 'maplibre-gl'
+import type { AnyLayer, AnySourceData, Style } from 'maplibre-gl'
 
-export default {
+export default defineComponent({
   name: 'BasemapSelect',
   data () {
     return {
@@ -58,8 +59,8 @@ export default {
     },
     async selectBasemap(basemap: Basemap, backupAndRestore: boolean) {
       // sauvegarde des sources et layers des thématiques     
-      let themeSources: Record<string, Source> = {}
-      let themeLayers: Layer[] = []
+      let themeSources: Record<string, AnySourceData> = {}
+      let themeLayers: AnyLayer[] = []
       if(backupAndRestore) {
         let actualStyle = this.components!.map.map!.getStyle()
         for(let s in actualStyle.sources) {
@@ -139,7 +140,7 @@ export default {
       this.collapsed = true
     }
   }
-}
+})
 
 </script>
 

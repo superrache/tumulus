@@ -1,6 +1,6 @@
 import * as env from './env'
 
-export async function wikipediaApi(wikipediaPage) {
+export async function wikipediaApi(wikipediaPage: string): Promise<any> {
     const s = wikipediaPage.split(':')
     if(s.length > 1) {
         let lang = s[0]
@@ -16,7 +16,7 @@ export async function wikipediaApi(wikipediaPage) {
     }
 }
 
-export async function wikidataApi(wikibaseItem) {
+export async function wikidataApi(wikibaseItem: string): Promise<any> {
     let response = await fetch(`${env.getServerUrl()}/wikidata?q=${wikibaseItem}`)
     return await response.json()
 }
