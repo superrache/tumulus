@@ -1,8 +1,8 @@
-import type { TumulusMap } from '@/types/common'
+import type { TumulusMapComponent } from '@/types/components'
 import * as config from '../const/config'
 import * as utils from './utils'
 
-export function applyURLParameters(map: TumulusMap) {
+export function applyURLParameters(map: TumulusMapComponent) {
     const parts = window.location.search.split('?')
     if(parts.length > 1) {
         console.log(`applying parameters ${parts[1]}`)
@@ -46,7 +46,7 @@ export function applyURLParameters(map: TumulusMap) {
     }
 }
 
-export function updateAppUrl(map: TumulusMap) {
+export function updateAppUrl(map: TumulusMapComponent) {
     if (map.map) {
         const {lng, lat} = map.map.getCenter()
         const zoom = map.map.getZoom()

@@ -1,10 +1,16 @@
 import { createApp } from 'vue'
-import i18n from './i18n'
+import { createI18n } from 'vue-i18n'
+import messages from '@intlify/unplugin-vue-i18n/messages'
 import App from './App.vue'
 import FeatureEditor from './components/FeatureEditor.vue'
 import IssueAnalyzer from './components/IssueAnalyzer.vue'
 import PlantNetAssistant from './components/PlantNetAssistant.vue'
 import './registerServiceWorker'
+
+const i18n = createI18n({
+    locale: 'fr',
+    messages
+})
 
 const test = 0
 
@@ -15,7 +21,7 @@ switch(test) {
         break;
     }
     case 1: {
-        let fe = createApp(FeatureEditor).use(i18n).mount('#app')
+        const fe = createApp(FeatureEditor).use(i18n).mount('#app')
         fe.osmConnector = {
             connected: true,
             addEditedFeature: (o) => {return o}
@@ -39,7 +45,7 @@ switch(test) {
         break
     }
     case 2: {
-        let ia = createApp(IssueAnalyzer).use(i18n).mount('#app')
+        const ia = createApp(IssueAnalyzer).use(i18n).mount('#app')
         ia.issues = [
             {
                 feature: {
@@ -77,7 +83,7 @@ switch(test) {
         break
     }
     case 3: {
-        let pna = createApp(PlantNetAssistant).use(i18n).mount('#app')
+        const pna = createApp(PlantNetAssistant).use(i18n).mount('#app')
         pna.components = {
                 osmConnector: {
                 connected: true,
@@ -116,7 +122,6 @@ switch(test) {
                 }]
             }
         ]
-    
         break
     }
 }

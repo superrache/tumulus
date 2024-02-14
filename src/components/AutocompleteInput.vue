@@ -52,9 +52,9 @@ export default {
   },*/
   methods: {
     async onInput() {
-        this.suggestions = await this.suggestionsFunction(this.innerValue, this.other)
+        this.suggestions = await this.suggestionsFunction!(this.innerValue, this.other)
     },
-    selectItem(suggestion) {
+    selectItem(suggestion: string) {
         if(suggestion) {
             this.innerValue = suggestion
             this.$emit('inputChanged', this.innerValue)

@@ -1,4 +1,4 @@
-import type { AnyLayer, AnySourceData, Layer, Marker, Source } from "maplibre-gl"
+import type { AnyLayer, AnySourceData, GeoJSONSource, Layer, Marker, Source } from "maplibre-gl"
 
 export interface Basemap {
     label: string
@@ -24,9 +24,9 @@ export interface Theme {
     visible: boolean
     dataCacheIds?: Set<string>
     geojsons?: [ Geojson, Geojson, Geojson ]
-    sources?: Source[]
+    sources?: GeoJSONSource[]
     layers?: Layer[]
-    markers?: Record<string, Marker>
+    markers?: Record<string, FeaturedMarker>
 }
 
 export interface Query {
@@ -44,9 +44,9 @@ export interface Geojson {
 }
 
 export interface Feature {
-    geometry: PointGeometry | LineGeometry | PolygonGeometry
+    geometry: PointGeometry | MultiPointGeometry | LineGeometry | PolygonGeometry | MultiLineGeometry | MultiPolygonGeometry
     type: 'Feature'
-    properties: Record<string, string | number> // g is number
+    properties: Record<string, string>
     id: string
     lang: string
 }
@@ -54,6 +54,11 @@ export interface Feature {
 export interface PointGeometry {
     type: 'Point'
     coordinates: number[]
+}
+
+export interface MultiPointGeometry {
+    type: 'MultiPoint'
+    coordinates: number[][]
 }
 
 export interface LineGeometry {
@@ -64,4 +69,20 @@ export interface LineGeometry {
 export interface PolygonGeometry {
     type: 'Polygon'
     coordinates: number[][]
+}
+
+export interface MultiLineGeometry {
+    type: 'MultiLineString'
+    coordinates: number[][][]
+}
+
+export interface MultiPolygonGeometry {
+    type: 'MultiPolygon'
+    coordinates: number[][][]
+}
+
+export interface FeaturedMarker extends Marker {
+    feature?: Feature
+    theme?: Theme
+    lngLat?: [number, number]
 }

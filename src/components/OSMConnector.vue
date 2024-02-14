@@ -114,7 +114,7 @@ export default defineComponent({
 
             for(let f in this.editedFeatures) {
                 const feature = this.editedFeatures[f]
-                const newTags = {} as Record<string, string | number> // copie de feature.properties sans les propriétés internes 'id' et 'g'
+                const newTags = {} as Record<string, string> // copie de feature.properties sans les propriétés internes 'id' et 'g'
                 for(const key in feature.properties) {
                     if(key !== 'id' && key !== 't' && key !== 'g' && key !== 'lng' && key !== 'lat') {
                         newTags[key] = feature.properties[key]
@@ -124,7 +124,7 @@ export default defineComponent({
                 let element = undefined
 
                 if(feature.id.indexOf('new') > 0) { // create a new element
-                    if(feature.properties['g'] === 0) { // point -> node
+                    if(feature.properties['g'] === '0') { // point -> node
                         const [lng, lat] = feature.geometry.coordinates
                         element = await this.osmRequest.createNodeElement(lat, lng, newTags)
                     } // else not yet implemented

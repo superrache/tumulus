@@ -56,7 +56,7 @@ export default defineComponent({
     return {
       components: null as TumulusComponents | null,
       originalFeature: null as Feature | null,
-      originalProperties: null as Record<string, string | number> | null,
+      originalProperties: null as Record<string, string> | null,
       editedProperties: [] as {key: string, value: string}[],
       editing: false as boolean,
       collapsed: false as boolean
@@ -149,7 +149,7 @@ export default defineComponent({
       if(this.originalFeature && this.originalProperties) {
         console.log(`save feature id=${this.originalFeature.id}`)
         
-        const newProperties: Record<string, string | number> = {}
+        const newProperties: Record<string, string> = {}
         let editedKeys = []
         for(let e in this.editedProperties) {
           let editedProperty = this.editedProperties[e]

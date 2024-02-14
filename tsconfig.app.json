@@ -9,6 +9,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": [
+      "node",
+      "webpack-env",
+      "@intlify/unplugin-vue-i18n/messages"
+    ]
   }
 }

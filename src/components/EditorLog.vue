@@ -12,19 +12,21 @@
 
 <script lang="ts">
 
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'EditorLog',
   data () {
     return {
-      log: null
+      log: null as string | null
     }
   },
   methods: {
-    add(message) {
+    add(message: string) {
       if(this.log === null) this.log = ''
-      this.log += '<br/>' + message
+      this.log += `<br/>${message}`
     },
-    addInline(message) {
+    addInline(message: string) {
       this.log += message
     },
     clear() {
@@ -34,7 +36,7 @@ export default {
       this.log = null
     }
   }
-}
+})
 
 </script>
 

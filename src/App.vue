@@ -67,7 +67,8 @@ import IssueAnalyzer from './components/IssueAnalyzer.vue'
 import TumulusMap from './components/TumulusMap.vue'
 import OSMConnector from './components/OSMConnector.vue'
 import CommentDialog from './components/CommentDialog.vue'
-import type { TumulusComponents } from './types/components'
+import type { BasemapSelectComponent, OSMConnectorComponent, SearchComponent, TumulusComponents, TumulusMapComponent, ThemeSelectComponent, ThanksComponent, EditorLogComponent, FeatureResultComponent, FeatureEditorComponent, PlantNetAssistantComponent, IssueAnalyzerComponent, CommentDialogComponent
+ } from './types/components'
 
 export default defineComponent({
   name: 'App',
@@ -90,7 +91,7 @@ export default defineComponent({
       locale: 'fr' as string,
       components: null as TumulusComponents | null,
       loading: '' as string,
-      sidebar: null,
+      sidebar: null as any | null,
       canReload: true as boolean
     }
   },
@@ -98,7 +99,7 @@ export default defineComponent({
 
   },
   watch: {
-    locale (val) {
+    locale (val: string) {
       this.$i18n.locale = val
     }
   },
@@ -108,18 +109,18 @@ export default defineComponent({
     // liens entre les composants
     this.components = {
       app: this,
-      map: this.$refs.map,
-      osmConnector: this.$refs.osmConnector,
-      basemapSelect: this.$refs.basemapSelect,
-      search: this.$refs.search,
-      themeSelect: this.$refs.themeSelect,
-      thanks: this.$refs.thanks,
-      editorLog: this.$refs.editorLog,
-      featureResult: this.$refs.featureResult,
-      featureEditor: this.$refs.featureEditor,
-      plantNetAssistant: this.$refs.plantNetAssistant,
-      issueAnalyzer: this.$refs.issueAnalyzer,
-      commentDialog: this.$refs.commentDialog
+      map: this.$refs.map as TumulusMapComponent,
+      osmConnector: this.$refs.osmConnector as OSMConnectorComponent,
+      basemapSelect: this.$refs.basemapSelect as BasemapSelectComponent,
+      search: this.$refs.search as SearchComponent,
+      themeSelect: this.$refs.themeSelect as ThemeSelectComponent,
+      thanks: this.$refs.thanks as ThanksComponent,
+      editorLog: this.$refs.editorLog as EditorLogComponent,
+      featureResult: this.$refs.featureResult as FeatureResultComponent,
+      featureEditor: this.$refs.featureEditor as FeatureEditorComponent,
+      plantNetAssistant: this.$refs.plantNetAssistant as PlantNetAssistantComponent,
+      issueAnalyzer: this.$refs.issueAnalyzer as IssueAnalyzerComponent,
+      commentDialog: this.$refs.commentDialog as CommentDialogComponent
     }
 
     this.components.map.components = this.components
@@ -155,8 +156,8 @@ export default defineComponent({
     })
   },
   computed: {
-    dispZoomMore() {
-      if(this.components && this.components.map) return this.components.map.currentZoom < this.components.map.maxZoomToGetData
+    dispZoomMore(): boolean {
+      if(this.components && this.components.map) return this.components!.map.currentZoom < this.components!.map.maxZoomToGetData
       else return false
     }
   },
@@ -170,19 +171,19 @@ export default defineComponent({
       }
     },
     updateAppUrl() {
-      URLParameters.updateAppUrl(this.components.map)
+      URLParameters.updateAppUrl(this.components!.map)
     },
-    onSidebarResize(e) {
+    onSidebarResize(e: any) {
       let [x, y] = [e.x, e.y]
       if(e.type === 'touchmove') {
         [x, y] = [e.touches[0].clientX, e.touches[0].clientY]
       }
       if(window.innerWidth < 641) { // mobile
-        this.sidebar.style.height = (window.innerHeight - y + 10) + 'px'
+        this.sidebar!.style.height = (window.innerHeight - y + 10) + 'px'
       } else { // desktop
-        this.sidebar.style.width = (x + 2) + 'px'
+        this.sidebar!.style.width = (x + 2) + 'px'
       }
-      this.components.map.map.resize()
+      this.components!.map.map!.resize()
     }
   }
 })
