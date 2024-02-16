@@ -86,3 +86,14 @@ export interface FeaturedMarker extends Marker {
     theme?: Theme
     lngLat?: [number, number]
 }
+
+export type Issue = {
+    feature: Feature
+    theme: Theme
+    message: string
+    importance: number
+    autoRepaired?: number
+    autoRepair?: Function
+    repairedIfEdited: string
+    manuallyRepaired?: boolean
+}

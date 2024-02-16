@@ -1,8 +1,8 @@
-import type { Feature, Theme } from "@/types/common"
+import type { Feature, Issue, Theme } from "@/types/common"
 
-export function detect(feature: Feature, theme: Theme) {
+export function detect(feature: Feature, theme: Theme): Issue[] {
     const props = feature.properties
-    const issues = []
+    const issues = [] as Issue[]
 
     if(feature.geometry.type === 'Point') { // invaders are points
         const coords = feature.geometry.coordinates
@@ -18,7 +18,7 @@ export function detect(feature: Feature, theme: Theme) {
                 
                 if(invaderRef.length > 0) {
                     // format ref PA_XXXXX
-                    invaderRef = 'PA_' + invaderRef.split('PA')[1].replace('-', '').replace('_', '')
+                    invaderRef = `PA_${invaderRef.split('PA')[1].replace('-', '').replace('_', '')}`
                     issues.push({
                         feature: feature,
                         theme: theme,

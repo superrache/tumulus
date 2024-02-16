@@ -1,5 +1,12 @@
 import * as config from '../const/config'
 
+export type NominatimResult = {
+    lat: number
+    lon: number
+    place_id: string
+    display_name: string
+}
+
 export async function search(q) {
     const url = config.nominatimInstance + '/search.php?format=jsonv2&q=' + encodeURIComponent(q)
     const response = await fetch(url)

@@ -38,10 +38,17 @@ export interface TumulusMapComponent {
     selectedFeatureId: string | null
     currentZoom: number
     maxZoomToGetData: number
+    countryCode: string | null
     createMap: Function
     updateParams: Function
     reload: Function
+    selectFeature: Function
     updateFeature: Function
+    updateThemesVisibility: Function
+    addPoint: Function
+    validateAddingPoint: Function
+    cancelAddingPoint: Function
+    flyTo: Function
 }
 
 export interface BasemapSelectComponent {
@@ -68,18 +75,21 @@ export interface FeatureResultComponent {
     updateFeature: Function
     loadFeature: Function
     unloadFeature: Function
+    isLoaded: Function
 }
 
 export interface FeatureEditorComponent {
     components: TumulusComponents
     loadFeature: Function
     unloadFeature: Function
+    isLoaded: Function
 }
 
 export interface PlantNetAssistantComponent {
     components: TumulusComponents
     loadFeature: Function
     unloadFeature: Function
+    updatedThemes: Function
 }
 
 export interface OSMConnectorComponent {
@@ -96,6 +106,7 @@ export interface CommentDialogComponent {
 export interface EditorLogComponent {
     clear: Function
     add: Function
+    addInline: Function
 }
 
 export interface ThanksComponent {

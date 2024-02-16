@@ -1,10 +1,10 @@
 import {wikidataApi} from '../utils/WikiApi'
 
-import type { Feature, Theme } from "@/types/common"
+import type { Feature, Issue, Theme } from "@/types/common"
 
-export function detect(feature: Feature, theme: Theme) {
+export function detect(feature: Feature, theme: Theme): Issue[] {
     const props = feature.properties
-    const issues = []
+    const issues = [] as Issue[]
 
     for(const wikidataTagName in props) {
         if(wikidataTagName.indexOf('wikidata') > -1) {

@@ -40,24 +40,25 @@ export default defineComponent({
 
   data () {
     return {
-      imageSrc: '',
+      imageSrc: '' as string,
       expanded: false,
-      closeButtonRef: null
+      closeButtonRef: null as any | null,
+      cloned: null as any | null
     }
   },
   created() {
-    this.imageSrc = this.$attrs.thumbnail
+    this.imageSrc = this.$attrs.thumbnail as string
   },
   methods: {
-    closeImage (event) {
+    closeImage(event: any) {
       this.expanded = false
-      this.imageSrc = this.$attrs.thumbnail
+      this.imageSrc = this.$attrs.thumbnail as string
       event.stopPropagation()
     },
-    freezeVp (e) {
+    freezeVp(e: any) {
       e.preventDefault()
     },
-    onExpandedImageClick (e) {
+    onExpandedImageClick(e: any) {
       e.stopPropagation()
       const image = this.cloned.querySelector('img')
       const imagePosition = this.getRenderedSize(image.width, image.height, image.naturalWidth, image.naturalHeight)
@@ -70,7 +71,7 @@ export default defineComponent({
         this.expanded = false
       }
     },
-    getRenderedSize (cWidth, cHeight, oWidth, oHeight) {
+    getRenderedSize(cWidth: number, cHeight: number, oWidth: number, oHeight: number): {left: number, top: number, right: number, bottom: number} {
       const oRatio = oWidth > oHeight
         ? oWidth / oHeight
         : oHeight / oWidth
@@ -89,7 +90,7 @@ export default defineComponent({
   },
   watch: {
     expanded (status) {
-      this.imageSrc = this.expanded ? this.$attrs.original : this.$attrs.thumbnail
+      this.imageSrc = (this.expanded ? this.$attrs.original : this.$attrs.thumbnail) as string
       
       this.$nextTick(() => {
         if (status) {

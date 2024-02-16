@@ -4,7 +4,7 @@
         <div id="issues">
             <div class="issue"
                 v-for="issue in issues"
-                :key="issue"
+                :key="`${issue.message} ${issue.feature.id}`"
                 :style="{ 'background-color': issue.theme.color, 'opacity': issue.theme.visible ? '1' : '0.3' }"
                 @click="editFeature(issue)">
                 <div class="importance" :class="importances[issue.importance]"></div>
@@ -13,10 +13,10 @@
                     <div class="message">{{issue.message}}</div>
                 </div>
                 <div class="buttons">
-                    <button class="little" title="Editer" @click="editFeature(issue)" :disabled="!connected" :class="issue.manuallyRepaired === undefined ? '' : (issue.manuallyRepaired == 1 ? 'repaired' : '')">
+                    <button class="little" title="Editer" @click="editFeature(issue)" :disabled="!connected" :class="issue.manuallyRepaired ? 'repaired' : ''">
                         <img src="/ui/edit.svg" width=18 />
                     </button>
-                    <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.autoRepaired === undefined ? '' : (issue.autoRepaired == 1 ? 'repaired' : 'irreparable')">
+                    <button class="little" title="Réparer" @click="autoRepairFeature(issue)" :disabled="typeof issue.autoRepair !== 'function' || !connected" :class="issue.autoRepaired ? 'repaired' : 'irreparable'">
                         <img src="/ui/repair.svg" width=18 />
                     </button>
                     <button class="little" title="Masquer" @click="deleteIssue(issue)">
@@ -42,34 +42,36 @@ import * as archeologicalSiteMissingSiteType from '../issues/ArcheologicalSiteMi
 import * as mhs from '../issues/Mhs'
 import * as monumentWithoutHeritage from '../issues/MonumentWithoutHeritage'
 import * as invader from '../issues/Invader'
+import type { TumulusComponents } from '@/types/components'
+import type { Feature, Theme, Issue } from '@/types/common'
 
 export default {
   name: 'IssueAnalyzer',
   data() {
     return {
-        components: null,
-        issues: [],
-        importances: ["missing-data", "warning", "error"],
-        editingIssue: null
+        components: null as TumulusComponents | null,
+        issues: [] as Issue[],
+        importances: ["missing-data", "warning", "error"] as string[],
+        editingIssue: null as Issue | null
     }
   },
   computed: {
-      connected() {
-          return this.components && this.components.osmConnector && this.components.osmConnector.connected
+      connected(): boolean {
+          return this.components !== null && this.components.osmConnector && this.components.osmConnector.connected
       }
   },
   methods: {
     clear() {
         this.issues = []
     },
-    deleteIssue(issue) {
+    deleteIssue(issue: Issue) {
         this.issues.splice(this.issues.indexOf(issue), 1)
     },
-    analyzeFeature(features, theme) {
+    analyzeFeature(features: Feature[], theme: Theme) {
         for(let f in features) {
             const feature = features[f]
 
-            feature.lang = this.components.map.countryCode
+            feature.lang = this.components!.map.countryCode!
 
             this.issues.push(...wikipediaWithoutWikidata.detect(feature, theme))
             this.issues.push(...wikidataWithoutWikipedia.detect(feature, theme))
@@ -81,38 +83,41 @@ export default {
             this.issues.push(...invader.detect(feature, theme))
         }
     },
-    editFeature(issue) {
-        this.components.map.selectFeature(issue.feature, issue.theme)
+    editFeature(issue: Issue) {
+        this.components!.map.selectFeature(issue.feature, issue.theme)
         this.editingIssue = issue
     },
-    async autoRepairFeature(issue) {
-        this.components.editorLog.add('Tentative de réparation du problème : ' + issue.message + ' sur l\'élément ' + issue.feature.id)
-        const reparation = await issue.autoRepair()
-        if(reparation !== null) {
-            this.components.editorLog.addInline(reparation.message + ' <span style="color: lightgreen;">[Réussi]</span>')
-            issue.autoRepaired = 1
-            let feature = reparation.feature
-            this.components.osmConnector.addEditedFeature(feature)
-            if(this.components.featureResult.isLoaded(feature)) this.components.featureResult.loadFeature(feature, issue.theme)
-            if(this.components.featureEditor.isLoaded(feature)) this.components.featureEditor.loadFeature(feature)
-        } else {
-            this.components.editorLog.addInline(' <span style="color: #ffaaaa;">[Echec]</span>')
-            issue.autoRepaired = 2
+    async autoRepairFeature(issue: Issue) {
+        if(this.components) {
+            this.components.editorLog.add(`Tentative de réparation du problème : ${issue.message} sur l'élément ${issue.feature.id}`)
+            if(issue.autoRepair) {
+                const reparation = await issue.autoRepair()
+                if(reparation !== null) {
+                    this.components.editorLog.addInline(`${reparation.message} <span style="color: lightgreen;">[Réussi]</span>`)
+                    issue.autoRepaired = 1
+                    const feature = reparation.feature
+                    this.components.osmConnector.addEditedFeature(feature)
+                    if(this.components.featureResult.isLoaded(feature)) this.components.featureResult.loadFeature(feature, issue.theme)
+                    if(this.components.featureEditor.isLoaded(feature)) this.components.featureEditor.loadFeature(feature)
+                } else {
+                    this.components.editorLog.addInline(' <span style="color: #ffaaaa;">[Echec]</span>')
+                    issue.autoRepaired = 2
+                }
+            }
         }
     },
     async autoRepairAll() {
-        this.components.editorLog.clear()
+        this.components!.editorLog.clear()
 
-        for(let i in this.issues) {
-            let issue = this.issues[i]
-            if(typeof issue.autoRepair == 'function') {
+        for(const i in this.issues) {
+            const issue = this.issues[i]
+            if(issue.autoRepair) {
                 await this.autoRepairFeature(issue)
             }
         }
     },
-    setEditedKeys(featureId, editedKeys) {
-        console.log("setEditedKeys")
-        console.log(editedKeys)
+    setEditedKeys(featureId: string, editedKeys: string[]) {
+        console.log(`setEditedKeys: ${editedKeys}`)
         if(this.editingIssue !== null && featureId === this.editingIssue.feature.id) {
             if(editedKeys.indexOf(this.editingIssue.repairedIfEdited) > -1) {
                 this.editingIssue.manuallyRepaired = true

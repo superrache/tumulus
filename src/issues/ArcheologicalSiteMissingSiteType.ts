@@ -1,8 +1,8 @@
-import type { Feature, Theme } from "@/types/common"
+import type { Feature, Issue, Theme } from "@/types/common"
 
-export function detect(feature: Feature, theme: Theme) {
+export function detect(feature: Feature, theme: Theme): Issue[] {
     const props = feature.properties
-    const issues = []
+    const issues = [] as Issue[]
 
     if(props['historic'] === 'archaeological_site' && !props['site_type']) {
         issues.push({

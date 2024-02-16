@@ -27,26 +27,28 @@
 
 <script lang="ts">
 
+import type { TumulusComponents } from '@/types/components'
 import * as nominatim from '../utils/Nominatim'
+import type { NominatimResult } from '../utils/Nominatim'
 
 export default {
   name: 'PlaceSearch',
   data() {
     return {
-        components: null,
-        results: [],
-        inputStr: ''
+        components: null as TumulusComponents | null,
+        results: [] as NominatimResult[],
+        inputStr: '' as string
     }
   },
   methods: {
-    async updateInput(e) {
+    async updateInput(e: any) {
         const q = e.target.value
         if(q.length > 2) {
             this.results = await nominatim.search(q)
         }
       //this.$emit("update:modelValue", e.target.value);
     },
-    onResultClic(e, result) {
+    onResultClic(e: any, result: NominatimResult) {
         this.go(result)
     },
     enter() { // entrer => premier résultat
@@ -54,15 +56,15 @@ export default {
             this.go(this.results[0])
         }
     },
-    go(result) {
-        this.components.map.flyTo([result.lon, result.lat])
+    go(result: NominatimResult) {
+        this.components!.map.flyTo([result.lon, result.lat])
         this.results = []
-        this.components.issueAnalyzer.clear() // il y a des chances qu'on s'éloigne donc les anciens issues n'ont plus de sens
+        this.components!.issueAnalyzer.clear() // il y a des chances qu'on s'éloigne donc les anciens issues n'ont plus de sens
     },
     clear() {
         this.inputStr = ''
-        this.results = []
-        this.$refs.input.focus()
+        this.results = [];
+        (this.$refs as any).input.focus()
     }
   }
 }

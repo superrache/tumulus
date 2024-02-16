@@ -12,36 +12,33 @@
 </template>
 
 <script lang="ts">
+import type { Theme } from '@/types/common'
+import type { TumulusComponents } from '@/types/components'
+
 
 export default {
   name: 'ThemeSelect',
   data () {
     return {
-        components: null,
-        themes: {
-          loading: {
-            id: "loading",
-            label: "thematics",
-            color: "transparent"
-          }
-        },
+        components: null as TumulusComponents | null,
+        themes: {} as Record<string, Theme>,
         collapsed: false
     }
   },
   methods: {
       load() {
-        this.themes = this.components.map.themes
-        this.components.plantNetAssistant.updatedThemes(this.themes)
+        this.themes = this.components!.map.themes
+        this.components!.plantNetAssistant.updatedThemes(this.themes)
       },
-      toogleThemeVisibility(e, id) {
-          for(let t in this.themes) {
+      toogleThemeVisibility(e: any, id: string) {
+          for(const t in this.themes) {
             if(t === id) {
               this.themes[t].visible = !this.themes[t].visible
-              console.log('toogleThemeVisibility ' + id + ' to ' + (this.themes[t].visible ? 'visible' : 'invisible'))
+              console.log(`toogleThemeVisibility ${id} to ${this.themes[t].visible ? 'visible' : 'invisible'}`)
             }
           }
-          this.components.map.updateThemesVisibility()
-          this.components.plantNetAssistant.updatedThemes(this.themes)
+          this.components!.map.updateThemesVisibility()
+          this.components!.plantNetAssistant.updatedThemes(this.themes)
       },
       collapse() {
         this.collapsed = true

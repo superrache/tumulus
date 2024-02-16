@@ -41,7 +41,7 @@
 
 <script lang="ts">
 
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import * as config from '../const/config' 
 import AutocompleteInput from './AutocompleteInput.vue'
 import type { TumulusComponents } from '@/types/components'
@@ -64,7 +64,7 @@ export default defineComponent({
   },
   computed: {
     connected(): boolean {
-      return this.components!.osmConnector.connected
+      return this.components !== null && this.components.osmConnector.connected
     }
   },
   methods: {
@@ -132,17 +132,16 @@ export default defineComponent({
       this.forceUpdateVueFromModele()
     },
     forceUpdateModeleFromVue() {
-      for(let e in this.editedProperties) {
-        let property = this.editedProperties[e]
-        property.key = this.$refs[`input-key-${e}`][0].innerValue
-        property.value = this.$refs[`input-value-${e}`][0].innerValue
+      for(let e = 0; e < this.editedProperties.length; e++) {
+        this.editedProperties[e].key = (this.$refs as any)[`input-key-${e}`][0].innerValue
+        this.editedProperties[e].value = (this.$refs as any)[`input-value-${e}`][0].innerValue
       }
     },
     forceUpdateVueFromModele() {
-      for(let e in this.editedProperties) {
-        let property = this.editedProperties[e]
-        this.$refs[`input-key-${e}`][0].innerValue = property.key
-        this.$refs[`input-value-${e}`][0].innerValue = property.value
+      for(let e = 0; e < this.editedProperties.length; e++) {
+        const ep = this.editedProperties[e]; // ; is important
+        (this.$refs as any)[`input-key-${e}`][0].innerValue = ep.key;
+        (this.$refs as any)[`input-value-${e}`][0].innerValue = ep.value
       }
     },
     save(updateUI: boolean) {
@@ -150,9 +149,9 @@ export default defineComponent({
         console.log(`save feature id=${this.originalFeature.id}`)
         
         const newProperties: Record<string, string> = {}
-        let editedKeys = []
-        for(let e in this.editedProperties) {
-          let editedProperty = this.editedProperties[e]
+        const editedKeys = [] as string[]
+        for(const e in this.editedProperties) {
+          const editedProperty = this.editedProperties[e]
           if(editedProperty.key !== '') {
               console.log(editedProperty.key + '=' + editedProperty.value)
               newProperties[editedProperty.key] = editedProperty.value
