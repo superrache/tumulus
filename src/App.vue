@@ -4,7 +4,7 @@
       <div id="sidebar-resizer"></div>
       <div id="panel">
         <a id="title" href="">
-          <img src="./img/megalith.svg" width="40"/> tumulus
+          <img src="/ui/megalith.svg" width="40"/> tumulus
         </a>
 
         <select v-model="locale">
